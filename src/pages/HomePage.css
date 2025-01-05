@@ -1,0 +1,49 @@
+
+.Overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(96, 96, 96, 0.17); /* Dark transparent background */
+    z-index: -1000; /* Ensure it appears behind the modal */
+}
+:root {
+    --primary-color: rgba(76, 175, 80, 0.75);
+    --secondary-color: #b2f7a5;
+    --success-color: #28a745;
+    --error-color: #000000;
+    --gray-color: #6c757d;
+    --light-gray: #b2f7a5;
+    --font-family: "Poppins", sans-serif;
+    --box-shadow-default: 0 4px 10px rgba(0, 0, 0, 0.1);
+    --box-shadow-hover: 0 6px 15px rgba(0, 0, 0, 0.2);
+    --border-radius: 12px;
+    --transition-speed: 0.3s;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--light-gray);
+    margin: 0;
+    padding: 0;
+}
+
+button {
+    font-family: var(--font-family);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color var(--transition-speed), transform var(--transition-speed);
+}
+
+button:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-3px);
+}
+
+button:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}

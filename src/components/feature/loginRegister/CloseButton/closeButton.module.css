@@ -1,0 +1,20 @@
+.closeButtonContainer {
+    width: 90%;
+    display: flex;
+    justify-content: end;
+}
+
+.closeButton {
+
+    font-family: 'Poppins', sans-serif;
+    position: inherit;
+    background: none;
+    font-size: 24px;
+    cursor: pointer;
+    border: none;
+    color: rgba(51, 51, 51, 0.44);
+}
+
+.closeButton:hover {
+    color: rgb(51, 51, 51);
+}

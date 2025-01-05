@@ -1,0 +1,46 @@
+.loginModal {
+    position: fixed; /* Makes the div independent of other components */
+    flex-grow: inherit;
+    display: flex; /* Enable Flexbox */
+    flex-direction: column; /* Align children in a column */
+    gap: 30px; /* Add spacing between items */
+    justify-content: start; /* Center items horizontally */
+    align-items: center; /* Center items vertically */
+    width: 300px;
+    min-height: 400px;
+    background-color: #f8f9fa;
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Offset by 50% of its width and height */
+    border-radius: 10px;
+    animation: fadeIn 0.3s ease-out;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -55%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+@media (max-width: 768px) {
+    .loginModal {
+        width: 90%; /* Adjust modal width for smaller screens */
+        min-height: auto; /* Flexible height */
+        padding: 15px; /* Adjust padding */
+    }
+
+    .loginModal input,
+    .loginModal button {
+        width: 100%; /* Full width for inputs and buttons */
+    }
+}

@@ -1,0 +1,26 @@
+.submitButtonField {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.submitButton {
+    padding: 12px;
+    width: 270px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: none;
+    background-color: rgba(76, 175, 80, 0.75);
+    font-family: 'Poppins Light', sans-serif;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    color: white;
+    transition: transform 0.2s ease-out; /* Smooth transition for active state */
+}
+
+.submitButton:hover {
+    background-color: rgba(76, 175, 80, 0.75); /* Maintain the same color but allow hover for interaction */
+}
+
+.submitButton:active {
+    transform: scale(0.91); /* Shrinks the button to 90% of its size when clicked */
+}
