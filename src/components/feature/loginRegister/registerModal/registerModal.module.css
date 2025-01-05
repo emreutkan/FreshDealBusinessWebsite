@@ -50,7 +50,7 @@
     .loginModal {
         width: 90%; /* Adjust modal width for smaller screens */
         min-height: auto; /* Flexible height */
-        padding: 15px; /* Adjust padding */
+        padding: 15px;
     }
 
     .loginModal input,
