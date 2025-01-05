@@ -6,6 +6,7 @@ import { AppDispatch } from "../redux/store.ts";
 import styles from './RestaurantsPage.module.css';
 import RestaurantCard from "../components/feature/restaurantPage/RestaurantCard/RestaurantCard.tsx";
 import AddRestaurantModal from "../components/feature/restaurantPage/addRestaurantModal/AddRestaurantModal.tsx";
+import Navbar from "../components/feature/Navbar/Navbar.tsx";
 
 const RestaurantsPage: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>(); // Type the dispatch correctly
@@ -27,21 +28,25 @@ const RestaurantsPage: React.FC = () => {
     }
 
     return (
-        <div className={styles.container}>
-            <h1>Your Restaurants</h1>
-            <button className={styles.addButton} onClick={openModal}>Add Restaurant</button>
-            {status === 'loading' && <p>Loading your restaurants...</p>}
-            {status === 'failed' && <p style={{ color: 'red' }}>{error}</p>}
-            {status === 'succeeded' && ownedRestaurants.length === 0 && (
-                <p>You have not added any restaurants yet.</p>
-            )}
-            <div className={styles.restaurantsGrid}>
-                {ownedRestaurants.map((restaurant) => (
-                    <RestaurantCard key={restaurant.id} restaurant={restaurant} />
-                ))}
+        <>
+            <Navbar/>
+            <div className={styles.container}>
+                <h1>Your Restaurants</h1>
+                <button className={styles.addButton} onClick={openModal}>Add Restaurant</button>
+                {status === 'loading' && <p>Loading your restaurants...</p>}
+                {status === 'failed' && <p style={{color: 'red'}}>{error}</p>}
+                {status === 'succeeded' && ownedRestaurants.length === 0 && (
+                    <p>You have not added any restaurants yet.</p>
+                )}
+                <div className={styles.restaurantsGrid}>
+                    {ownedRestaurants.map((restaurant) => (
+                        <RestaurantCard key={restaurant.id} restaurant={restaurant}/>
+                    ))}
+                </div>
+                {isModalOpen && <AddRestaurantModal onClose={closeModal}/>}
             </div>
-            {isModalOpen && <AddRestaurantModal onClose={closeModal} />}
-        </div>
+        </>
+
     );
 };
 
