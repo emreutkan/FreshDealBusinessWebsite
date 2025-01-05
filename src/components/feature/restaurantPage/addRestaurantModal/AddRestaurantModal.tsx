@@ -297,6 +297,7 @@ const AddRestaurantModal: React.FC<AddRestaurantModalProps> = ({ onClose }) => {
                         </div>
                     </form>
 
+                    {/* Map Section */}
                     <div className={styles.mapContainer}>
                         <LoadScript
                             googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY!}
