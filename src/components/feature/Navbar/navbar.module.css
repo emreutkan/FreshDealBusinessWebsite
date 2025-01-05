@@ -1,0 +1,131 @@
+/* General Navbar Styling */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    font-family: "Poppins", sans-serif;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border-bottom: #b2f7a5 1px solid;
+
+}
+
+.navbarLogo {
+    font-size: 20px;
+    font-weight: bold;
+    color: #B2F7A5FF;
+    text-transform: lowercase;
+    cursor: pointer;
+}
+
+.navbarBrand {
+    color: #B2F7A5FF;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: lowercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.navbarBrand:hover {
+    color: #44773b;
+}
+
+.navbarLinks {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.navbarLink {
+    text-decoration: none;
+    font-size: 16px;
+    color: #484848;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.navbarLink:hover {
+    color: #44773b;
+    font-weight: bold;
+    transform: translateY(-2px);
+}
+
+.navbarLinkActive {
+    font-weight: bold;
+    color: #000000;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.navbarRight {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.navbarMenuButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 15px;
+    border: 1px solid #dcdcdc;
+    border-radius: 20px;
+    background-color: white;
+    cursor: pointer;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.navbarMenuButton:hover {
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.menuIcon {
+    font-size: 18px;
+    color: #484848;
+}
+
+.profileIcon {
+    font-size: 18px;
+    background-color: #e0e0e0;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.navbarMenuButton:hover .profileIcon {
+    background-color: #c4c4c4;
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px;
+    }
+
+    .navbarLinks {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .navbarRight {
+        margin-top: 15px;
+        justify-content: flex-start;
+    }
+}

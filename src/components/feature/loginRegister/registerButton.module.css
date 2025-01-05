@@ -1,0 +1,30 @@
+.registerButton {
+    display: inline-block;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(90deg, rgba(76, 175, 80, 0.75), rgba(76, 175, 80, 0.75)); /* Airbnb gradient style */
+    border: none;
+    border-radius: 20px;
+    /*box-shadow: 0 4px 10px rgba(255, 56, 92, 0.3);*/
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+    width: 100%;
+}
+
+.registerButton:hover {
+    background: linear-gradient(90deg, rgba(76, 175, 80, 0.75), rgba(76, 175, 80, 0.75)); /* Reverse gradient on hover */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.19); /* Enhance shadow */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.registerButton:active {
+    transform: scale(0.98); /* Button press effect */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.82); /* Reduce shadow */
+}
+
+.registerButton:focus {
+    outline: 2px solid rgba(0, 0, 0, 0.82); /* Focus ring */
+}
