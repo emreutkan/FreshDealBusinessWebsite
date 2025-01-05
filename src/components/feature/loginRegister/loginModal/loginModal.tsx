@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {RootState} from "../../../../redux/store.ts";
+import { setEmail, setPassword } from "../../../../redux/slices/userSlice.ts";
+import {loginUser} from "../../../../redux/thunks/userThunks.ts";
 import styles from "./loginModal.module.css";
 import InputField from "../InputField/InputField";
 import SubmitButton from "../SubmitButton/SubmitButton";
 import CloseButton from "../CloseButton/CloseButton";
+import {AppDispatch} from "../../../../redux/store.ts";
 
 interface LoginModalProps {
     onClose: () => void;
 }
 
 const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
-    const [email, setEmail] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
-    const [emailValid, setEmailValid] = useState<boolean>(true);
-    const [passwordValid, setPasswordValid] = useState<boolean>(true);
+    const dispatch = useDispatch<AppDispatch>();
+    const {email, password, loading, error} = useSelector((state: RootState) => state.user);
+    const [emailValid, setEmailValid] = useState(true);
+    const [passwordValid, setPasswordValid] = useState(true);
 
     useEffect(() => {
         if (email.trim().length > 0) {
@@ -26,23 +31,36 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
     }, [email, password]);
 
     const handleLogin = async () => {
-        if (email.trim().length === 0) setEmailValid(false);
-        if (password.trim().length === 0) setPasswordValid(false);
+        if (!email.trim()) setEmailValid(false);
+        if (!password.trim()) setPasswordValid(false);
 
-        if (emailValid && passwordValid) {
-            // Handle login logic here
+        if (!emailValid && !passwordValid) {
+            return;
         }
-    };
+        try {
+            const result = await dispatch(
+                loginUser({
+                    email: email,
+                    password: password,
+                    login_type: "email",
+                    password_login: true,
+                })
+            ).unwrap(); // Use unwrap() to handle fulfilled/rejected states
+            console.log("Login request successful", result);
+        } catch (err) {
+            console.error("Login request failed", err);
+        }
+    }
 
     return (
         <div className={styles.loginModal}>
-            <CloseButton onClick={onClose} />
+            <CloseButton onClick={onClose}/>
             <InputField
                 isValid={emailValid}
                 placeholder="Email"
                 type="text"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => dispatch(setEmail(e.target.value))}
                 errorMessage="Enter a valid Email Address"
             />
             <InputField
@@ -50,10 +68,12 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
                 type="password"
                 placeholder="Password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => dispatch(setPassword(e.target.value))}
                 errorMessage="Enter a valid Password (8+ chars, letters & numbers)!"
             />
-            <SubmitButton text="Login" onClick={handleLogin} />
+
+            <SubmitButton text={loading ? "Logging in..." : "Login"} onClick={handleLogin}/>
+            {error && <p className={styles.error}>{error}</p>}
         </div>
     );
 };

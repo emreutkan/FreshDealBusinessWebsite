@@ -10,21 +10,18 @@ const AccountMenu: React.FC = () => {
     const [isSelectorOpen, setIsSelectorOpen] = useState(false);
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
-    const [closeButtonClicked, setCloseButtonClicked] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
+
+    const toggleSelector = () => setIsSelectorOpen(!isSelectorOpen);
 
     const handleLoginModalOpen = () => {
         setIsLoginModalOpen(!isLoginModalOpen);
-        if (isRegisterModalOpen) setIsRegisterModalOpen(false);
+        setIsRegisterModalOpen(false);
     };
 
     const handleRegisterModalOpen = () => {
         setIsRegisterModalOpen(!isRegisterModalOpen);
-        if (isLoginModalOpen) setIsLoginModalOpen(false);
-    };
-
-    const toggleSelector = () => {
-        setIsSelectorOpen(!isSelectorOpen);
+        setIsLoginModalOpen(false);
     };
 
     const handleClickOutside = (event: MouseEvent) => {
@@ -36,30 +33,25 @@ const AccountMenu: React.FC = () => {
     };
 
     useEffect(() => {
-        if (closeButtonClicked) {
-            setIsSelectorOpen(false);
-            setIsLoginModalOpen(false);
-            setIsRegisterModalOpen(false);
-            setCloseButtonClicked(false);
-        }
-
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [closeButtonClicked]);
+    }, []);
 
     return (
         <div className={styles.accountMenu} ref={dropdownRef}>
             <div className={styles.iconGroup}>
                 <button className={styles.menuButton} onClick={toggleSelector}>
                     <span className={styles.menuIcon}>≡</span>
-                    <span className={styles.profileIcon}>👤</span>
+                    <span className={styles.profileIcon}>
+                        {user ? user.username : "👤"}
+                    </span>
                 </button>
 
                 {isSelectorOpen && (
                     <div className={styles.dropdownModal}>
-                        {!user && (
+                        {!user ? (
                             <>
                                 <div onClick={handleLoginModalOpen} className={styles.loginButton}>
                                     <RegisterButton modalType="LoginModal" />
@@ -68,21 +60,20 @@ const AccountMenu: React.FC = () => {
                                     <RegisterButton modalType="RegisterModal" />
                                 </div>
                             </>
-                        )}
-                        {user && (
-                            <div onClick={logout}>
-                                <RegisterButton modalType="Log outModal" />
+                        ) : (
+                            <div onClick={logout} className={styles.logoutButton}>
+                                <button>Log Out</button>
                             </div>
                         )}
 
                         {isLoginModalOpen && (
                             <LoginModal
-                                onClose={() => setCloseButtonClicked(true)}
+                                onClose={() => setIsLoginModalOpen(false)}
                             />
                         )}
                         {isRegisterModalOpen && (
                             <RegisterModal
-                                onClose={() => setCloseButtonClicked(true)}
+                                onClose={() => setIsRegisterModalOpen(false)}
                             />
                         )}
                     </div>
