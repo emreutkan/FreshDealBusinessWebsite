@@ -1,4 +1,4 @@
-import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
     getUserData,
     loginUser,
@@ -7,21 +7,6 @@ import {
     updatePassword,
     updateUsername
 } from "../thunks/userThunks.ts";
-
-//
-// interface UpdateUsernamePayload {
-//     newUsername: string;
-// }
-//
-// interface UpdateEmailPayload {
-//     oldEmail: string;
-//     newEmail: string;
-// }
-//
-// interface UpdatePasswordPayload {
-//     oldPassword: string;
-//     newPassword: string;
-// }
 
 interface UserState {
     email: string;
@@ -39,30 +24,6 @@ interface UserState {
     role: "owner";
 }
 
-export interface UserDataResponse {
-    user_data: {
-        id: number;
-        name: string;
-        email: string;
-        phone_number: string;
-        role: string;
-    };
-    user_address_list: Array<{
-        id: number;
-        title: string;
-        longitude: number;
-        latitude: number;
-        street: string;
-        neighborhood: string;
-        district: string;
-        province: string;
-        country: string;
-        postalCode: number;
-        apartmentNo: number;
-        doorNo: string;
-    }>;
-}
-
 const initialState: UserState = {
     email: '',
     name_surname: '',
@@ -73,7 +34,7 @@ const initialState: UserState = {
     verificationCode: '',
     step: 'send_code',
     login_type: 'email',
-    token: null,
+    token: localStorage.getItem('userToken') || null, // Retrieve token from localStorage
     loading: false,
     error: null,
     role: "owner",
@@ -118,9 +79,11 @@ const userSlice = createSlice({
         },
         setToken(state, action: PayloadAction<string>) {
             state.token = action.payload;
+            localStorage.setItem('userToken', action.payload); // Save token to localStorage
         },
         logout() {
-            return {...initialState};
+            localStorage.removeItem('userToken'); // Remove token from localStorage
+            return { ...initialState };
         },
     },
     extraReducers: (builder) => {
@@ -133,10 +96,10 @@ const userSlice = createSlice({
                 state.loading = false;
                 state.token = action.payload.token;
                 state.role = action.payload.role;
+                localStorage.setItem('userToken', action.payload.token); // Save token on login success
             })
             .addCase(loginUser.rejected, (state) => {
                 state.loading = false;
-                // state.error = action.payload || 'Login failed';
                 state.error = 'Login failed';
             })
             .addCase(registerUser.pending, (state) => {
@@ -148,7 +111,6 @@ const userSlice = createSlice({
             })
             .addCase(registerUser.rejected, (state) => {
                 state.loading = false;
-                // state.error = action.payload || 'Registration failed';
                 state.error = 'Registration failed';
             })
             .addCase(updateUsername.pending, (state) => {
