@@ -1,43 +1,99 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from "../../../../redux/store.ts";
-import { addRestaurant } from "../../../../redux/thunks/restaurantThunk.ts";
-import { AddRestaurantPayload } from "../../../../redux/thunks/restaurantThunk.ts";
-import { GoogleMap, Marker, LoadScript, Autocomplete } from "@react-google-maps/api";
-import styles from './addRestaurantModal.module.css';
+import React, { useState, useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../../../redux/store";
+import { addRestaurant, AddRestaurantPayload } from "../../../../redux/thunks/restaurantThunk";
+import {
+    GoogleMap,
+    Marker,
+    LoadScript,
+    StandaloneSearchBox,
+} from "@react-google-maps/api";
+import styles from "./addRestaurantModal.module.css";
 
 interface AddRestaurantModalProps {
     onClose: () => void;
 }
 
 const MAP_CONTAINER_STYLE = {
-    width: "100%", // Full width of the right column
-    height: "400px",
+    width: "100%",
+    height: "100%",
 };
 
 const DEFAULT_CENTER = {
-    lat: 37.7749, // Default latitude (San Francisco)
-    lng: -122.4194, // Default longitude (San Francisco)
+    lat: 37.7749,
+    lng: -122.4194,
 };
 
 const AddRestaurantModal: React.FC<AddRestaurantModalProps> = ({ onClose }) => {
     const dispatch = useDispatch<AppDispatch>();
 
     const [formData, setFormData] = useState({
-        restaurantName: '',
-        restaurantDescription: '',
-        longitude: '',
-        latitude: '',
-        category: '',
-        workingDays: '',
-        workingHoursStart: '',
-        workingHoursEnd: '',
-        listings: '',
+        restaurantName: "",
+        restaurantDescription: "",
+        longitude: "",
+        latitude: "",
+        category: "",
+        workingDays: "",
+        workingHoursStart: "",
+        workingHoursEnd: "",
+        listings: "",
         image: null as File | null,
+        restaurantAddress: "",
     });
 
     const [markerPosition, setMarkerPosition] = useState(DEFAULT_CENTER);
-    const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null);
+    const [userLocation, setUserLocation] = useState<google.maps.LatLngLiteral | null>(
+        null
+    );
+
+    const searchBoxRef = useRef<StandaloneSearchBox | null>(null);
+
+    const getIpLocation = async (): Promise<google.maps.LatLngLiteral | null> => {
+        try {
+            const response = await fetch("https://ipapi.co/json/");
+            if (!response.ok) {
+                throw new Error("Failed to fetch IP-based location");
+            }
+            const data = await response.json();
+            if (
+                data &&
+                typeof data.latitude === "number" &&
+                typeof data.longitude === "number"
+            ) {
+                return { lat: data.latitude, lng: data.longitude };
+            }
+            return null;
+        } catch (error) {
+            console.error("Error getting IP-based location:", error);
+            return null;
+        }
+    };
+
+    useEffect(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    setUserLocation({ lat: latitude, lng: longitude });
+                },
+                async (error) => {
+                    console.error("Error getting current position:", error);
+
+                    const ipLocation = await getIpLocation();
+                    if (ipLocation) {
+                        setUserLocation(ipLocation);
+                    }
+                }
+            );
+        } else {
+            (async () => {
+                const ipLocation = await getIpLocation();
+                if (ipLocation) {
+                    setUserLocation(ipLocation);
+                }
+            })();
+        }
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -50,24 +106,21 @@ const AddRestaurantModal: React.FC<AddRestaurantModalProps> = ({ onClose }) => {
         }
     };
 
-    const onLoadAutocomplete = (autocompleteInstance: google.maps.places.Autocomplete) => {
-        setAutocomplete(autocompleteInstance);
-    };
+    const reverseGeocode = async (lat: number, lng: number) => {
+        const geocoder = new google.maps.Geocoder();
+        const location = { lat, lng };
 
-    const onPlaceChanged = () => {
-        if (autocomplete) {
-            const place = autocomplete.getPlace();
-            if (place.geometry) {
-                const latitude = place.geometry.location?.lat();
-                const longitude = place.geometry.location?.lng();
-                setMarkerPosition({ lat: latitude!, lng: longitude! });
+        geocoder.geocode({ location }, (results, status) => {
+            if (status === "OK" && results && results.length > 0) {
+                const address = results[0].formatted_address;
                 setFormData((prev) => ({
                     ...prev,
-                    latitude: latitude!.toString(),
-                    longitude: longitude!.toString(),
+                    restaurantAddress: address,
                 }));
+            } else {
+                console.error("Reverse geocoding failed:", status);
             }
-        }
+        });
     };
 
     const onMapClick = (e: google.maps.MapMouseEvent) => {
@@ -79,6 +132,34 @@ const AddRestaurantModal: React.FC<AddRestaurantModalProps> = ({ onClose }) => {
                 ...prev,
                 latitude: latitude.toString(),
                 longitude: longitude.toString(),
+            }));
+
+            reverseGeocode(latitude, longitude);
+        }
+    };
+
+    const onPlacesChanged = () => {
+        const places = searchBoxRef.current?.getPlaces();
+
+        if (places && places.length > 0) {
+            const place = places[0];
+            if (!place.geometry || !place.geometry.location) return;
+
+            const lat = place.geometry.location.lat();
+            const lng = place.geometry.location.lng();
+
+            setMarkerPosition({ lat, lng });
+            setFormData((prev) => ({
+                ...prev,
+                latitude: lat.toString(),
+                longitude: lng.toString(),
+            }));
+
+            const address =
+                place.formatted_address || place.name || "Unknown place";
+            setFormData((prev) => ({
+                ...prev,
+                restaurantAddress: address,
             }));
         }
     };
@@ -92,10 +173,10 @@ const AddRestaurantModal: React.FC<AddRestaurantModalProps> = ({ onClose }) => {
             longitude: parseFloat(formData.longitude),
             latitude: parseFloat(formData.latitude),
             category: formData.category,
-            workingDays: formData.workingDays.split(','),
+            workingDays: formData.workingDays.split(",").map(day => day.trim()),
             workingHoursStart: formData.workingHoursStart || undefined,
             workingHoursEnd: formData.workingHoursEnd || undefined,
-            listings: parseInt(formData.listings),
+            listings: parseInt(formData.listings, 10),
             image: formData.image || undefined,
         };
 
@@ -103,12 +184,15 @@ const AddRestaurantModal: React.FC<AddRestaurantModalProps> = ({ onClose }) => {
         onClose();
     };
 
+    const mapCenter = userLocation || markerPosition || DEFAULT_CENTER;
+
     return (
         <div className={styles.modalOverlay}>
             <div className={styles.modal}>
                 <h2>Add New Restaurant</h2>
+
                 <div className={styles.content}>
-                    {/* Left Column: Form */}
+                    {/* Form Section */}
                     <form onSubmit={handleSubmit} className={styles.form}>
                         <input
                             type="text"
@@ -123,6 +207,7 @@ const AddRestaurantModal: React.FC<AddRestaurantModalProps> = ({ onClose }) => {
                             placeholder="Description"
                             value={formData.restaurantDescription}
                             onChange={handleChange}
+                            rows={4}
                         />
                         <input
                             type="text"
@@ -139,61 +224,114 @@ const AddRestaurantModal: React.FC<AddRestaurantModalProps> = ({ onClose }) => {
                             value={formData.workingDays}
                             onChange={handleChange}
                         />
+                        <label htmlFor="restaurantName">Working Hours Start</label>
+
+                        <div className={styles.timeInputs}>
+                            <input
+                                type="time"
+                                name="workingHoursStart"
+                                placeholder="Start Time"
+                                value={formData.workingHoursStart}
+                                onChange={handleChange}
+                            />
+                            <input
+                                type="time"
+                                name="workingHoursEnd"
+                                placeholder="End Time"
+                                value={formData.workingHoursEnd}
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        {/* Image Upload */}
+                        <div className={styles.imageInputContainer}>
+                            <label className={styles.imageInputLabel}>Upload Image:</label>
+                            <label className={styles.imageInput}>
+                                {formData.image ? formData.image.name : "Choose an image"}
+                                <input
+                                    type="file"
+                                    name="image"
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                    hidden
+                                />
+                            </label>
+                        </div>
+
+                        {/* Read-only latitude and longitude */}
                         <input
-                            type="time"
-                            name="workingHoursStart"
-                            placeholder="Start Hours"
-                            value={formData.workingHoursStart}
+                            type="text"
+                            name="latitude"
+                            placeholder="Latitude"
+                            value={formData.latitude}
                             onChange={handleChange}
+                            readOnly
                         />
                         <input
-                            type="time"
-                            name="workingHoursEnd"
-                            placeholder="End Hours"
-                            value={formData.workingHoursEnd}
+                            type="text"
+                            name="longitude"
+                            placeholder="Longitude"
+                            value={formData.longitude}
                             onChange={handleChange}
+                            readOnly
                         />
+
+                        {/* Read-only address */}
                         <input
-                            type="number"
-                            name="listings"
-                            placeholder="Number of Listings"
-                            value={formData.listings}
+                            type="text"
+                            name="restaurantAddress"
+                            placeholder="Address"
+                            value={formData.restaurantAddress}
                             onChange={handleChange}
-                            required
+                            readOnly
                         />
-                        <input
-                            type="file"
-                            name="image"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                        />
-                        <button type="submit" className={styles.submitButton}>
-                            Add Restaurant
-                        </button>
-                        <button type="button" className={styles.cancelButton} onClick={onClose}>
-                            Cancel
-                        </button>
+
+                        {/* Buttons */}
+                        <div className={styles.buttonContainer}>
+                            <button type="submit" className={styles.submitButton}>
+                                Add Restaurant
+                            </button>
+                            <button type="button" className={styles.cancelButton} onClick={onClose}>
+                                Cancel
+                            </button>
+                        </div>
                     </form>
 
                     <div className={styles.mapContainer}>
                         <LoadScript
-                            googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY!}
-                            libraries={['places']}
+                            googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY!}
+                            libraries={["places"]}
                         >
-                            <Autocomplete onLoad={onLoadAutocomplete} onPlaceChanged={onPlaceChanged}>
+                            {/* Search Box */}
+                            <StandaloneSearchBox
+                                onLoad={(ref) => (searchBoxRef.current = ref)}
+                                onPlacesChanged={onPlacesChanged}
+                            >
                                 <input
                                     type="text"
-                                    placeholder="Search Address"
-                                    className={styles.autocompleteInput}
+                                    placeholder="Search for an address"
+                                    className={styles.searchBoxInput}
                                 />
-                            </Autocomplete>
+                            </StandaloneSearchBox>
+
                             <GoogleMap
                                 mapContainerStyle={MAP_CONTAINER_STYLE}
-                                center={markerPosition}
+                                center={mapCenter}
                                 zoom={12}
                                 onClick={onMapClick}
                             >
+                                {/* Marker for new restaurant */}
                                 <Marker position={markerPosition} />
+
+                                {/* Marker for user's location */}
+                                {userLocation && (
+                                    <Marker
+                                        position={userLocation}
+                                        icon={{
+                                            url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                                        }}
+                                    />
+                                )}
                             </GoogleMap>
                         </LoadScript>
                     </div>
