@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styles from "./registerModal.module.css";
-import { registerUser } from "../../../../Api/apiService";
 import InputField from "../InputField/InputField";
 import SubmitButton from "../SubmitButton/SubmitButton";
 import CloseButton from "../CloseButton/CloseButton";
@@ -10,15 +9,12 @@ interface RegisterModalProps {
 }
 
 const RegisterModal: React.FC<RegisterModalProps> = ({ onClose }) => {
-
     const [name, setName] = useState<string>("");
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [nameValid, setNameValid] = useState<boolean>(true);
     const [emailValid, setEmailValid] = useState<boolean>(true);
     const [passwordValid, setPasswordValid] = useState<boolean>(true);
-    const [userRegistered, setUserRegistered] = useState<boolean>(false);
-    const [showRegisterInfo, setShowRegisterInfo] = useState<boolean>(false);
 
     useEffect(() => {
         if (name.trim().length > 0) {
@@ -32,7 +28,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose }) => {
             const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
             setPasswordValid(passwordRegex.test(password));
         }
-        setShowRegisterInfo(false);
     }, [name, email, password]);
 
     const handleRegister = async () => {
@@ -41,30 +36,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose }) => {
         if (password.trim().length === 0) setPasswordValid(false);
 
         if (nameValid && emailValid && passwordValid) {
-            try {
-                const userData = {
-                    name,
-                    email,
-                    password,
-                };
-                const response = await registerUser(userData);
-
-                if (response.message === "User registered successfully") {
-                    setUserRegistered(true);
-                } else {
-                    console.error("User already exists!");
-                    setUserRegistered(false);
-                }
-            } catch (error) {
-                console.error("Registration failed:", error);
-                setUserRegistered(false);
-            } finally {
-                setShowRegisterInfo(true);
-            }
-        } else {
-            console.error("Validation errors exist");
-            setUserRegistered(false);
-            setShowRegisterInfo(true);
+            // Registration logic here
         }
     };
 
@@ -95,18 +67,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose }) => {
                 isValid={passwordValid}
                 errorMessage="Enter a valid Password (8+ chars, letters & numbers)!"
             />
-
-            {showRegisterInfo && (
-                <span
-                    className={
-                        userRegistered
-                            ? styles.registerFeedback
-                            : styles.registerFeedbackFail
-                    }
-                >
-                    {userRegistered ? "User Registered" : "Registration Failed"}
-                </span>
-            )}
             <SubmitButton onClick={handleRegister} text="Register" />
         </div>
     );

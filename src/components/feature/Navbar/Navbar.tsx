@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import styles from "./navbar.module.css";
 import AccountMenu from "./AccountMenu/AccountMenu";
-import { useUser } from "../../../context/UserContext";
+// import { useUser } from "../../../context/UserContext";
 
 const Navbar: React.FC = () => {
-    const { role } = useUser();
+    // const { role } = useUser();
     const [restaurantsOpen, setRestaurantsOpen] = useState(true);
 
     return (

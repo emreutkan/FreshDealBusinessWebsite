@@ -30,3 +30,31 @@
     font-size: 14px;
     font-weight: bold;
 }
+
+
+
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -55%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+@media (max-width: 768px) {
+    .loginModal {
+        width: 90%; /* Adjust modal width for smaller screens */
+        min-height: auto; /* Flexible height */
+        padding: 15px;
+    }
+
+    .loginModal input,
+    .loginModal button {
+        width: 100%; /* Full width for inputs and buttons */
+    }
+}
