@@ -24,7 +24,12 @@ const RestaurantsPage: React.FC = () => {
     const closeModal = () => setIsModalOpen(false); // Close modal
 
     if (!token) {
-        return <div>Please log in to view your restaurants.</div>;
+        return (
+            <>
+                <Navbar/>
+                <div>Please log in to view your restaurants.</div>;
+            </>
+        )
     }
 
     return (

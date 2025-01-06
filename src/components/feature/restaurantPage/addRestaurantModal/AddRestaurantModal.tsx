@@ -24,6 +24,16 @@ const DEFAULT_CENTER = {
     lng: -122.4194,
 };
 
+const DAYS_OF_WEEK = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+];
+
 const AddRestaurantModal: React.FC<AddRestaurantModalProps> = ({ onClose }) => {
     const dispatch = useDispatch<AppDispatch>();
 
@@ -33,10 +43,10 @@ const AddRestaurantModal: React.FC<AddRestaurantModalProps> = ({ onClose }) => {
         longitude: "",
         latitude: "",
         category: "",
-        workingDays: "",
+        workingDays: [] as string[], // Store as an array
         workingHoursStart: "",
         workingHoursEnd: "",
-        listings: "",
+        listings: "0", // Initialize listings to "0"
         image: null as File | null,
         restaurantAddress: "",
     });
@@ -167,18 +177,44 @@ const AddRestaurantModal: React.FC<AddRestaurantModalProps> = ({ onClose }) => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        const longitude = parseFloat(formData.longitude);
+        const latitude = parseFloat(formData.latitude);
+
+        if (isNaN(longitude) || isNaN(latitude)) {
+            alert("Longitude and latitude must be valid float values.");
+            return;
+        }
+
+
         const payload: AddRestaurantPayload = {
             restaurantName: formData.restaurantName,
             restaurantDescription: formData.restaurantDescription || undefined,
-            longitude: parseFloat(formData.longitude),
-            latitude: parseFloat(formData.latitude),
+            longitude,
+            latitude,
             category: formData.category,
-            workingDays: formData.workingDays.split(",").map(day => day.trim()),
+            workingDays: formData.workingDays, // Send as an array
             workingHoursStart: formData.workingHoursStart || undefined,
             workingHoursEnd: formData.workingHoursEnd || undefined,
             listings: parseInt(formData.listings, 10),
             image: formData.image || undefined,
         };
+
+        const uploadPayload = new FormData();
+        uploadPayload.append('restaurantName', payload.restaurantName);
+        if (payload.restaurantDescription) uploadPayload.append('restaurantDescription', payload.restaurantDescription);
+        uploadPayload.append('longitude', payload.longitude.toString());
+        uploadPayload.append('latitude', payload.latitude.toString());
+        uploadPayload.append('category', payload.category);
+        payload.workingDays.forEach(day => uploadPayload.append('workingDays', day));
+        if (payload.workingHoursStart) uploadPayload.append('workingHoursStart', payload.workingHoursStart);
+        if (payload.workingHoursEnd) uploadPayload.append('workingHoursEnd', payload.workingHoursEnd);
+        uploadPayload.append('listings', payload.listings.toString());
+        if (payload.image) uploadPayload.append('image', payload.image);
+
+        // Log payload for debugging
+        for (const [key, value] of uploadPayload.entries()) {
+            console.log(`${key}: ${value}`);
+        }
 
         await dispatch(addRestaurant(payload));
         onClose();
@@ -217,13 +253,31 @@ const AddRestaurantModal: React.FC<AddRestaurantModalProps> = ({ onClose }) => {
                             onChange={handleChange}
                             required
                         />
-                        <input
-                            type="text"
-                            name="workingDays"
-                            placeholder="Working Days (e.g., Mon-Fri)"
-                            value={formData.workingDays}
-                            onChange={handleChange}
-                        />
+                        <div>
+                            <label>Working Days:</label>
+                            <div className={styles.workingDaysContainer}>
+                                {DAYS_OF_WEEK.map((day) => (
+                                    <label key={day}>
+                                        <input
+                                            type="checkbox"
+                                            value={day}
+                                            checked={formData.workingDays.includes(day)}
+                                            onChange={(e) => {
+                                                const selectedDay = e.target.value;
+                                                setFormData((prev) => {
+                                                    const updatedDays = prev.workingDays.includes(selectedDay)
+                                                        ? prev.workingDays.filter((d) => d !== selectedDay) // Remove day if unchecked
+                                                        : [...prev.workingDays, selectedDay]; // Add day if checked
+                                                    return {...prev, workingDays: updatedDays};
+                                                });
+                                            }}
+                                        />
+                                        {day}
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+
                         <label htmlFor="restaurantName">Working Hours Start</label>
 
                         <div className={styles.timeInputs}>
