@@ -56,14 +56,14 @@ const AddRestaurantModal: React.FC<AddRestaurantModalProps> = ({ onClose }) => {
         null
     );
 
-    const searchBoxRef = useRef<StandaloneSearchBox | null>(null);
+    const searchBoxRef = useRef<google.maps.places.SearchBox | null>(null);
 
     const getIpLocation = async (): Promise<google.maps.LatLngLiteral | null> => {
         try {
             const response = await fetch("https://ipapi.co/json/");
             if (!response.ok) {
-                throw new Error("Failed to fetch IP-based location");
-            }
+                console.log("Failed to fetch IP-based location");
+                return null;}
             const data = await response.json();
             if (
                 data &&
@@ -297,7 +297,6 @@ const AddRestaurantModal: React.FC<AddRestaurantModalProps> = ({ onClose }) => {
                             />
                         </div>
 
-                        {/* Image Upload */}
                         <div className={styles.imageInputContainer}>
                             <label className={styles.imageInputLabel}>Upload Image:</label>
                             <label className={styles.imageInput}>
@@ -357,7 +356,6 @@ const AddRestaurantModal: React.FC<AddRestaurantModalProps> = ({ onClose }) => {
                             googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY!}
                             libraries={["places"]}
                         >
-                            {/* Search Box */}
                             <StandaloneSearchBox
                                 onLoad={(ref) => (searchBoxRef.current = ref)}
                                 onPlacesChanged={onPlacesChanged}
@@ -375,10 +373,8 @@ const AddRestaurantModal: React.FC<AddRestaurantModalProps> = ({ onClose }) => {
                                 zoom={12}
                                 onClick={onMapClick}
                             >
-                                {/* Marker for new restaurant */}
                                 <Marker position={markerPosition} />
 
-                                {/* Marker for user's location */}
                                 {userLocation && (
                                     <Marker
                                         position={userLocation}
