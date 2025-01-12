@@ -7,7 +7,6 @@ import {getUserData, loginUser, registerUser} from "../../../../redux/thunks/use
 import store, {AppDispatch} from "../../../../redux/store.ts";
 import { useDispatch } from "react-redux";
 import {setToken} from "../../../../redux/slices/userSlice.ts";
-import {Alert} from "@mui/material";
 
 interface RegisterModalProps {
     onClose: () => void;
