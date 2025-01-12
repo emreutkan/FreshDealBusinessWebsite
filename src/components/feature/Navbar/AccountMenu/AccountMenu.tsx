@@ -1,18 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import RegisterButton from "../../loginRegister/RegisterButton";
-import styles from "./accountMenu.module.css";
 import RegisterModal from "../../loginRegister/registerModal/RegisterModal";
 import LoginModal from "../../loginRegister/loginModal/loginModal.tsx";
-import { useUser } from "../../../../context/UserContext";
+import styles from "./AccountMenu.module.css";
 
 const AccountMenu: React.FC = () => {
-    const { user, logout } = useUser();
-    const [isSelectorOpen, setIsSelectorOpen] = useState(false);
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
-
-    const toggleSelector = () => setIsSelectorOpen(!isSelectorOpen);
 
     const handleLoginModalOpen = () => {
         setIsLoginModalOpen(!isLoginModalOpen);
@@ -26,7 +20,6 @@ const AccountMenu: React.FC = () => {
 
     const handleClickOutside = (event: MouseEvent) => {
         if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-            setIsSelectorOpen(false);
             setIsLoginModalOpen(false);
             setIsRegisterModalOpen(false);
         }
@@ -40,45 +33,63 @@ const AccountMenu: React.FC = () => {
     }, []);
 
     return (
-        <div className={styles.accountMenu} ref={dropdownRef}>
-            <div className={styles.iconGroup}>
-                <button className={styles.menuButton} onClick={toggleSelector}>
-                    <span className={styles.menuIcon}>≡</span>
-                    <span className={styles.profileIcon}>
-                        {user ? user.username : "👤"}
+        <div className={styles.container}>
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    flex: 1,
+                    justifyContent: "space-between",
+                    gap: "10px",
+                }}
+                ref={dropdownRef}
+            >
+                <button
+                    onClick={handleLoginModalOpen}
+                    className={styles.btn}
+                    style={isLoginModalOpen ? { backgroundColor: "#b0f484" } : {}}
+                >
+                    <span
+                        style={{
+                            color: "black",
+                            fontSize: "16px",
+                        }}
+                    >
+                        Login
                     </span>
                 </button>
-
-                {isSelectorOpen && (
-                    <div className={styles.dropdownModal}>
-                        {!user ? (
-                            <>
-                                <div onClick={handleLoginModalOpen} className={styles.loginButton}>
-                                    <RegisterButton modalType="LoginModal" />
-                                </div>
-                                <div onClick={handleRegisterModalOpen}>
-                                    <RegisterButton modalType="RegisterModal" />
-                                </div>
-                            </>
-                        ) : (
-                            <div onClick={logout} className={styles.logoutButton}>
-                                <button>Log Out</button>
-                            </div>
-                        )}
-
-                        {isLoginModalOpen && (
-                            <LoginModal
-                                onClose={() => setIsLoginModalOpen(false)}
-                            />
-                        )}
-                        {isRegisterModalOpen && (
-                            <RegisterModal
-                                onClose={() => setIsRegisterModalOpen(false)}
-                            />
-                        )}
-                    </div>
-                )}
+                <button
+                    onClick={handleRegisterModalOpen}
+                    className={styles.btn}
+                    style={isRegisterModalOpen ? { backgroundColor: "#b0f484" } : {}}
+                >
+                    <span
+                        style={{
+                            color: "black",
+                            fontSize: "16px",
+                        }}
+                    >
+                        Register
+                    </span>
+                </button>
             </div>
+
+            {/* Dark background overlay */}
+            {(isLoginModalOpen || isRegisterModalOpen) && (
+                <div className={styles.overlay}></div>
+            )}
+
+            {/* Modals */}
+            {isLoginModalOpen && (
+                <div className={styles.modal}>
+                    <LoginModal onClose={() => setIsLoginModalOpen(false)} />
+                </div>
+            )}
+            {isRegisterModalOpen && (
+                <div className={styles.modal}>
+                    <RegisterModal onClose={() => setIsRegisterModalOpen(false)} />
+                </div>
+            )}
         </div>
     );
 };

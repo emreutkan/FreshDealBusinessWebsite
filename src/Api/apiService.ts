@@ -1,7 +1,9 @@
 // api/apiService.ts
 import axios from 'axios';
 
-const API_BASE_URL = 'https://freshdealapi-fkfaajfaffh4c0ex.uksouth-01.azurewebsites.net/v1';
+// const API_BASE_URL = 'https://freshdealapi-fkfaajfaffh4c0ex.uksouth-01.azurewebsites.net/v1';
+
+const API_BASE_URL = 'http://192.168.1.3:8181/v1';
 
 const CHANGE_USERNAME = `${API_BASE_URL}/user/changeUsername`;
 const CHANGE_PASSWORD = `${API_BASE_URL}/user/changePassword`;

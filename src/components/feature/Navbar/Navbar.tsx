@@ -6,6 +6,8 @@ import AccountMenu from "./AccountMenu/AccountMenu";
 import { logout } from "../../../redux/slices/userSlice";
 import { RootState } from "../../../redux/store";
 import { Link, useNavigate } from 'react-router-dom';
+import {Image} from "@mui/icons-material";
+import logo from "../../../../public/fresh-deal-logo.svg";
 
 const Navbar: React.FC = () => {
     const dispatch = useDispatch();
@@ -26,14 +28,12 @@ const Navbar: React.FC = () => {
 
     const handleLogout = () => {
         dispatch(logout());
-        navigate('/login'); // Redirect to login page after logout
+        navigate('/'); // Redirect to login page after logout
     };
 
     return (
         <nav className={styles.navbar}>
-            <div className={styles.navbarLogo}>
-                <Link to="/" className={styles.navbarBrand}>Freshdeal</Link>
-            </div>
+            <img src={logo} alt="logo" width={205} height={57}/>
 
             {token && (
                 <div className={styles.navbarLinks}>

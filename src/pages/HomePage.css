@@ -1,13 +1,13 @@
 
-.Overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(96, 96, 96, 0.17); /* Dark transparent background */
-    z-index: -1000; /* Ensure it appears behind the modal */
-}
+/*.Overlay {*/
+/*    position: fixed;*/
+/*    top: 0;*/
+/*    left: 0;*/
+/*    width: 100%;*/
+/*    height: 100%;*/
+/*    background-color: rgba(96, 96, 96, 0.17); !* Dark transparent background *!*/
+/*    z-index: -1000; !* Ensure it appears behind the modal *!*/
+/*}*/
 :root {
     --primary-color: rgba(76, 175, 80, 0.75);
     --secondary-color: #b2f7a5;
@@ -22,28 +22,45 @@
     --transition-speed: 0.3s;
 }
 
-body {
-    font-family: var(--font-family);
-    background-color: var(--light-gray);
+/*body {*/
+/*    font-family: var(--font-family);*/
+/*    background-color: var(--light-gray);*/
+/*    margin: 0;*/
+/*    padding: 0;*/
+/*}*/
+
+/*button {*/
+/*    font-family: var(--font-family), serif;*/
+/*    border: none;*/
+/*    padding: 12px 24px;*/
+/*    border-radius: 16px;*/
+/*    background: #b0f484;*/
+/*    cursor: pointer;*/
+/*    width: 120px;*/
+/*    transition: background-color var(--transition-speed), transform var(--transition-speed);*/
+/*}*/
+
+/*button:hover {*/
+/*    background-color: var(--secondary-color);*/
+/*    transform: translateY(-3px);*/
+/*}*/
+
+/*button:focus {*/
+/*    outline: 2px solid var(--primary-color);*/
+/*    outline-offset: 2px;*/
+/*}*/
+
+h1 {
+    font-family: "Poppins", sans-serif;
+    font-weight: 300; /* Light */
+    font-size: 40px;
     margin: 0;
-    padding: 0;
+    line-height: 1.5;
 }
 
-button {
-    font-family: var(--font-family);
-    border: none;
-    padding: 12px 24px;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: background-color var(--transition-speed), transform var(--transition-speed);
-}
-
-button:hover {
-    background-color: var(--secondary-color);
-    transform: translateY(-3px);
-}
-
-button:focus {
-    outline: 2px solid var(--primary-color);
-    outline-offset: 2px;
+text, p, span, div {
+    font-family: "Poppins", sans-serif;
+    font-weight: 300; /* Light */
+    font-size: 12px;
+    line-height: 1.6;
 }

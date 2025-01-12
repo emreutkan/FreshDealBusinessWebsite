@@ -1,18 +1,19 @@
 /* General Navbar Styling */
 .navbar {
+    height: 100px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 10px 20px;
     background-color: white;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    /*box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);*/
     font-family: "Poppins", sans-serif;
     position: sticky;
     top: 0;
     z-index: 1000;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    border-bottom: #b2f7a5 1px solid;
+    /*border-radius: 12px;*/
+    /*margin-bottom: 20px;*/
+    /*border-bottom: #b2f7a5 1px solid;*/
 
 }
 
