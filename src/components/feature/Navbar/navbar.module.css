@@ -40,9 +40,13 @@
 }
 
 .navbarLinks {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
-    gap: 20px;
     align-items: center;
+    gap: 3vw;
+
 }
 
 .navbarLink {
@@ -55,14 +59,19 @@
 }
 
 .navbarLink:hover {
-    color: #44773b;
-    font-weight: bold;
+    /*color: #44773b;*/
+    /*font-weight: bold;*/
     transform: translateY(-2px);
+    text-decoration: underline;
+    text-underline-offset: 4px;
 }
 
 .navbarLinkActive {
-    font-weight: bold;
-    color: #000000;
+    font-size: 16px;
+    color: #484848;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
     text-decoration: underline;
     text-underline-offset: 4px;
 }

@@ -6,7 +6,7 @@
     border-radius: 16px;
     background: #f0f0f0;
     cursor: pointer;
-    width: 150px;
+    width: 160px;
     transition: background-color var(--transition-speed), transform var(--transition-speed);
 }
 
@@ -21,7 +21,7 @@
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5); /* Darken background */
-    z-index: 1000; /* Behind the modals */
+    z-index: 2; /* Behind the modals */
 }
 
 .modal {
@@ -33,5 +33,5 @@
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Elevation */
-    z-index: 1100; /* Above the overlay */
+    z-index: 100; /* Above the overlay */
 }

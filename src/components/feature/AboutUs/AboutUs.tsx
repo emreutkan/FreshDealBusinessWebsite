@@ -77,7 +77,7 @@ const AboutUs: React.FC = () => {
                         alignItems: "center",
                         justifyContent: "center",
 
-                    }}>Our Mission</h1>
+                    }}>Our Vision</h1>
 
                     <text style={
                         {
@@ -90,10 +90,9 @@ const AboutUs: React.FC = () => {
                             width: "25vw",
                         }
                     }>
-                        At Fresh Deal, we prevent premium food waste and offer everyone unbeatable prices on
-                        high-quality meals and groceries.
+                        By combining sustainability with affordability, we ensure no premium product goes unused, letting everyone enjoy the best at a better price.
                     </text>
-                    <img src={OurMissionLogo} alt="Our Mission Logo"
+                    <img src={OurVisionLogo} alt="Our Vision Logo"
                          style={{
                              // width: "25vw",
                          }}/>
@@ -116,7 +115,7 @@ const AboutUs: React.FC = () => {
                         alignItems: "center",
                         justifyContent: "center",
 
-                    }}>Our Mission</h1>
+                    }}>Our Values</h1>
 
                     <text style={
                         {
@@ -129,10 +128,9 @@ const AboutUs: React.FC = () => {
                             width: "25vw",
                         }
                     }>
-                        At Fresh Deal, we prevent premium food waste and offer everyone unbeatable prices on
-                        high-quality meals and groceries.
+                        We preserve premium quality, make it affordable, and reduce waste, creating value for users, businesses, and the planet.
                     </text>
-                    <img src={OurMissionLogo} alt="Our Mission Logo"
+                    <img src={OurValuesLogo} alt="Our Values Logo"
                          style={{
                              // width: "25vw",
                          }}/>

@@ -21,7 +21,7 @@ interface UserState {
     token: string | null;
     loading: boolean;
     error: string | null;
-    role: "owner";
+    role: "owner" | "customer" | "";
 }
 
 const initialState: UserState = {
@@ -37,7 +37,7 @@ const initialState: UserState = {
     token: localStorage.getItem('userToken') || null, // Retrieve token from localStorage
     loading: false,
     error: null,
-    role: "owner",
+    role: "",
 };
 
 const userSlice = createSlice({
@@ -95,8 +95,7 @@ const userSlice = createSlice({
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.loading = false;
                 state.token = action.payload.token;
-                state.role = action.payload.role;
-                localStorage.setItem('userToken', action.payload.token); // Save token on login success
+                localStorage.setItem('userToken', action.payload.token); // Use 'userToken' for consistency
             })
             .addCase(loginUser.rejected, (state) => {
                 state.loading = false;
@@ -157,6 +156,9 @@ const userSlice = createSlice({
                 state.name_surname = action.payload.user_data.name;
                 state.email = action.payload.user_data.email;
                 state.phoneNumber = action.payload.user_data.phone_number;
+                state.role = action.payload.user_data.role;
+
+
             })
             .addCase(getUserData.rejected, (state, action) => {
                 state.loading = false;
@@ -171,7 +173,7 @@ export interface UserDataResponse {
         name: string;
         email: string;
         phone_number: string;
-        role: string;
+        role: "owner" | "customer" | "";
     };
     user_address_list: Array<{
         id: number;

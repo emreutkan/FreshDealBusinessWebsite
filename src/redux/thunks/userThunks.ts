@@ -24,9 +24,13 @@ export const loginUser = createAsyncThunk(
             login_type?: "email" | "phone_number";
             password_login?: boolean;
         },
-        {rejectWithValue}
+        {dispatch, rejectWithValue}
     ) => {
         try {
+            const response = await loginUserAPI(payload);
+            if (response.token) {
+                await dispatch(getUserData({token: response.token}));
+            }
             return await loginUserAPI(payload);
         } catch (error) {
             return rejectWithValue('Login failed' + {error});
@@ -120,17 +124,20 @@ export const updatePassword = createAsyncThunk<
 );
 
 // Get user data
+// Get user data
 export const getUserData = createAsyncThunk<
     UserDataResponse,
     { token: string },
     { rejectValue: string }
 >(
     'user/getUserData',
-    async ({token}, {rejectWithValue}) => {
+    async ({ token }, { rejectWithValue }) => {
         try {
             return await getUserDataAPI(token);
-        } catch (error) {
-            return rejectWithValue('Failed to fetch user data' + {error});
+        } catch (error: any) {
+            // Assuming error.message provides meaningful information
+            const errorMessage = error.message || 'An unknown error occurred';
+            return rejectWithValue(`Failed to fetch user data: ${errorMessage}`);
         }
     }
 );
