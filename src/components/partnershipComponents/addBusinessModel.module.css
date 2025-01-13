@@ -72,7 +72,7 @@
     width: 21vw;
     height: 50px;
     border-radius: 5px;
-    border: 0px solid #b0f484;
+    border: 0 solid #b0f484;
     background-color: #f0f0f0;
     padding: 10px;
     margin-bottom: 10px;
@@ -126,7 +126,7 @@ span{
     font-size: 22px;
 }
 
-.defaultInput::t:focus {
+.defaultInput:focus {
     outline: none;
     border: 1px solid #b0f484;
 
@@ -170,30 +170,7 @@ input[readOnly] {
     cursor: not-allowed;
 }
 
-.imageInputContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
 
-.imageInputLabel {
-    font-size: 14px;
-    color: #555;
-}
-
-.imageInput {
-    padding: 10px;
-    border: 2px dashed #ccc;
-    border-radius: 6px;
-    background-color: #fafafa;
-    cursor: pointer;
-    transition: border-color 0.3s, background-color 0.3s;
-}
-
-.imageInput:hover {
-    border-color: #28a745;
-    background-color: #f1fff0;
-}
 
 .fileUploadContainer {
     display: flex;
@@ -228,22 +205,8 @@ input[readOnly] {
     border-color: #86e277;
 }
 
-.labelContent {
-    font-family: Arial, sans-serif;
-    font-size: 16px;
-    color: #6d6d6d;
-}
 
-.icon {
-    font-size: 24px; /* Adjust for icon size */
-    margin-bottom: 5px;
-}
 
-.fileUploadContainer.dragging {
-    background-color: #f0f9e8;
-    border-color: #86e277;
-    transform: scale(1.1); /* Slightly expand on drag */
-}
 
 .fileInput {
     display: none; /* Hide the default file input */

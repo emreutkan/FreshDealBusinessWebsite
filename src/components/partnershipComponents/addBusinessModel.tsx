@@ -14,62 +14,36 @@ import {
     AddRestaurantPayload,
 } from "../../redux/thunks/restaurantThunk.ts";
 
-/** ------------------------------------------------
- * Use a STATIC array for libraries so it doesn't
- * create a new array on every render
- * ------------------------------------------------ */
-const LIBRARIES: (
-    | "places"
-    | "drawing"
-    | "geometry"
-    | "localContext"
-    | "visualization"
-    )[] = ["places"];
-
-/** Define DEFAULT_CENTER BEFORE using it in state */
 const DEFAULT_CENTER = {
     lat: 37.7749,
     lng: -122.4194,
 };
 
-/** Container style for Google Map */
 const MAP_CONTAINER_STYLE = {
     width: "100%",
     height: "100%",
 };
 
 const AddBusinessModel = () => {
-    /** ─────────────────────────
-     *  Step wizard: 1 or 2
-     *  ───────────────────────── */
     const [currentStep, setCurrentStep] = useState(1);
-
-    // States
     const [phoneModalOpen, setPhoneModalOpen] = useState(false);
     const [categoryModalOpen, setCategoryModalOpen] = useState(false);
     const [selectedAreaCode, setSelectedAreaCode] = useState("+90");
     const [selectedCategory, setSelectedCategory] = useState("");
     const [searchingForAddress, setSearchingForAddress] = useState(false);
     const [daysModalOpen, setDaysModalOpen] = useState(false);
-
-    // For file uploads
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-
-    // For Google Maps
     const searchBoxRef = useRef<google.maps.places.SearchBox | null>(null);
     const [markerPosition, setMarkerPosition] =
         useState<google.maps.LatLngLiteral>(DEFAULT_CENTER);
     const [userLocation, setUserLocation] =
         useState<google.maps.LatLngLiteral | null>(null);
 
-    // We want to highlight inputs in red if they are invalid.
-    // We'll keep a record of which fields are invalid:
+
     const [invalidFields, setInvalidFields] = useState<string[]>([]);
 
-    // Redux dispatch
     const dispatch = useDispatch<AppDispatch>();
 
-    // Lists for demonstration
     const areaCodes = ["+90", "+1", "+44"];
     const restaurantCategories = [
         "Baked Goods",
@@ -93,10 +67,7 @@ const AddBusinessModel = () => {
         "Sunday",
     ];
 
-    /** ─────────────────────────────────────────
-     *  formData combines all fields we need.
-     *  We'll add the new delivery/pickup fields here.
-     *  ───────────────────────────────────────── */
+
     const [formData, setFormData] = useState({
         restaurantName: "",
         restaurantDescription: "",
@@ -106,7 +77,6 @@ const AddBusinessModel = () => {
         workingDays: [] as string[],
         workingHoursStart: "",
         workingHoursEnd: "",
-        listings: "0", // Initialize listings to "0"
         // Additional fields:
         ownerEmail: "",
         phoneNumber: "",
@@ -142,31 +112,40 @@ const AddBusinessModel = () => {
             return null;
         }
     };
-
     useEffect(() => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const { latitude, longitude } = position.coords;
-                    setUserLocation({ lat: latitude, lng: longitude });
-                },
-                async (error) => {
-                    console.error("Error getting current position:", error);
-                    const ipLocation = await getIpLocation();
-                    if (ipLocation) {
-                        setUserLocation(ipLocation);
+        let isMounted = true;
+
+        const fetchLocation = async () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        if (isMounted) {
+                            setUserLocation({
+                                lat: position.coords.latitude,
+                                lng: position.coords.longitude,
+                            });
+                        }
+                    },
+                    async () => {
+                        if (isMounted) {
+                            const ipLocation = await getIpLocation();
+                            if (ipLocation) setUserLocation(ipLocation);
+                        }
                     }
+                );
+            } else {
+                if (isMounted) {
+                    const ipLocation = await getIpLocation();
+                    if (ipLocation) setUserLocation(ipLocation);
                 }
-            );
-        } else {
-            // No geolocation? fallback to IP
-            (async () => {
-                const ipLocation = await getIpLocation();
-                if (ipLocation) {
-                    setUserLocation(ipLocation);
-                }
-            })();
-        }
+            }
+        };
+
+        fetchLocation();
+
+        return () => {
+            isMounted = false; // Cleanup to prevent state updates on unmounted component
+        };
     }, []);
 
     /** Reverse geocoding */
@@ -174,7 +153,7 @@ const AddBusinessModel = () => {
         const geocoder = new google.maps.Geocoder();
         const location = { lat, lng };
 
-        geocoder.geocode({ location }, (results, status) => {
+        await geocoder.geocode({location}, (results, status) => {
             if (status === "OK" && results && results.length > 0) {
                 const address = results[0].formatted_address;
                 // If you want to store the address into form data:
@@ -200,7 +179,7 @@ const AddBusinessModel = () => {
             }));
 
             // If you want to automatically fill an address from reverse geocode:
-            reverseGeocode(latitude, longitude);
+            reverseGeocode(latitude, longitude).then(r => console.log(r));
         }
     };
 
@@ -219,29 +198,21 @@ const AddBusinessModel = () => {
                 ...prev,
                 latitude: lat.toString(),
                 longitude: lng.toString(),
-                // Store the address into the restaurantDescription, or
-                // a new field if you like:
-                // For demonstration, let's call it "restaurantAddress" if you like
-                // but you didn't define that in your final payload, so be mindful.
             }));
         }
     };
 
-    /** ─────────────────────────────────────────
-     *   FORM HANDLERS
-     *  ───────────────────────────────────────── */
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
         const { name, value, type } = e.target;
         // If it's a checkbox, handle differently.
         if (type === "checkbox") {
-            setFormData((prev) => ({ ...prev, [name]: (e.target as any).checked }));
+            setFormData((prev) => ({ ...prev, [name]: (e.target) }));
         } else {
             setFormData((prev) => ({ ...prev, [name]: value }));
         }
 
-        // Remove from invalidFields if user is typing.
         setInvalidFields((prevInvalid) => prevInvalid.filter((f) => f !== name));
     };
 
@@ -280,9 +251,7 @@ const AddBusinessModel = () => {
             "workingHoursEnd",
         ];
 
-        // Check if user selected any day
-        // We'll add 'workingDays' as a "field" that must be present.
-        // If no days selected => fail
+
         const invalids: string[] = [];
         requiredFields.forEach((field) => {
             if (!formData[field as keyof typeof formData]) {
@@ -303,11 +272,9 @@ const AddBusinessModel = () => {
         return invalids.length === 0;
     };
 
-    /** On first step, "Continue" button click */
     const handleContinue = (e: React.FormEvent) => {
         e.preventDefault();
         if (validateStep1()) {
-            // If validation passes, go to step 2
             setCurrentStep(2);
         }
     };
@@ -343,7 +310,6 @@ const AddBusinessModel = () => {
         finalData.append("category", formData.category);
         finalData.append("workingHoursStart", formData.workingHoursStart);
         finalData.append("workingHoursEnd", formData.workingHoursEnd);
-        finalData.append("listings", formData.listings.toString());
         finalData.append("pickup", formData.pickup ? "true" : "false");
         finalData.append("delivery", formData.delivery ? "true" : "false");
         if (formData.delivery) {
@@ -376,25 +342,23 @@ const AddBusinessModel = () => {
             category: formData.category,
             workingHoursStart: formData.workingHoursStart,
             workingHoursEnd: formData.workingHoursEnd,
-            listings: parseInt(formData.listings, 10),
+            workingDays: formData.workingDays,
+
             image: uploadedFile || undefined,
-            // If your backend expects 'pickup' and 'delivery' as booleans,
-            // you'd expand your AddRestaurantPayload or handle them differently.
-            // For demonstration, let's just keep them in finalData in the fetch approach.
+            pickup: formData.pickup,
+            delivery: formData.delivery,
+            maxDeliveryDistance: formData.delivery ? parseFloat(formData.maxDeliveryDistance) : 0,
+            deliveryFee: formData.delivery ? parseFloat(formData.deliveryFee) : 0,
+            minOrderAmount: formData.delivery ? parseFloat(formData.minOrderAmount) : 0,
+
         };
 
-        // If your addRestaurant expects only part of the fields, you might do:
-        // dispatch(addRestaurant(payload));
-
-        // Or do a direct fetch with finalData:
-        /*
-        fetch("/your-backend-url", {
-          method: "POST",
-          body: finalData,
-        })
-          .then((res) => console.log("Success", res))
-          .catch((err) => console.error("Error", err));
-        */
+        const result = await dispatch(addRestaurant(payload));
+        if (addRestaurant.fulfilled.match(result)) {
+            console.log("Restaurant added successfully!");
+        } else {
+            console.error("Failed to add restaurant:", result.error);
+        }
 
         alert("Form completed successfully! Check console for finalData contents.");
     };
@@ -414,7 +378,8 @@ const AddBusinessModel = () => {
     return (
         <LoadScript
             googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY!}
-            libraries={LIBRARIES}
+
+            libraries={["places" ]}
         >
             <div
                 style={{
@@ -977,7 +942,7 @@ const AddBusinessModel = () => {
                             <Marker
                                 position={userLocation}
                                 icon={{
-                                    url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                                    url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
                                 }}
                             />
                         )}

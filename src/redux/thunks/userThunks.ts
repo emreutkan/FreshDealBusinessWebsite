@@ -1,14 +1,9 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
-import {
-    getUserDataAPI,
-    loginUserAPI,
-    registerUserAPI,
-    updateEmailAPI,
-    updatePasswordAPI,
-    updateUsernameAPI,
-} from "../../Api/apiService.ts";
+
 import {RootState} from "../store";
 import {UserDataResponse} from "../slices/userSlice.ts";
+import {loginUserAPI, registerUserAPI} from "../Api/authApi.ts";
+import {getUserDataAPI, updateEmailAPI, updatePasswordAPI, updateUsernameAPI} from "../Api/userApi.ts";
 
 
 // Login user
@@ -123,8 +118,7 @@ export const updatePassword = createAsyncThunk<
     }
 );
 
-// Get user data
-// Get user data
+
 export const getUserData = createAsyncThunk<
     UserDataResponse,
     { token: string },
@@ -134,9 +128,8 @@ export const getUserData = createAsyncThunk<
     async ({ token }, { rejectWithValue }) => {
         try {
             return await getUserDataAPI(token);
-        } catch (error: any) {
-            // Assuming error.message provides meaningful information
-            const errorMessage = error.message || 'An unknown error occurred';
+        } catch (error) {
+            const errorMessage = 'An unknown error occurred '+ error  ;
             return rejectWithValue(`Failed to fetch user data: ${errorMessage}`);
         }
     }

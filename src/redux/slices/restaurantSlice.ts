@@ -2,10 +2,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
     addRestaurant,
-    fetchRestaurant,
-    fetchOwnedRestaurants,
+    getRestaurantsOfUserThunk,
     removeRestaurant,
-    fetchRestaurantsProximity,
+    getRestaurantsInProximityThunk,
 } from '../thunks/restaurantThunk';
 
 export interface Restaurant {
@@ -28,7 +27,6 @@ export interface Restaurant {
 
 interface RestaurantState {
     ownedRestaurants: Restaurant[];
-    singleRestaurant: Restaurant | null;
     nearbyRestaurants: Restaurant[];
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
@@ -36,7 +34,6 @@ interface RestaurantState {
 
 const initialState: RestaurantState = {
     ownedRestaurants: [],
-    singleRestaurant: null,
     nearbyRestaurants: [],
     status: 'idle',
     error: null,
@@ -65,30 +62,16 @@ const restaurantSlice = createSlice({
             state.error = action.payload as string;
         });
 
-        // Fetch Single Restaurant
-        builder.addCase(fetchRestaurant.pending, (state) => {
-            state.status = 'loading';
-            state.error = null;
-        });
-        builder.addCase(fetchRestaurant.fulfilled, (state, action: PayloadAction<Restaurant>) => {
-            state.status = 'succeeded';
-            state.singleRestaurant = action.payload;
-        });
-        builder.addCase(fetchRestaurant.rejected, (state, action) => {
-            state.status = 'failed';
-            state.error = action.payload as string;
-        });
-
         // Fetch Owned Restaurants
-        builder.addCase(fetchOwnedRestaurants.pending, (state) => {
+        builder.addCase(getRestaurantsOfUserThunk.pending, (state) => {
             state.status = 'loading';
             state.error = null;
         });
-        builder.addCase(fetchOwnedRestaurants.fulfilled, (state, action: PayloadAction<Restaurant[]>) => {
+        builder.addCase(getRestaurantsOfUserThunk.fulfilled, (state, action: PayloadAction<Restaurant[]>) => {
             state.status = 'succeeded';
             state.ownedRestaurants = action.payload;
         });
-        builder.addCase(fetchOwnedRestaurants.rejected, (state, action) => {
+        builder.addCase(getRestaurantsOfUserThunk.rejected, (state, action) => {
             state.status = 'failed';
             state.error = action.payload as string;
         });
@@ -110,15 +93,15 @@ const restaurantSlice = createSlice({
         });
 
         // Fetch Restaurants by Proximity
-        builder.addCase(fetchRestaurantsProximity.pending, (state) => {
+        builder.addCase(getRestaurantsInProximityThunk.pending, (state) => {
             state.status = 'loading';
             state.error = null;
         });
-        builder.addCase(fetchRestaurantsProximity.fulfilled, (state, action: PayloadAction<{ restaurants: Restaurant[] }>) => {
+        builder.addCase(getRestaurantsInProximityThunk.fulfilled, (state, action: PayloadAction<{ restaurants: Restaurant[] }>) => {
             state.status = 'succeeded';
             state.nearbyRestaurants = action.payload.restaurants;
         });
-        builder.addCase(fetchRestaurantsProximity.rejected, (state, action) => {
+        builder.addCase(getRestaurantsInProximityThunk.rejected, (state, action) => {
             state.status = 'failed';
             state.error = action.payload as string;
         });

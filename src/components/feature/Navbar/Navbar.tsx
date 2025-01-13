@@ -5,7 +5,7 @@ import styles from "./navbar.module.css";
 import AccountMenu from "./AccountMenu/AccountMenu";
 import { logout } from "../../../redux/slices/userSlice";
 import { RootState } from "../../../redux/store";
-import logo from "../../../../public/fresh-deal-logo.svg";
+import logo from "../../../assets/fresh-deal-logo.svg";
 
 interface NavbarProps  {
     activePage: string;
@@ -31,12 +31,8 @@ const Navbar: React.FC<NavbarProps> = ({activePage, setActivePage}) => {
     return (
         <nav className={styles.navbar}>
             <img src={logo} alt="logo" width={205} height={57}/>
-
-
             {token ? (
                 <div className={styles.navbarLinks}>
-
-
                     <span className={
                         activePage === 'Partnership'
                             ? `${styles.navbarLinkActive}`

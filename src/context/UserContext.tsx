@@ -1,11 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useState, useEffect, ReactNode } from "react";
 
 // Define types for user data and context
 interface User {
     id: string;
     role: string;
     accessToken: string;
-    [key: string]: any; // Allow additional properties if needed
 }
 
 interface UserContextType {
@@ -57,11 +56,11 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
 
     // Logout function
     const logout = () => {
-        setUser(null); // Clear the user state
-        setRole('guest'); // Reset role to 'guest'
-        setUserID(null); // Clear userID
-        localStorage.removeItem("accessToken"); // Remove token
-        localStorage.removeItem("user"); // Remove user details
+        setUser(null);
+        setRole('guest');
+        setUserID(null);
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("user");
     };
 
     // Provide user state, role, and actions
@@ -70,13 +69,4 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
             {children}
         </UserContext.Provider>
     );
-};
-
-// Hook to use the UserContext
-export const useUser = (): UserContextType => {
-    const context = useContext(UserContext);
-    if (!context) {
-        throw new Error("useUser must be used within a UserProvider");
-    }
-    return context;
 };

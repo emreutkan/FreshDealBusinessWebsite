@@ -7,7 +7,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../redux/store.ts";
 import RestaurantsPage from "./RestaurantsPage.tsx";
 import {getUserData} from "../redux/thunks/userThunks.ts";
-import {fetchOwnedRestaurants} from "../redux/thunks/restaurantThunk.ts";
+import {getRestaurantsOfUserThunk} from "../redux/thunks/restaurantThunk.ts";
 
 const HomePage: React.FC = () => {
 
@@ -31,7 +31,7 @@ const HomePage: React.FC = () => {
         console.log('storedToken', storedToken);
         if (storedToken) {
             dispatch(getUserData({ token: storedToken }));
-            dispatch(fetchOwnedRestaurants());
+            dispatch(getRestaurantsOfUserThunk());
         }
     }, [dispatch, token]);
 
@@ -59,15 +59,18 @@ const HomePage: React.FC = () => {
                 activePage={activePage}
                 setActivePage={setActivePage}
             />
-            { activePage === 'AboutUs' && <AboutUs/> }
-            {activePage === 'Partnership' && <PartnershipPage></PartnershipPage>}
+            {activePage === 'AboutUs' && <AboutUs/>}
+            <div style={{display: activePage === 'Partnership' ? "block" : "none"}}>
+                <PartnershipPage/>
+            </div>
+
             {activePage === 'Restaurants' && <RestaurantsPage/>}
 
         </>
 
 
-)
-    ;
+    )
+        ;
 }
 
 export default HomePage;
