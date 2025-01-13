@@ -34,9 +34,9 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
         if (!email.trim()) setEmailValid(false);
         if (!password.trim()) setPasswordValid(false);
 
-        if (!emailValid && !passwordValid) {
-            return;
-        }
+        // if (!emailValid && !passwordValid) {
+        //     return;
+        // }
         try {
             const result = await dispatch(
                 loginUser({

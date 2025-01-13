@@ -1,13 +1,13 @@
 // store/thunks/restaurantThunk.ts
 import {createAsyncThunk} from '@reduxjs/toolkit';
+
+import {RootState} from '../store';
 import {
     addRestaurantAPI,
     deleteRestaurantAPI,
-    getRestaurantAPI,
-    getRestaurantsAPI,
-    getRestaurantsProximityAPI,
-} from '../../Api/apiService.ts';
-import {RootState} from '../store';
+    getRestaurantsInProximityAPI,
+    getRestaurantsOfUserAPI
+} from "../Api/restaurantApi.ts";
 
 // Type Definitions
 export interface AddRestaurantPayload {
@@ -19,8 +19,12 @@ export interface AddRestaurantPayload {
     workingDays: string[];
     workingHoursStart?: string;
     workingHoursEnd?: string;
-    listings: number;
     image?: File; // Optional image file
+    pickup?: boolean;
+    delivery?: boolean;
+    maxDeliveryDistance?: number;
+    deliveryFee?: number;
+    minOrderAmount?: number;
 }
 
 export const addRestaurant = createAsyncThunk(
@@ -42,7 +46,6 @@ export const addRestaurant = createAsyncThunk(
             payload.workingDays.forEach(day => formData.append('workingDays', day));
             if (payload.workingHoursStart) formData.append('workingHoursStart', payload.workingHoursStart);
             if (payload.workingHoursEnd) formData.append('workingHoursEnd', payload.workingHoursEnd);
-            formData.append('listings', payload.listings.toString());
             if (payload.image) formData.append('image', payload.image);
 
             return await addRestaurantAPI(formData, token);
@@ -52,18 +55,8 @@ export const addRestaurant = createAsyncThunk(
     }
 );
 
-export const fetchRestaurant = createAsyncThunk(
-    'restaurant/fetchRestaurant',
-    async (restaurantId: number, { rejectWithValue }) => {
-        try {
-            return await getRestaurantAPI(restaurantId);
-        } catch (error) {
-            return rejectWithValue('Failed to fetch restaurant' + {error});
-        }
-    }
-);
 
-export const fetchOwnedRestaurants = createAsyncThunk(
+export const getRestaurantsOfUserThunk = createAsyncThunk(
     'restaurant/fetchOwnedRestaurants',
     async (_, { rejectWithValue, getState }) => {
         try {
@@ -73,7 +66,7 @@ export const fetchOwnedRestaurants = createAsyncThunk(
                 console.log('No authentication token');
                 return rejectWithValue('No authentication token');
             }
-            return await getRestaurantsAPI(token);
+            return await getRestaurantsOfUserAPI(token);
         } catch (error) {
             return rejectWithValue('Failed to fetch restaurants' + {error});
         }
@@ -99,11 +92,11 @@ export const removeRestaurant = createAsyncThunk(
     }
 );
 
-export const fetchRestaurantsProximity = createAsyncThunk(
+export const getRestaurantsInProximityThunk = createAsyncThunk(
     'restaurant/fetchRestaurantsProximity',
     async (payload: { latitude: number; longitude: number; radius?: number }, { rejectWithValue }) => {
         try {
-            return await getRestaurantsProximityAPI(payload);
+            return await getRestaurantsInProximityAPI(payload);
         } catch (error) {
             return rejectWithValue('Failed to fetch nearby restaurants' + {error});
         }

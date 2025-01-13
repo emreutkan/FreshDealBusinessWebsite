@@ -16,6 +16,7 @@
     animation: fadeIn 0.3s ease-out;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     padding: 20px;
+    z-index: 999;
 }
 
 

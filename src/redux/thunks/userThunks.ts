@@ -1,14 +1,9 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
-import {
-    getUserDataAPI,
-    loginUserAPI,
-    registerUserAPI,
-    updateEmailAPI,
-    updatePasswordAPI,
-    updateUsernameAPI,
-} from "../../Api/apiService.ts";
+
 import {RootState} from "../store";
 import {UserDataResponse} from "../slices/userSlice.ts";
+import {loginUserAPI, registerUserAPI} from "../Api/authApi.ts";
+import {getUserDataAPI, updateEmailAPI, updatePasswordAPI, updateUsernameAPI} from "../Api/userApi.ts";
 
 
 // Login user
@@ -24,9 +19,13 @@ export const loginUser = createAsyncThunk(
             login_type?: "email" | "phone_number";
             password_login?: boolean;
         },
-        {rejectWithValue}
+        {dispatch, rejectWithValue}
     ) => {
         try {
+            const response = await loginUserAPI(payload);
+            if (response.token) {
+                await dispatch(getUserData({token: response.token}));
+            }
             return await loginUserAPI(payload);
         } catch (error) {
             return rejectWithValue('Login failed' + {error});
@@ -119,18 +118,19 @@ export const updatePassword = createAsyncThunk<
     }
 );
 
-// Get user data
+
 export const getUserData = createAsyncThunk<
     UserDataResponse,
     { token: string },
     { rejectValue: string }
 >(
     'user/getUserData',
-    async ({token}, {rejectWithValue}) => {
+    async ({ token }, { rejectWithValue }) => {
         try {
             return await getUserDataAPI(token);
         } catch (error) {
-            return rejectWithValue('Failed to fetch user data' + {error});
+            const errorMessage = 'An unknown error occurred '+ error  ;
+            return rejectWithValue(`Failed to fetch user data: ${errorMessage}`);
         }
     }
 );
