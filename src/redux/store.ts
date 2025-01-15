@@ -4,12 +4,14 @@ import { configureStore } from '@reduxjs/toolkit';
 import userReducer from './slices/userSlice';
 import restaurantReducer from './slices/restaurantSlice';
 import purchaseReducer from './slices/purchaseSlice';
+import listingReducer from './slices/listingSlice';
 
 const store = configureStore({
     reducer: {
         user: userReducer, // Add reducers here
         restaurant: restaurantReducer,
         purchases: purchaseReducer,
+        listing: listingReducer,
     },
 });
 
