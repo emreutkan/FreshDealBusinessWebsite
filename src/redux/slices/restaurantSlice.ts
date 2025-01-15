@@ -8,21 +8,26 @@ import {
 } from '../thunks/restaurantThunk';
 
 export interface Restaurant {
-    id: number;
+    id: string;
     owner_id: number;
     restaurantName: string;
-    restaurantDescription?: string;
+    restaurantDescription: string;
     longitude: number;
     latitude: number;
     category: string;
     workingDays: string[];
-    workingHoursStart?: string;
-    workingHoursEnd?: string;
+    workingHoursStart: string;
+    workingHoursEnd: string;
     listings: number;
-    rating?: number;
+    rating: number;
     ratingCount: number;
-    image_url?: string;
-    distance_km?: number; // For proximity-based fetching
+    distance_km: number;
+    image_url: string;
+    pickup: boolean;
+    delivery: boolean;
+    maxDeliveryDistance: number;
+    deliveryFee: number;
+    minOrderAmount: number;
 }
 
 interface RestaurantState {
@@ -81,7 +86,7 @@ const restaurantSlice = createSlice({
             state.status = 'loading';
             state.error = null;
         });
-        builder.addCase(removeRestaurant.fulfilled, (state, action: PayloadAction<{ restaurantId: number; data: any }>) => {
+        builder.addCase(removeRestaurant.fulfilled, (state, action: PayloadAction<{ restaurantId: string; data: any }>) => {
             state.status = 'succeeded';
             state.ownedRestaurants = state.ownedRestaurants.filter(
                 (restaurant) => restaurant.id !== action.payload.restaurantId

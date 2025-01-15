@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import RegisterModal from "../../loginRegister/registerModal/RegisterModal";
-import LoginModal from "../../loginRegister/loginModal/loginModal.tsx";
+import RegisterModal from "../registerModal/RegisterModal.tsx";
+import LoginModal from "../loginModal/loginModal.tsx";
 import styles from "./AccountMenu.module.css";
 
 const AccountMenu: React.FC = () => {

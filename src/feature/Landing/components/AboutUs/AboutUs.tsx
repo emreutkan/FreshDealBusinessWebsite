@@ -1,8 +1,8 @@
 import React from "react";
-import Frame from "../../../assets/Frame.svg";
-import OurVisionLogo from "../../../assets/vision.svg";
-import OurValuesLogo from "../../../assets/values.svg";
-import OurMissionLogo from "../../../assets/mission.svg";
+import Frame from "../../../../assets/Frame.svg";
+import OurVisionLogo from "../../../../assets/vision.svg";
+import OurValuesLogo from "../../../../assets/values.svg";
+import OurMissionLogo from "../../../../assets/mission.svg";
 
 const AboutUs: React.FC = () => {
     return (

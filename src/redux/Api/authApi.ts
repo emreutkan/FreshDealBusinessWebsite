@@ -12,9 +12,7 @@ export const loginUserAPI = async (payload: {
     login_type?: "email" | "phone_number";
     password_login?: boolean;
 }) => {
-    console.log('Sending login request with payload:', payload);
     const response = await axios.post(LOGIN_API_ENDPOINT, payload);
-    console.log('Received login response:', response.data);
     return response.data;
 };
 
@@ -25,12 +23,9 @@ export const registerUserAPI = async (userData: {
     password: string;
 }) => {
     try {
-        console.log('Sending registration request with userData:', userData);
         const response = await axios.post(REGISTER_API_ENDPOINT, userData);
-        console.log('Received registration response:', response.data);
         return response.data;
     } catch (error) {
-        console.error('Error during user registration:', error);
         throw error;
     }
 };

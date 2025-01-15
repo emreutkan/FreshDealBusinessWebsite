@@ -3,16 +3,15 @@ import styles from "./addBusinessModel.module.css";
 import { Button } from "@mui/material";
 import {
     GoogleMap,
-    LoadScript,
     Marker,
     StandaloneSearchBox,
 } from "@react-google-maps/api";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../redux/store.ts";
+import { AppDispatch } from "../../../../redux/store.ts";
 import {
     addRestaurant,
     AddRestaurantPayload,
-} from "../../redux/thunks/restaurantThunk.ts";
+} from "../../../../redux/thunks/restaurantThunk.ts";
 
 const DEFAULT_CENTER = {
     lat: 37.7749,
@@ -39,11 +38,27 @@ const AddBusinessModel = () => {
     const [userLocation, setUserLocation] =
         useState<google.maps.LatLngLiteral | null>(null);
 
-
     const [invalidFields, setInvalidFields] = useState<string[]>([]);
 
     const dispatch = useDispatch<AppDispatch>();
+    const daysModalRef = useRef<HTMLDivElement>(null);
 
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (
+                daysModalOpen &&
+                daysModalRef.current &&
+                !daysModalRef.current.contains(e.target as Node)
+            ) {
+                setDaysModalOpen(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [daysModalOpen]);
     const areaCodes = ["+90", "+1", "+44"];
     const restaurantCategories = [
         "Baked Goods",
@@ -66,7 +81,6 @@ const AddBusinessModel = () => {
         "Saturday",
         "Sunday",
     ];
-
 
     const [formData, setFormData] = useState({
         restaurantName: "",
@@ -95,7 +109,6 @@ const AddBusinessModel = () => {
         try {
             const response = await fetch("https://ipapi.co/json/");
             if (!response.ok) {
-                console.log("Failed to fetch IP-based location");
                 return null;
             }
             const data = await response.json();
@@ -112,6 +125,7 @@ const AddBusinessModel = () => {
             return null;
         }
     };
+
     useEffect(() => {
         let isMounted = true;
 
@@ -148,40 +162,6 @@ const AddBusinessModel = () => {
         };
     }, []);
 
-    /** Reverse geocoding */
-    const reverseGeocode = async (lat: number, lng: number) => {
-        const geocoder = new google.maps.Geocoder();
-        const location = { lat, lng };
-
-        await geocoder.geocode({location}, (results, status) => {
-            if (status === "OK" && results && results.length > 0) {
-                const address = results[0].formatted_address;
-                // If you want to store the address into form data:
-                // (not strictly required if user already provided an address)
-                console.log("Detected address from marker:", address);
-            } else {
-                console.error("Reverse geocoding failed:", status);
-            }
-        });
-    };
-
-    /** Single click on the map to set marker */
-    const onMapClick = (e: google.maps.MapMouseEvent) => {
-        if (e.latLng) {
-            const latitude = e.latLng.lat();
-            const longitude = e.latLng.lng();
-            setMarkerPosition({ lat: latitude, lng: longitude });
-
-            setFormData((prev) => ({
-                ...prev,
-                latitude: latitude.toString(),
-                longitude: longitude.toString(),
-            }));
-
-            // If you want to automatically fill an address from reverse geocode:
-            reverseGeocode(latitude, longitude).then(r => console.log(r));
-        }
-    };
 
     /** Handling places changed from the StandaloneSearchBox */
     const onPlacesChanged = () => {
@@ -206,9 +186,8 @@ const AddBusinessModel = () => {
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
         const { name, value, type } = e.target;
-        // If it's a checkbox, handle differently.
         if (type === "checkbox") {
-            setFormData((prev) => ({ ...prev, [name]: (e.target) }));
+            setFormData((prev) => ({ ...prev, [name]: e.target.checked }));
         } else {
             setFormData((prev) => ({ ...prev, [name]: value }));
         }
@@ -216,10 +195,16 @@ const AddBusinessModel = () => {
         setInvalidFields((prevInvalid) => prevInvalid.filter((f) => f !== name));
     };
 
-    /** File input changes */
+    /** File input changes with file type validation */
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files?.length) {
-            setUploadedFile(e.target.files[0]);
+            const file = e.target.files[0];
+            const allowedTypes = ["image/png", "image/jpeg"];
+            if (!allowedTypes.includes(file.type)) {
+                alert("Only PNG and JPEG images are allowed.");
+                return;
+            }
+            setUploadedFile(file);
             setInvalidFields((prev) => prev.filter((f) => f !== "image"));
         }
     };
@@ -251,20 +236,22 @@ const AddBusinessModel = () => {
             "workingHoursEnd",
         ];
 
-
         const invalids: string[] = [];
         requiredFields.forEach((field) => {
             if (!formData[field as keyof typeof formData]) {
+                console.log("Invalid field:", field);
                 invalids.push(field);
             }
         });
 
         if (formData.workingDays.length === 0) {
+            console.log("Invalid field: workingDays");
             invalids.push("workingDays");
         }
 
-        // Also file upload is required
+        // File upload is also required.
         if (!uploadedFile) {
+            console.log("Invalid field: image");
             invalids.push("image");
         }
 
@@ -274,20 +261,19 @@ const AddBusinessModel = () => {
 
     const handleContinue = (e: React.FormEvent) => {
         e.preventDefault();
-        if (validateStep1()) {
-            setCurrentStep(2);
+        if (!validateStep1()) {
+            alert("Please fill in all required fields correctly before continuing.");
+            return;
         }
+        setCurrentStep(2);
     };
 
     /** Validate Step 2 fields */
     const validateStep2 = () => {
-        // pickup or delivery must be selected
         const invalids: string[] = [];
         if (!formData.pickup && !formData.delivery) {
-            // We'll artificially create a field name here, e.g. "pickupOrDelivery"
             invalids.push("pickupOrDelivery");
         }
-        // If delivery is selected, these three fields are required
         if (formData.delivery) {
             if (!formData.maxDeliveryDistance) invalids.push("maxDeliveryDistance");
             if (!formData.deliveryFee) invalids.push("deliveryFee");
@@ -299,7 +285,10 @@ const AddBusinessModel = () => {
 
     /** Final submission */
     const handleComplete = async () => {
-        if (!validateStep2()) return;
+        if (!validateStep2()) {
+            alert("Please fill in all required fields correctly before completing.");
+            return;
+        }
 
         // Build final FormData to send to backend
         const finalData = new FormData();
@@ -317,23 +306,14 @@ const AddBusinessModel = () => {
             finalData.append("deliveryFee", formData.deliveryFee);
             finalData.append("minOrderAmount", formData.minOrderAmount);
         }
-        // The backend does not mention "workingDays" in your snippet,
-        // but if you DO want to send it, you'd either append each day
-        // individually or combine them into a single string. Example:
         formData.workingDays.forEach((day) => finalData.append("workingDays", day));
 
-        // If there's an image
         if (uploadedFile) {
             finalData.append("image", uploadedFile);
         }
 
-        // Debug
-        for (const [key, value] of finalData.entries()) {
-            console.log(`${key}: ${value}`);
-        }
 
-        // Dispatch to your thunk or do a fetch to your backend:
-        // Using the typed AddRestaurantPayload => you might adapt it:
+
         const payload: AddRestaurantPayload = {
             restaurantName: formData.restaurantName,
             restaurantDescription: formData.restaurantDescription,
@@ -343,44 +323,34 @@ const AddBusinessModel = () => {
             workingHoursStart: formData.workingHoursStart,
             workingHoursEnd: formData.workingHoursEnd,
             workingDays: formData.workingDays,
-
             image: uploadedFile || undefined,
             pickup: formData.pickup,
             delivery: formData.delivery,
-            maxDeliveryDistance: formData.delivery ? parseFloat(formData.maxDeliveryDistance) : 0,
+            maxDeliveryDistance: formData.delivery
+                ? parseFloat(formData.maxDeliveryDistance)
+                : 0,
             deliveryFee: formData.delivery ? parseFloat(formData.deliveryFee) : 0,
-            minOrderAmount: formData.delivery ? parseFloat(formData.minOrderAmount) : 0,
-
+            minOrderAmount: formData.delivery
+                ? parseFloat(formData.minOrderAmount)
+                : 0,
         };
 
-        const result = await dispatch(addRestaurant(payload));
-        if (addRestaurant.fulfilled.match(result)) {
-            console.log("Restaurant added successfully!");
-        } else {
-            console.error("Failed to add restaurant:", result.error);
-        }
+        await dispatch(addRestaurant(payload));
 
         alert("Form completed successfully! Check console for finalData contents.");
     };
 
-    /**  Toggle methods for modals */
     const togglePhoneModal = () => setPhoneModalOpen(!phoneModalOpen);
     const toggleCategoryModal = () => setCategoryModalOpen(!categoryModalOpen);
     const toggleDaysModal = () => setDaysModalOpen(!daysModalOpen);
 
-    /** Choose which center to display on the map */
     const mapCenter = userLocation || markerPosition || DEFAULT_CENTER;
 
-    /** Helper: does field appear in invalidFields? */
     const isInvalid = (fieldName: string): boolean =>
         invalidFields.includes(fieldName);
 
     return (
-        <LoadScript
-            googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY!}
 
-            libraries={["places" ]}
-        >
             <div
                 style={{
                     display: "flex",
@@ -411,7 +381,9 @@ const AddBusinessModel = () => {
                                 >
                                     {/* ------- COLUMN 1: OWNER INFO ------- */}
                                     <div className={styles.inputContainer}>
-                                        <span style={{ marginBottom: "10px" }}>Add your details</span>
+                    <span style={{ marginBottom: "10px" }}>
+                      Add your details
+                    </span>
                                         <input
                                             name="ownerEmail"
                                             className={styles.defaultInput}
@@ -435,7 +407,9 @@ const AddBusinessModel = () => {
                                                 style={{
                                                     width: "20%",
                                                     marginTop: "0px",
-                                                    borderColor: isInvalid("phoneNumber") ? "darkred" : "",
+                                                    borderColor: isInvalid("phoneNumber")
+                                                        ? "darkred"
+                                                        : "",
                                                 }}
                                                 className={styles.defaultInput}
                                                 onClick={togglePhoneModal}
@@ -447,7 +421,9 @@ const AddBusinessModel = () => {
                                                 style={{
                                                     width: "80%",
                                                     marginTop: "0px",
-                                                    borderColor: isInvalid("phoneNumber") ? "darkred" : "",
+                                                    borderColor: isInvalid("phoneNumber")
+                                                        ? "darkred"
+                                                        : "",
                                                 }}
                                                 className={styles.defaultInput}
                                                 placeholder="Phone Number"
@@ -477,7 +453,9 @@ const AddBusinessModel = () => {
                                                             key={code}
                                                             style={{
                                                                 backgroundColor:
-                                                                    code === selectedAreaCode ? "#b0f484" : "#f0f0f0",
+                                                                    code === selectedAreaCode
+                                                                        ? "#b0f484"
+                                                                        : "#f0f0f0",
                                                                 border: "none",
                                                                 padding: "10px 20px",
                                                                 textAlign: "left",
@@ -507,11 +485,15 @@ const AddBusinessModel = () => {
                                                 type="text"
                                                 placeholder="Search for an address"
                                                 className={`${styles.defaultInput} ${
-                                                    searchingForAddress ? styles.defaultInputShowMap : ""
+                                                    searchingForAddress
+                                                        ? styles.defaultInputShowMap
+                                                        : ""
                                                 }`}
                                                 style={{
                                                     marginTop: "0px",
-                                                    borderColor: isInvalid("longitude") ? "darkred" : "",
+                                                    borderColor: isInvalid("longitude")
+                                                        ? "darkred"
+                                                        : "",
                                                 }}
                                                 onFocus={() => setSearchingForAddress(true)}
                                                 onBlur={() => setSearchingForAddress(false)}
@@ -537,7 +519,11 @@ const AddBusinessModel = () => {
                                             onChange={handleChange}
                                             value={formData.restaurantName}
                                             style={{
-                                                borderColor: isInvalid("restaurantName") ? "darkred" : "",
+                                                border: isInvalid("restaurantName") ? "2px solid darkred" : "",
+
+                                                borderColor: isInvalid("restaurantName")
+                                                    ? "darkred"
+                                                    : "",
                                             }}
                                         />
                                         <input
@@ -547,9 +533,9 @@ const AddBusinessModel = () => {
                                             onChange={handleChange}
                                             value={formData.restaurantDescription}
                                             style={{
-                                                borderColor: isInvalid("restaurantDescription")
-                                                    ? "darkred"
-                                                    : "",
+                                                border: isInvalid("restaurantName") ? "2px solid darkred" : "",
+
+
                                             }}
                                         />
                                         <button
@@ -621,7 +607,9 @@ const AddBusinessModel = () => {
                                             gap: "10px",
                                         }}
                                     >
-                                        <span style={{ marginBottom: "10px" }}>Extra Details</span>
+                    <span style={{ marginBottom: "10px" }}>
+                      Extra Details
+                    </span>
 
                                         {/* NEW FIELD: OPEN DAYS (Multi-select) */}
                                         <button
@@ -630,7 +618,9 @@ const AddBusinessModel = () => {
                                             style={{
                                                 cursor: "pointer",
                                                 textAlign: "center",
-                                                borderColor: isInvalid("workingDays") ? "darkred" : "",
+                                                borderColor: isInvalid("workingDays")
+                                                    ? "darkred"
+                                                    : "",
                                             }}
                                             onClick={toggleDaysModal}
                                         >
@@ -640,11 +630,13 @@ const AddBusinessModel = () => {
                                         </button>
                                         {daysModalOpen && (
                                             <div
+                                                ref={daysModalRef}
+
                                                 style={{
                                                     position: "absolute",
                                                     width: "20vw",
-                                                    top: "60%",
-                                                    left: "35%",
+                                                    top: "34.5%",
+                                                    left: "42%",
                                                     backgroundColor: "#f0f0f0",
                                                     boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
                                                     borderRadius: "10px",
@@ -654,10 +646,14 @@ const AddBusinessModel = () => {
                                                     gap: "10px",
                                                     zIndex: 999,
                                                 }}
+                                                onClick={(e) => e.stopPropagation()} // prevent form submission when clicking inside
+
                                             >
                                                 {daysOfWeek.map((day) => (
                                                     <button
                                                         key={day}
+                                                        type="button"  // ensures it does not submit the form
+
                                                         style={{
                                                             backgroundColor: formData.workingDays.includes(day)
                                                                 ? "#b0f484"
@@ -670,12 +666,16 @@ const AddBusinessModel = () => {
                                                             fontWeight: 300,
                                                             fontSize: "20px",
                                                         }}
-                                                        onClick={() => handleDaySelection(day)}
-                                                    >
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleDaySelection(day);
+                                                        }}                                                    >
                                                         {day}
                                                     </button>
                                                 ))}
                                                 <button
+                                                    type="button"  // ensures this button does not submit the form
+
                                                     style={{
                                                         marginTop: "10px",
                                                         padding: "10px 20px",
@@ -686,8 +686,10 @@ const AddBusinessModel = () => {
                                                         fontSize: "18px",
                                                         alignSelf: "flex-end",
                                                     }}
-                                                    onClick={toggleDaysModal}
-                                                >
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        toggleDaysModal();
+                                                    }}                                                >
                                                     Close
                                                 </button>
                                             </div>
@@ -925,17 +927,19 @@ const AddBusinessModel = () => {
                     )}
                 </div>
 
-                {/* Map Section (we always render the map, separate from the form) */}
+                {/* Map Section (always rendered separate from the form) */}
                 <div
                     className={
-                        !searchingForAddress ? styles.mapContainer : styles.mapContainerShowMap
+                        !searchingForAddress
+                            ? styles.mapContainer
+                            : styles.mapContainerShowMap
                     }
                 >
                     <GoogleMap
                         mapContainerStyle={MAP_CONTAINER_STYLE}
                         center={mapCenter}
                         zoom={12}
-                        onClick={onMapClick}
+                        // onClick={onMapClick}
                     >
                         <Marker position={markerPosition} />
                         {userLocation && (
@@ -949,7 +953,6 @@ const AddBusinessModel = () => {
                     </GoogleMap>
                 </div>
             </div>
-        </LoadScript>
     );
 };
 

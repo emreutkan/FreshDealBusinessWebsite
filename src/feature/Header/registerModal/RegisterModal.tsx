@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styles from "./registerModal.module.css";
-import InputField from "../InputField/InputField";
-import SubmitButton from "../SubmitButton/SubmitButton";
-import CloseButton from "../CloseButton/CloseButton";
-import {getUserData, loginUser, registerUser} from "../../../../redux/thunks/userThunks.ts";
-import store, {AppDispatch} from "../../../../redux/store.ts";
+import InputField from "../InputField/InputField.tsx";
+import SubmitButton from "../SubmitButton/SubmitButton.tsx";
+import CloseButton from "../CloseButton/CloseButton.tsx";
+import {getUserData, loginUser, registerUser} from "../../../redux/thunks/userThunks.ts";
+import {AppDispatch} from "../../../redux/store.ts";
 import { useDispatch } from "react-redux";
-import {setToken} from "../../../../redux/slices/userSlice.ts";
+import {setToken} from "../../../redux/slices/userSlice.ts";
 
 interface RegisterModalProps {
     onClose: () => void;
@@ -91,7 +91,6 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose }) => {
                         role: 'owner'
                     })
                 ).unwrap(); // Use unwrap() to handle fulfilled/rejected states
-                console.log("Login request successful", result);
                 if (result.message == "User registered successfully!") {
                     const loginResult = await dispatch(
                         loginUser({
@@ -103,12 +102,8 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose }) => {
                         })
                     ).unwrap(); // Use unwrap() to handle fulfilled/rejected states
                     if (loginResult.success) {
-                        console.log('store.getState().user before setToken = ', store.getState().user);
                         dispatch(setToken(loginResult.token));
                         dispatch(getUserData({token: loginResult.token}));
-                        console.log('store.getState().user = after setToken', store.getState().user);
-                    } else {
-                        console.log("Login Failed", loginResult.message || "Something went wrong.");
                     }
                 }
 

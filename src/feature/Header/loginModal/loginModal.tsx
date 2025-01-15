@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {RootState} from "../../../../redux/store.ts";
-import { setEmail, setPassword } from "../../../../redux/slices/userSlice.ts";
-import {loginUser} from "../../../../redux/thunks/userThunks.ts";
+import {RootState} from "../../../redux/store.ts";
+import { setEmail, setPassword } from "../../../redux/slices/userSlice.ts";
+import {loginUser} from "../../../redux/thunks/userThunks.ts";
 import styles from "./loginModal.module.css";
-import InputField from "../InputField/InputField";
-import SubmitButton from "../SubmitButton/SubmitButton";
-import CloseButton from "../CloseButton/CloseButton";
-import {AppDispatch} from "../../../../redux/store.ts";
+import InputField from "../InputField/InputField.tsx";
+import SubmitButton from "../SubmitButton/SubmitButton.tsx";
+import CloseButton from "../CloseButton/CloseButton.tsx";
+import {AppDispatch} from "../../../redux/store.ts";
 
 interface LoginModalProps {
     onClose: () => void;
@@ -46,9 +46,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
                     password_login: true,
                 })
             ).unwrap(); // Use unwrap() to handle fulfilled/rejected states
-            console.log("Login request successful", result);
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (err) {
-            console.error("Login request failed", err);
         }
     }
 

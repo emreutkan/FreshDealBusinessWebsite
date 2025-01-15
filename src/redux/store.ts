@@ -3,11 +3,13 @@ import { configureStore } from '@reduxjs/toolkit';
 // Import your reducers here
 import userReducer from './slices/userSlice';
 import restaurantReducer from './slices/restaurantSlice';
+import purchaseReducer from './slices/purchaseSlice';
 
 const store = configureStore({
     reducer: {
         user: userReducer, // Add reducers here
         restaurant: restaurantReducer,
+        purchases: purchaseReducer,
     },
 });
 

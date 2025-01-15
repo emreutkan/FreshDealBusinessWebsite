@@ -65,7 +65,6 @@ export const updateUsername = createAsyncThunk<
         try {
             const token = getState().user.token;
             if (!token) {
-                console.log('No authentication token');
                 return rejectWithValue('No authentication token');
             }
             return await updateUsernameAPI(newUsername, token);
@@ -86,7 +85,6 @@ export const updateEmail = createAsyncThunk<
         try {
             const token = getState().user.token;
             if (!token) {
-                console.log('No authentication token');
                 return rejectWithValue('No authentication token');
             }
 
@@ -108,7 +106,6 @@ export const updatePassword = createAsyncThunk<
         try {
             const token = getState().user.token;
             if (!token) {
-                console.log('No authentication token');
                 return rejectWithValue('No authentication token');
             }
             return await updatePasswordAPI(oldPassword, newPassword, token);

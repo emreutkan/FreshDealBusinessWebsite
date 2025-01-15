@@ -7,6 +7,8 @@ import {
     updatePassword,
     updateUsername
 } from "../thunks/userThunks.ts";
+import {getStoredToken, removeStoredToken, setStoredToken} from "../Api/apiService.ts";
+
 
 interface UserState {
     email: string;
@@ -23,6 +25,7 @@ interface UserState {
     error: string | null;
     role: "owner" | "customer" | "";
 }
+// userSlice.ts
 
 const initialState: UserState = {
     email: '',
@@ -34,16 +37,31 @@ const initialState: UserState = {
     verificationCode: '',
     step: 'send_code',
     login_type: 'email',
-    token: localStorage.getItem('userToken') || null, // Retrieve token from localStorage
+
+    // Pull token from localStorage (if any).
+    token: getStoredToken() || null, // Use the helper function
+
     loading: false,
     error: null,
-    role: "",
+    role: '',
 };
+
 
 const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
+        setToken(state, action: PayloadAction<string>) {
+            state.token = action.payload;
+            setStoredToken(action.payload);
+            getUserData({ token: state.token });
+        },
+        logout(state) {
+            removeStoredToken();
+            state.token = null;
+            state.role = "";
+            return { ...initialState, token: null }; // Ensure token is null after logout
+        },
         setSelectedCode(state, action: PayloadAction<string>) {
             state.selectedCode = action.payload;
         },
@@ -77,14 +95,7 @@ const userSlice = createSlice({
         setLoginType(state, action: PayloadAction<"email" | "phone_number">) {
             state.login_type = action.payload;
         },
-        setToken(state, action: PayloadAction<string>) {
-            state.token = action.payload;
-            localStorage.setItem('userToken', action.payload); // Save token to localStorage
-        },
-        logout() {
-            localStorage.removeItem('userToken'); // Remove token from localStorage
-            return { ...initialState };
-        },
+
     },
     extraReducers: (builder) => {
         builder
@@ -95,7 +106,7 @@ const userSlice = createSlice({
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.loading = false;
                 state.token = action.payload.token;
-                localStorage.setItem('userToken', action.payload.token); // Use 'userToken' for consistency
+                setStoredToken(action.payload.token);
             })
             .addCase(loginUser.rejected, (state) => {
                 state.loading = false;
