@@ -53,13 +53,9 @@ const userSlice = createSlice({
     reducers: {
         setToken(state, action: PayloadAction<string>) {
             state.token = action.payload;
-            setStoredToken(action.payload);
-            getUserData({ token: state.token });
         },
         logout(state) {
-            removeStoredToken();
-            state.token = null;
-            state.role = "";
+
             return { ...initialState, token: null }; // Ensure token is null after logout
         },
         setSelectedCode(state, action: PayloadAction<string>) {
