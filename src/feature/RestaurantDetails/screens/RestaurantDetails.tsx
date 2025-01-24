@@ -14,7 +14,6 @@ import ListingModel from "../components/addListingModel/ListingModel.tsx";
 import RestaurantInfo from "../components/restaurantDetails/RestaurantInfo.tsx";
 import RestaurantListings from "../components/restaurantListings/RestaurantListings.tsx";
 import Orders from "../components/Orders/Orders.tsx";
-import {getRestaurantsOfUserThunk} from "../../../redux/thunks/restaurantThunk.ts";
 
 
 

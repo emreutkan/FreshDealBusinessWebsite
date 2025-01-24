@@ -78,7 +78,8 @@
 }
 
 .completionImage {
-    max-width: 100%;
+    max-width: 25%;
+    max-height: 25%;
     border-radius: 4px;
 }
 
@@ -228,5 +229,202 @@
     .uploadButton,
     .cancelButton {
         width: 100%;
+    }
+}
+
+.rejectButton {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    margin-left: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.rejectButton:hover {
+    background-color: #c82333;
+}
+
+.rejectButton:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+.statusLists {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 10px;
+}
+
+.statusSection {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.statusTitle {
+    margin: 0 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #dee2e6;
+    color: #495057;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.statusList {
+    height: 300px;
+    overflow-y: auto;
+    padding-right: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: #adb5bd #dee2e6;
+}
+
+.statusList::-webkit-scrollbar {
+    width: 6px;
+}
+
+.statusList::-webkit-scrollbar-track {
+    background: #dee2e6;
+    border-radius: 4px;
+}
+
+.statusList::-webkit-scrollbar-thumb {
+    background-color: #adb5bd;
+    border-radius: 4px;
+}
+
+/* Status-specific colors */
+.statusSection:has(.pending) .statusTitle {
+    color: #f0ad4e;
+    border-bottom-color: #f0ad4e;
+}
+
+.statusSection:has(.accepted) .statusTitle {
+    color: #0275d8;
+    border-bottom-color: #0275d8;
+}
+
+.statusSection:has(.completed) .statusTitle {
+    color: #5cb85c;
+    border-bottom-color: #5cb85c;
+}
+
+.statusSection:has(.rejected) .statusTitle {
+    color: #d9534f;
+    border-bottom-color: #d9534f;
+}
+
+.purchaseItem {
+    background: white;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 1200px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.modalClose {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #4a5568;
+    padding: 4px 8px;
+    transition: color 0.2s ease;
+}
+
+.modalClose:hover {
+    color: #2d3748;
+}
+
+.modalList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+}
+
+.statusHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.expandButton {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    color: #4a5568;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.expandButton:hover {
+    color: #2d3748;
+    transform: scale(1.1);
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 640px) {
+    .modalContent {
+        width: 95%;
+        padding: 15px;
+        margin: 10px;
+    }
+
+    .modalList {
+        padding: 8px;
     }
 }

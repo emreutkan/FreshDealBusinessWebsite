@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef,  } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './Orders.module.css';
 import {
@@ -8,7 +8,31 @@ import {
     rejectPurchaseOrder
 } from '../../../../redux/thunks/purchaseThunks.ts';
 import { AppDispatch, RootState } from "../../../../redux/store.ts";
-import {Purchase} from "../../../../redux/slices/purchaseSlice.ts";
+import { Purchase } from "../../../../redux/slices/purchaseSlice.ts";
+
+// Modal Component
+interface ModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    title: string;
+    children: React.ReactNode;
+}
+
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
+    if (!isOpen) return null;
+
+    return (
+        <div className={styles.modalOverlay} onClick={onClose}>
+            <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+                <div className={styles.modalHeader}>
+                    <h2>{title}</h2>
+                    <button className={styles.modalClose} onClick={onClose}>×</button>
+                </div>
+                {children}
+            </div>
+        </div>
+    );
+};
 
 // Utility function for date formatting
 const formatDate = (dateString: string) => {
@@ -23,7 +47,6 @@ const formatDate = (dateString: string) => {
     });
 };
 
-
 interface OrdersProps {
     restaurantId: number;
 }
@@ -34,6 +57,7 @@ const Orders: React.FC<OrdersProps> = ({ restaurantId }) => {
     const [acceptingOrder, setAcceptingOrder] = useState<number | null>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
     // Get orders from Redux store
     const { items: purchases, loading, error } = useSelector((state: RootState) => {
@@ -71,7 +95,7 @@ const Orders: React.FC<OrdersProps> = ({ restaurantId }) => {
             setRejectingOrder(null);
         }
     };
-    // Function to get status-specific className
+
     const getStatusClassName = (status: Purchase['status']) => {
         switch (status) {
             case 'PENDING':
@@ -94,7 +118,6 @@ const Orders: React.FC<OrdersProps> = ({ restaurantId }) => {
         }
     }, [dispatch, restaurantId]);
 
-    // Set up polling for order updates (every 30 seconds)
     useEffect(() => {
         if (restaurantId) {
             const intervalId = setInterval(() => {
@@ -123,22 +146,14 @@ const Orders: React.FC<OrdersProps> = ({ restaurantId }) => {
             setAcceptingOrder(null);
         }
     };
+
     const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
-            // Debug log
-            console.log('Selected file:', {
-                name: file.name,
-                type: file.type,
-                size: file.size
-            });
-
-            // Validate file type
             if (!file.type.startsWith('image/')) {
                 alert('Please select an image file');
                 return;
             }
-            // Validate file size (e.g., max 5MB)
             if (file.size > 5 * 1024 * 1024) {
                 alert('Image size should be less than 5MB');
                 return;
@@ -154,35 +169,160 @@ const Orders: React.FC<OrdersProps> = ({ restaurantId }) => {
         }
 
         try {
-            // Debug log
-            console.log('Starting upload for:', {
-                purchaseId,
-                fileName: selectedFile.name,
-                fileType: selectedFile.type,
-                fileSize: selectedFile.size
-            });
-
             const result = await dispatch(addCompletionImage({
                 purchaseId,
                 file: selectedFile
             })).unwrap();
 
             console.log('Upload result:', result);
-
-            // Reset states after successful upload
             setSelectedFile(null);
             setActiveImageUpload(null);
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }
-
-            // Refresh orders
             await dispatch(fetchRestaurantPurchases(restaurantId));
         } catch (error) {
             console.error('Failed to upload image:', error);
         }
     };
 
+    const groupPurchasesByStatus = (purchases: Purchase[]) => {
+        return {
+            pending: purchases.filter(p => p.status === 'PENDING'),
+            accepted: purchases.filter(p => p.status === 'ACCEPTED'),
+            completed: purchases.filter(p => p.status === 'COMPLETED'),
+            rejected: purchases.filter(p => p.status === 'REJECTED')
+        };
+    };
+
+    const renderPurchaseItem = (purchase: Purchase) => (
+        <div
+            key={purchase.purchase_id}
+            className={`${styles.purchaseItem} ${getStatusClassName(purchase.status)}`}
+        >
+            <div className={styles.purchaseHeader}>
+                <span className={styles.orderId}>Order #{purchase.purchase_id}</span>
+                <span className={styles.status}>{purchase.status}</span>
+                <span className={styles.date}>
+                    {formatDate(purchase.purchase_date)}
+                </span>
+            </div>
+
+            <div className={styles.orderDetails}>
+                <div className={styles.itemTitle}>
+                    {purchase.listing_title} x {purchase.quantity}
+                </div>
+                <div className={styles.totalPrice}>
+                    {formatPrice(purchase.total_price)}
+                </div>
+            </div>
+
+            {purchase.is_delivery && purchase.delivery_address && (
+                <div className={styles.deliveryInfo}>
+                    <strong>Delivery Address:</strong>
+                    <p>{purchase.delivery_address}</p>
+                    {purchase.delivery_notes && (
+                        <>
+                            <strong>Delivery Notes:</strong>
+                            <p>{purchase.delivery_notes}</p>
+                        </>
+                    )}
+                </div>
+            )}
+
+            {purchase.status === 'PENDING' && (
+                <div className={styles.purchaseActions}>
+                    <button
+                        className={styles.acceptButton}
+                        onClick={() => handleAcceptOrder(purchase.purchase_id)}
+                        disabled={acceptingOrder === purchase.purchase_id}
+                    >
+                        {acceptingOrder === purchase.purchase_id ? 'Accepting...' : 'Accept Order'}
+                    </button>
+                    <button
+                        className={styles.rejectButton}
+                        onClick={() => handleRejectOrder(purchase.purchase_id)}
+                        disabled={rejectingOrder === purchase.purchase_id}
+                    >
+                        {rejectingOrder === purchase.purchase_id ? 'Rejecting...' : 'Reject Order'}
+                    </button>
+                </div>
+            )}
+
+            {purchase.status === 'ACCEPTED' && !purchase.completion_image_url && (
+                <div className={styles.imageUploadSection}>
+                    {activeImageUpload === purchase.purchase_id ? (
+                        <div className={styles.imageUploadControls}>
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                capture="environment"
+                                onChange={handleImageSelect}
+                                className={styles.fileInput}
+                                id={`file-input-${purchase.purchase_id}`}
+                            />
+                            <label
+                                htmlFor={`file-input-${purchase.purchase_id}`}
+                                className={styles.fileInputLabel}
+                            >
+                                {selectedFile ? selectedFile.name : 'Choose Image or Take Photo'}
+                            </label>
+
+                            {selectedFile && (
+                                <div className={styles.imagePreview}>
+                                    <img
+                                        src={URL.createObjectURL(selectedFile)}
+                                        alt="Preview"
+                                        className={styles.previewImage}
+                                    />
+                                </div>
+                            )}
+
+                            <div className={styles.uploadButtons}>
+                                <button
+                                    className={styles.uploadButton}
+                                    onClick={() => handleImageUpload(purchase.purchase_id)}
+                                    disabled={!selectedFile}
+                                >
+                                    Upload Image
+                                </button>
+                                <button
+                                    className={styles.cancelButton}
+                                    onClick={() => {
+                                        setActiveImageUpload(null);
+                                        setSelectedFile(null);
+                                        if (fileInputRef.current) {
+                                            fileInputRef.current.value = '';
+                                        }
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <button
+                            className={styles.addImageButton}
+                            onClick={() => setActiveImageUpload(purchase.purchase_id)}
+                        >
+                            Add Completion Image
+                        </button>
+                    )}
+                </div>
+            )}
+
+            {purchase.completion_image_url && (
+                <div className={styles.imageContainer}>
+                    <img
+                        src={purchase.completion_image_url}
+                        alt="Order completion"
+                        className={styles.completionImage}
+                    />
+                </div>
+            )}
+        </div>
+    );
 
     return (
         <div className={styles.purchasesCard}>
@@ -190,144 +330,120 @@ const Orders: React.FC<OrdersProps> = ({ restaurantId }) => {
             {loading && <p className={styles.loading}>Loading orders...</p>}
             {error && <p className={styles.error}>{error}</p>}
 
-            <div className={styles.purchasesList}>
-                {Array.isArray(purchases) && purchases.map(purchase => (
-                    <div
-                        key={purchase.purchase_id}
-                        className={`${styles.purchaseItem} ${getStatusClassName(purchase.status)}`}
+            {!loading && Array.isArray(purchases) && (
+                <div className={styles.statusLists}>
+                    {/* Pending Orders Section */}
+                    <div className={styles.statusSection}>
+                        <div className={styles.statusHeader}>
+                            <h3 className={styles.statusTitle}>Pending Orders</h3>
+                            <button
+                                className={styles.expandButton}
+                                onClick={() => setExpandedSection('pending')}
+                            >
+                                ⤢
+                            </button>
+                        </div>
+                        <div className={styles.statusList}>
+                            {groupPurchasesByStatus(purchases).pending.map(purchase => renderPurchaseItem(purchase))}
+                        </div>
+                    </div>
+
+                    {/* Accepted Orders Section */}
+                    <div className={styles.statusSection}>
+                        <div className={styles.statusHeader}>
+                            <h3 className={styles.statusTitle}>Accepted Orders</h3>
+                            <button
+                                className={styles.expandButton}
+                                onClick={() => setExpandedSection('accepted')}
+                            >
+                                ⤢
+                            </button>
+                        </div>
+                        <div className={styles.statusList}>
+                            {groupPurchasesByStatus(purchases).accepted.map(purchase => renderPurchaseItem(purchase))}
+                        </div>
+                    </div>
+
+                    {/* Completed Orders Section */}
+                    <div className={styles.statusSection}>
+                        <div className={styles.statusHeader}>
+                            <h3 className={styles.statusTitle}>Completed Orders</h3>
+                            <button
+                                className={styles.expandButton}
+                                onClick={() => setExpandedSection('completed')}
+                            >
+                                ⤢
+                            </button>
+                        </div>
+                        <div className={styles.statusList}>
+                            {groupPurchasesByStatus(purchases).completed.map(purchase => renderPurchaseItem(purchase))}
+                        </div>
+                    </div>
+
+                    {/* Rejected Orders Section */}
+                    <div className={styles.statusSection}>
+                        <div className={styles.statusHeader}>
+                            <h3 className={styles.statusTitle}>Rejected Orders</h3>
+                            <button
+                                className={styles.expandButton}
+                                onClick={() => setExpandedSection('rejected')}
+                            >
+                                ⤢
+                            </button>
+                        </div>
+                        <div className={styles.statusList}>
+                            {groupPurchasesByStatus(purchases).rejected.map(purchase => renderPurchaseItem(purchase))}
+                        </div>
+                    </div>
+
+                    {/* Modals */}
+                    <Modal
+                        isOpen={expandedSection === 'pending'}
+                        onClose={() => setExpandedSection(null)}
+                        title="Pending Orders"
                     >
-                        <div className={styles.purchaseHeader}>
-                            <span className={styles.orderId}>Order #{purchase.purchase_id}</span>
-                            <span className={styles.status}>{purchase.status}</span>
-                            <span className={styles.date}>
-                                {formatDate(purchase.purchase_date)}
-                            </span>
+                        <div className={styles.modalList}>
+                            {groupPurchasesByStatus(purchases).pending.map(purchase => renderPurchaseItem(purchase))}
                         </div>
+                    </Modal>
 
-                        <div className={styles.orderDetails}>
-                            <div className={styles.itemTitle}>
-                                {purchase.listing_title} x {purchase.quantity}
-                            </div>
-                            <div className={styles.totalPrice}>
-                                {formatPrice(purchase.total_price)}
-                            </div>
+                    <Modal
+                        isOpen={expandedSection === 'accepted'}
+                        onClose={() => setExpandedSection(null)}
+                        title="Accepted Orders"
+                    >
+                        <div className={styles.modalList}>
+                            {groupPurchasesByStatus(purchases).accepted.map(purchase => renderPurchaseItem(purchase))}
                         </div>
+                    </Modal>
 
-                        {purchase.is_delivery && purchase.delivery_address && (
-                            <div className={styles.deliveryInfo}>
-                                <strong>Delivery Address:</strong>
-                                <p>{purchase.delivery_address}</p>
-                                {purchase.delivery_notes && (
-                                    <>
-                                        <strong>Delivery Notes:</strong>
-                                        <p>{purchase.delivery_notes}</p>
-                                    </>
-                                )}
-                            </div>
-                        )}
-
-                        {purchase.completion_image_url && (
-                            <div className={styles.imageContainer}>
-                                <img
-                                    src={purchase.completion_image_url}
-                                    alt="Order completion"
-                                    className={styles.completionImage}
-                                />
-                            </div>
-                        )}
-
-                        <div className={styles.purchaseActions}>
-                            {purchase.status === 'PENDING' && (
-                                <>
-                                    <button
-                                        className={styles.acceptButton}
-                                        onClick={() => handleAcceptOrder(purchase.purchase_id)}
-                                        disabled={acceptingOrder === purchase.purchase_id}
-                                    >
-                                        {acceptingOrder === purchase.purchase_id ? 'Accepting...' : 'Accept Order'}
-                                    </button>
-                                    <button
-                                        className={styles.rejectButton}
-                                        onClick={() => handleRejectOrder(purchase.purchase_id)}
-                                        disabled={rejectingOrder === purchase.purchase_id}
-                                    >
-                                        {rejectingOrder === purchase.purchase_id ? 'Rejecting...' : 'Reject Order'}
-                                    </button>
-                                </>
-                            )}
-
-                            {purchase.status === 'ACCEPTED' && !purchase.completion_image_url && (
-                                <div className={styles.imageUploadSection}>
-                                    {activeImageUpload === purchase.purchase_id ? (
-                                        <div className={styles.imageUploadControls}>
-                                            <input
-                                                ref={fileInputRef}
-                                                type="file"
-                                                accept="image/*"
-                                                capture="environment"
-                                                onChange={handleImageSelect}
-                                                className={styles.fileInput}
-                                                id={`file-input-${purchase.purchase_id}`}
-                                            />
-                                            <label
-                                                htmlFor={`file-input-${purchase.purchase_id}`}
-                                                className={styles.fileInputLabel}
-                                            >
-                                                {selectedFile ? selectedFile.name : 'Choose Image or Take Photo'}
-                                            </label>
-
-                                            {selectedFile && (
-                                                <div className={styles.imagePreview}>
-                                                    <img
-                                                        src={URL.createObjectURL(selectedFile)}
-                                                        alt="Preview"
-                                                        className={styles.previewImage}
-                                                    />
-                                                </div>
-                                            )}
-
-                                            <div className={styles.uploadButtons}>
-                                                <button
-                                                    className={styles.uploadButton}
-                                                    onClick={() => handleImageUpload(purchase.purchase_id)}
-                                                    disabled={!selectedFile}
-                                                >
-                                                    Upload Image
-                                                </button>
-                                                <button
-                                                    className={styles.cancelButton}
-                                                    onClick={() => {
-                                                        setActiveImageUpload(null);
-                                                        setSelectedFile(null);
-                                                        if (fileInputRef.current) {
-                                                            fileInputRef.current.value = '';
-                                                        }
-                                                    }}
-                                                >
-                                                    Cancel
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <button
-                                            className={styles.addImageButton}
-                                            onClick={() => setActiveImageUpload(purchase.purchase_id)}
-                                        >
-                                            Add Completion Image
-                                        </button>
-                                    )}
-                                </div>
-                            )}
+                    <Modal
+                        isOpen={expandedSection === 'completed'}
+                        onClose={() => setExpandedSection(null)}
+                        title="Completed Orders"
+                    >
+                        <div className={styles.modalList}>
+                            {groupPurchasesByStatus(purchases).completed.map(purchase => renderPurchaseItem(purchase))}
                         </div>
-                    </div>
-                ))}
+                    </Modal>
 
-                {!loading && (!purchases || purchases.length === 0) && (
-                    <div className={styles.noOrders}>
-                        No orders found for this restaurant
-                    </div>
-                )}
-            </div>
+                    <Modal
+                        isOpen={expandedSection === 'rejected'}
+                        onClose={() => setExpandedSection(null)}
+                        title="Rejected Orders"
+                    >
+                        <div className={styles.modalList}>
+                            {groupPurchasesByStatus(purchases).rejected.map(purchase => renderPurchaseItem(purchase))}
+                        </div>
+                    </Modal>
+                </div>
+            )}
+
+            {!loading && (!purchases || purchases.length === 0) && (
+                <div className={styles.noOrders}>
+                    No orders found for this restaurant
+                </div>
+            )}
         </div>
     );
 };
