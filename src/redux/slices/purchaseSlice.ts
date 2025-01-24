@@ -1,135 +1,94 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import {API_BASE_URL, authenticatedApiCall, getAuthHeaders} from "../Api/apiService.ts";
+import { createSlice } from '@reduxjs/toolkit';
+import {
+    acceptPurchaseOrder,
+    addCompletionImage,
+    createPurchaseOrder,
+    fetchRestaurantPurchases,
+    handlePurchaseResponse,
+    rejectPurchaseOrder,
+    fetchUserActiveOrders,
+    fetchUserPreviousOrders,
+    fetchOrderDetails
+} from '../thunks/purchaseThunks.ts';
 
-
+// Updated interfaces to match API response format
 export interface PurchaseItem {
     id: number;
-    name: string;
-    quantity: number;
+    title: string;
+    count: number;
     price: number;
 }
 
 export interface DeliveryInfo {
-    address: string;
-    notes?: string;
+    is_delivery: boolean;
+    pickup_notes?: string;
+    delivery_address?: string;
+    delivery_notes?: string;
+}
+
+export interface Restaurant {
+    id: number;
+    restaurantName: string;
+    image_url?: string;
 }
 
 export interface Purchase {
-    id: number;
-    date: string;
-    status: 'pending' | 'accepted' | 'rejected' | 'completed';
-    items: PurchaseItem[];
-    total: number;
-    completionImage?: string;
-    userId: string;
-    restaurantId: number;
+    purchase_id: number;
+    purchase_date: string;
+    status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'COMPLETED';
+    quantity: number;
+    total_price: string;
+    completion_image_url?: string;
+    user_id: number;
+    restaurant_id: number;
+    listing_id: number;
+    listing_title: string;
+    is_delivery: boolean;
     delivery_address?: string;
     delivery_notes?: string;
-    is_delivery: boolean;
-    listing_id: number;
-    listing_title?: string;
+    restaurant?: Restaurant;
+}
+
+interface PaginationMetadata {
+    current_page: number;
+    total_pages: number;
+    per_page: number;
+    total_orders: number;
+    has_next: boolean;
+    has_prev: boolean;
 }
 
 interface PurchaseState {
     items: Purchase[];
+    activeOrders: Purchase[];
+    previousOrders: Purchase[];
+    selectedOrder: Purchase | null;
+    pagination: PaginationMetadata | null;
     loading: boolean;
     error: string | null;
 }
 
 const initialState: PurchaseState = {
     items: [],
+    activeOrders: [],
+    previousOrders: [],
+    selectedOrder: null,
+    pagination: null,
     loading: false,
     error: null
 };
 
-// Update your thunks to use the new utility
-export const fetchRestaurantPurchases = createAsyncThunk(
-    'purchases/fetchByRestaurant',
-    async (restaurantId: number, { dispatch, rejectWithValue }) => {
-        try {
-            return await authenticatedApiCall(
-                `${API_BASE_URL}/restaurant/${restaurantId}/purchases`,
-                { method: 'GET' },
-                dispatch
-            );
-        } catch (error) {
-            return rejectWithValue(error.message);
-        }
-    }
-);
-
-export const createPurchaseOrder = createAsyncThunk(
-    'purchases/create',
-    async (deliveryInfo: DeliveryInfo | undefined, { dispatch, rejectWithValue }) => {
-        try {
-            return await authenticatedApiCall(
-                `${API_BASE_URL}/purchase`,
-                {
-                    method: 'POST',
-                    body: JSON.stringify({ delivery_info: deliveryInfo })
-                },
-                dispatch
-            );
-        } catch (error) {
-            return rejectWithValue(error.message);
-        }
-    }
-);
-
-export const handlePurchaseResponse = createAsyncThunk(
-    'purchases/respond',
-    async ({ purchaseId, action }: { purchaseId: number; action: 'accept' | 'reject' }) => {
-        const response = await fetch(`${API_BASE_URL}/purchase/${purchaseId}/response`, {
-            method: 'POST',
-            headers: getAuthHeaders(),
-            body: JSON.stringify({ action })
-        });
-        if (!response.ok) throw new Error(`Failed to ${action} purchase`);
-        return await response.json();
-    }
-);
-
-export const acceptPurchaseOrder = createAsyncThunk(
-    'purchases/accept',
-    async (purchaseId: number) => {
-        const response = await fetch(`${API_BASE_URL}/purchases/${purchaseId}/accept`, {
-            method: 'POST',
-            headers: getAuthHeaders()
-        });
-        if (!response.ok) throw new Error('Failed to accept purchase');
-        return await response.json();
-    }
-);
-
-export const rejectPurchaseOrder = createAsyncThunk(
-    'purchases/reject',
-    async (purchaseId: number) => {
-        const response = await fetch(`${API_BASE_URL}/purchases/${purchaseId}/reject`, {
-            method: 'POST',
-            headers: getAuthHeaders()
-        });
-        if (!response.ok) throw new Error('Failed to reject purchase');
-        return await response.json();
-    }
-);
-
-export const addCompletionImage = createAsyncThunk(
-    'purchases/addImage',
-    async ({ purchaseId, imageUrl }: { purchaseId: number; imageUrl: string }) => {
-        const response = await fetch(`${API_BASE_URL}/purchase/${purchaseId}/completion-image`, {
-            method: 'POST',
-            headers: getAuthHeaders(),
-            body: JSON.stringify({ image_url: imageUrl })
-        });
-        if (!response.ok) throw new Error('Failed to add image');
-        return await response.json();
-    }
-);
-
 const purchaseSlice = createSlice({
     name: 'purchases',
     initialState,
-    reducers: {},
+    reducers: {
+        clearSelectedOrder: (state) => {
+            state.selectedOrder = null;
+        },
+        clearError: (state) => {
+            state.error = null;
+        }
+    },
     extraReducers: (builder) => {
         builder
             // Create purchase order
@@ -139,12 +98,14 @@ const purchaseSlice = createSlice({
             })
             .addCase(createPurchaseOrder.fulfilled, (state, action) => {
                 state.loading = false;
-                state.items = [...state.items, ...action.payload.purchases];
+                state.items.push(...action.payload.purchases);
+                state.activeOrders.push(...action.payload.purchases);
             })
             .addCase(createPurchaseOrder.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message || 'Failed to create purchase';
             })
+
             // Fetch restaurant purchases
             .addCase(fetchRestaurantPurchases.pending, (state) => {
                 state.loading = true;
@@ -158,47 +119,114 @@ const purchaseSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || 'Failed to fetch purchases';
             })
+
+            // Fetch user active orders
+            .addCase(fetchUserActiveOrders.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchUserActiveOrders.fulfilled, (state, action) => {
+                state.loading = false;
+                state.activeOrders = action.payload.active_orders;
+            })
+            .addCase(fetchUserActiveOrders.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || 'Failed to fetch active orders';
+            })
+
+            // Fetch user previous orders
+            .addCase(fetchUserPreviousOrders.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchUserPreviousOrders.fulfilled, (state, action) => {
+                state.loading = false;
+                state.previousOrders = action.payload.orders;
+                state.pagination = action.payload.pagination;
+            })
+            .addCase(fetchUserPreviousOrders.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || 'Failed to fetch previous orders';
+            })
+
+            // Fetch order details
+            .addCase(fetchOrderDetails.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchOrderDetails.fulfilled, (state, action) => {
+                state.loading = false;
+                state.selectedOrder = action.payload.order;
+            })
+            .addCase(fetchOrderDetails.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || 'Failed to fetch order details';
+            })
+
             // Handle purchase response (accept/reject)
             .addCase(handlePurchaseResponse.fulfilled, (state, action) => {
-                const index = state.items.findIndex(p => p.id === action.payload.purchase_id);
-                if (index !== -1) {
-                    state.items[index] = {
-                        ...state.items[index],
-                        status: action.payload.status
-                    };
-                }
+                const updatePurchaseStatus = (purchases: Purchase[]) => {
+                    const index = purchases.findIndex(p => p.id === action.payload.purchase.id);
+                    if (index !== -1) {
+                        purchases[index] = action.payload.purchase;
+                    }
+                };
+
+                updatePurchaseStatus(state.items);
+                updatePurchaseStatus(state.activeOrders);
             })
+
             // Accept purchase
             .addCase(acceptPurchaseOrder.fulfilled, (state, action) => {
-                const index = state.items.findIndex(p => p.id === action.payload.purchase_id);
-                if (index !== -1) {
-                    state.items[index] = {
-                        ...state.items[index],
-                        status: action.payload.status
-                    };
-                }
+                const updatePurchaseStatus = (purchases: Purchase[]) => {
+                    const index = purchases.findIndex(p => p.id === action.payload.purchase.id);
+                    if (index !== -1) {
+                        purchases[index] = action.payload.purchase;
+                    }
+                };
+
+                updatePurchaseStatus(state.items);
+                updatePurchaseStatus(state.activeOrders);
             })
+
             // Reject purchase
             .addCase(rejectPurchaseOrder.fulfilled, (state, action) => {
-                const index = state.items.findIndex(p => p.id === action.payload.purchase_id);
-                if (index !== -1) {
-                    state.items[index] = {
-                        ...state.items[index],
-                        status: action.payload.status
-                    };
+                const updatePurchaseStatus = (purchases: Purchase[]) => {
+                    const index = purchases.findIndex(p => p.id === action.payload.purchase.id);
+                    if (index !== -1) {
+                        purchases[index] = action.payload.purchase;
+                    }
+                };
+
+                updatePurchaseStatus(state.items);
+                const activeOrderIndex = state.activeOrders.findIndex(p => p.id === action.payload.purchase.id);
+                if (activeOrderIndex !== -1) {
+                    state.activeOrders.splice(activeOrderIndex, 1);
+                    state.previousOrders.unshift(action.payload.purchase);
                 }
             })
+
             // Add completion image
             .addCase(addCompletionImage.fulfilled, (state, action) => {
-                const index = state.items.findIndex(p => p.id === action.payload.purchase_id);
-                if (index !== -1) {
-                    state.items[index] = {
-                        ...state.items[index],
-                        completionImage: action.payload.image_url
-                    };
+                const updatePurchaseWithImage = (purchases: Purchase[]) => {
+                    const index = purchases.findIndex(p => p.id === action.payload.purchase.id);
+                    if (index !== -1) {
+                        purchases[index] = {
+                            ...purchases[index],
+                            status: 'COMPLETED',
+                            completion_image_url: action.payload.purchase.completion_image_url
+                        };
+                    }
+                };
+
+                updatePurchaseWithImage(state.items);
+                updatePurchaseWithImage(state.activeOrders);
+                if (state.selectedOrder?.id === action.payload.purchase.id) {
+                    state.selectedOrder = action.payload.purchase;
                 }
             });
     }
 });
 
+export const { clearSelectedOrder, clearError } = purchaseSlice.actions;
 export default purchaseSlice.reducer;

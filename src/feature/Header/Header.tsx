@@ -24,7 +24,7 @@ const Header: React.FC<NavbarProps> = ({ activePage, setActivePage }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
     const user = useSelector((state: RootState) => state.user);
-
+    const ownedRestaurants = useSelector((state: RootState) => state.restaurant.ownedRestaurants);
     // Initialize user session
     useEffect(() => {
         const initializeUserSession = async () => {

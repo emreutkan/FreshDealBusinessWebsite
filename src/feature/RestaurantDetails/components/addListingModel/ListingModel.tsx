@@ -1,16 +1,28 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { Button } from "@mui/material";
-import { AppDispatch } from "../../../../redux/store";
-import { addListing, AddListingPayload } from "../../../../redux/thunks/listingThunks";
-import styles from "./addListingModel.module.css";  // You'll need to create this CSS module
+import React, {useState, useEffect} from "react";
+import {useDispatch} from "react-redux";
+import {Button} from "@mui/material";
+import {AppDispatch} from "../../../../redux/store";
+import {
+    addListing,
+    editListing,
+} from "../../../../redux/thunks/listingThunks";
+import styles from "./ListingModel.module.css";
+import {AddListingPayload, Listing} from "../../../../types/listingRelated.ts";
 
-interface AddListingModelProps {
-    restaurantId: number;
-    onClose?: () => void;
+
+interface ListingModelProps {
+    restaurantId: number,
+    onClose?: () => void,
+    listing?: Listing,
+    isEditing?: boolean,
 }
 
-const AddListingModel: React.FC<AddListingModelProps> = ({ restaurantId, onClose }) => {
+const ListingModel: React.FC<ListingModelProps> = ({
+                                                       restaurantId,
+                                                       onClose,
+                                                       listing,
+                                                       isEditing = false,
+                                                   }) => {
     const dispatch = useDispatch<AppDispatch>();
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
     const [invalidFields, setInvalidFields] = useState<string[]>([]);
@@ -25,11 +37,26 @@ const AddListingModel: React.FC<AddListingModelProps> = ({ restaurantId, onClose
         consumeWithin: "",
     });
 
+    // Initialize form data if editing
+    useEffect(() => {
+        if (isEditing && listing) {
+            setFormData({
+                title: listing.title,
+                description: listing.description || "",
+                originalPrice: listing.originalPrice.toString(),
+                pickUpPrice: listing.pickUpPrice?.toString() || "",
+                deliveryPrice: listing.deliveryPrice?.toString() || "",
+                count: listing.count.toString(),
+                consumeWithin: listing.consumeWithin.toString(),
+            });
+        }
+    }, [isEditing, listing]);
+
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        const {name, value} = e.target;
+        setFormData((prev) => ({...prev, [name]: value}));
         setInvalidFields((prev) => prev.filter((field) => field !== name));
     };
 
@@ -61,7 +88,8 @@ const AddListingModel: React.FC<AddListingModelProps> = ({ restaurantId, onClose
             }
         });
 
-        if (!uploadedFile) {
+        // Only require image upload for new listings
+        if (!isEditing && !uploadedFile) {
             invalids.push("image");
         }
 
@@ -89,11 +117,21 @@ const AddListingModel: React.FC<AddListingModelProps> = ({ restaurantId, onClose
         };
 
         try {
-            await dispatch(addListing(payload)).unwrap();
-            alert("Listing added successfully!");
+            if (isEditing && listing) {
+                await dispatch(editListing({
+                    ...payload,
+                    listingId: listing.id,
+                    // Only include image if a new one was uploaded
+                    ...(uploadedFile ? {image: uploadedFile} : {})
+                })).unwrap();
+                alert("Listing updated successfully!");
+            } else {
+                await dispatch(addListing(payload)).unwrap();
+                alert("Listing added successfully!");
+            }
             onClose?.();
         } catch (error) {
-            alert(`Failed to add listing: ${error}`);
+            alert(`Failed to ${isEditing ? 'update' : 'add'} listing: ${error}`);
         }
     };
 
@@ -102,7 +140,7 @@ const AddListingModel: React.FC<AddListingModelProps> = ({ restaurantId, onClose
 
     return (
         <div className={styles.container}>
-            <h2>Add New Listing</h2>
+            <h2>{isEditing ? 'Edit Listing' : 'Add New Listing'}</h2>
             <form onSubmit={handleSubmit} className={styles.form}>
                 <div className={styles.inputGroup}>
                     <input
@@ -179,8 +217,21 @@ const AddListingModel: React.FC<AddListingModelProps> = ({ restaurantId, onClose
                             onChange={handleFileChange}
                         />
                         <label htmlFor="listingImage" className={styles.fileLabel}>
-                            {uploadedFile ? uploadedFile.name : "Upload Listing Image"}
+                            {uploadedFile
+                                ? uploadedFile.name
+                                : isEditing
+                                    ? "Change Listing Image (optional)"
+                                    : "Upload Listing Image"}
                         </label>
+                        {isEditing && listing?.imageUrl && !uploadedFile && (
+                            <div className={styles.currentImage}>
+                                <img
+                                    src={listing.imageUrl}
+                                    alt="Current listing"
+                                    className={styles.previewImage}
+                                />
+                            </div>
+                        )}
                     </div>
 
                     <div className={styles.buttonGroup}>
@@ -193,7 +244,7 @@ const AddListingModel: React.FC<AddListingModelProps> = ({ restaurantId, onClose
                                 textTransform: "none",
                             }}
                         >
-                            Add Listing
+                            {isEditing ? 'Save Changes' : 'Add Listing'}
                         </Button>
                         {onClose && (
                             <Button
@@ -215,4 +266,4 @@ const AddListingModel: React.FC<AddListingModelProps> = ({ restaurantId, onClose
     );
 };
 
-export default AddListingModel;
+export default ListingModel;

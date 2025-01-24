@@ -1,0 +1,173 @@
+.container {
+    padding: clamp(1rem, 4vw, 2rem);
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    width: min(95%, 600px);
+    margin: auto;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1rem, 3vw, 1.5rem);
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.75rem, 2vw, 1rem);
+}
+
+.input {
+    padding: 0.875rem;
+    border: 2px solid #eef0f7;
+    border-radius: 8px;
+    font-size: clamp(0.875rem, 2vw, 1rem);
+    transition: all 0.2s ease;
+    background-color: #f8f9fc;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #b0f484;
+    box-shadow: 0 0 0 3px rgba(176, 244, 132, 0.2);
+    background-color: white;
+}
+
+.textarea {
+    padding: 0.875rem;
+    border: 2px solid #eef0f7;
+    border-radius: 8px;
+    min-height: 120px;
+    font-size: clamp(0.875rem, 2vw, 1rem);
+    resize: vertical;
+    transition: all 0.2s ease;
+    background-color: #f8f9fc;
+}
+
+.textarea:focus {
+    outline: none;
+    border-color: #b0f484;
+    box-shadow: 0 0 0 3px rgba(176, 244, 132, 0.2);
+    background-color: white;
+}
+
+.priceGroup, .countGroup {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.fileUpload {
+    border: 2px dashed #eef0f7;
+    padding: 1.5rem;
+    text-align: center;
+    border-radius: 12px;
+    background-color: #f8f9fc;
+    transition: all 0.2s ease;
+}
+
+.fileUpload:hover {
+    border-color: #b0f484;
+    background-color: rgba(176, 244, 132, 0.1);
+}
+
+.fileInput {
+    display: none;
+}
+
+.fileLabel {
+    cursor: pointer;
+    display: block;
+    padding: 1rem;
+    font-size: clamp(0.875rem, 2vw, 1rem);
+    color: #666;
+    transition: color 0.2s ease;
+}
+
+.fileLabel:hover {
+    color: #333;
+}
+
+.buttonGroup {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 480px) {
+    .buttonGroup {
+        flex-direction: column;
+    }
+
+    .buttonGroup button {
+        width: 100%;
+    }
+}
+
+.invalid {
+    border-color: #ff4d4f;
+    background-color: #fff2f0;
+}
+
+.submitButton, .cancelButton {
+    padding: 0.875rem 1.5rem;
+    border-radius: 8px;
+    font-size: clamp(0.875rem, 2vw, 1rem);
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    min-width: 120px;
+}
+
+.submitButton {
+    background-color: #b0f484;
+    color: #2c5a14;
+}
+
+.submitButton:hover {
+    background-color: #9ce670;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(176, 244, 132, 0.3);
+}
+
+.cancelButton {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.cancelButton:hover {
+    background-color: #e4e4e4;
+    transform: translateY(-1px);
+}
+
+/* Modern input placeholder styles */
+::placeholder {
+    color: #aab;
+    opacity: 0.7;
+}
+
+/* Modern scrollbar styles */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #ccc;
+}

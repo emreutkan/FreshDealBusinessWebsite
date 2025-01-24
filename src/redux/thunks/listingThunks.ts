@@ -1,62 +1,14 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from '../store';
-import axios from 'axios';
 
-import { API_BASE_URL} from "../Api/apiService.ts";
-
-// Type Definitions
-export interface AddListingPayload {
-    restaurantId: number;
-    title: string;
-    description?: string;
-    originalPrice: number;
-    pickUpPrice?: number;
-    deliveryPrice?: number;
-    count: number;
-    consumeWithin: number;
-    image: File;
-}
-
-export interface SearchListingParams {
-    type: 'listing';
-    query: string;
-    restaurantId: number;
-}
-
-// API Functions
-const addListingAPI = async (restaurantId: number, formData: FormData, token: string) => {
-    const response = await axios.post(
-        `${API_BASE_URL}/restaurants/${restaurantId}/listings`,
-        formData,
-        {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'multipart/form-data'
-            }
-        }
-    );
-    return response.data;
-};
-
-const getListingsAPI = async (queryParams: URLSearchParams) => {
-    const response = await axios.get(`${API_BASE_URL}/listings?${queryParams.toString()}`);
-    return response.data;
-};
-
-const searchListingsAPI = async (queryParams: URLSearchParams) => {
-    const response = await axios.get(`${API_BASE_URL}/search?${queryParams.toString()}`);
-    return response.data;
-};
-
-const deleteListingAPI = async (restaurantId: number, listingId: number, token: string) => {
-    const response = await axios.delete(
-        `${API_BASE_URL}/restaurants/${restaurantId}/listings/${listingId}`,
-        {
-            headers: { 'Authorization': `Bearer ${token}` }
-        }
-    );
-    return response.data;
-};
+import {
+    addListingAPI,
+    deleteListingAPI,
+    editListingAPI,
+    getListingsAPI,
+    searchListingsAPI
+} from "../Api/listingsApi.ts";
+import {AddListingPayload, EditListingPayload, SearchListingParams} from "../../types/listingRelated.ts";
 
 // Thunks
 export const addListing = createAsyncThunk(
@@ -129,12 +81,10 @@ export const searchListings = createAsyncThunk(
     }
 );
 
-export const deleteListing = createAsyncThunk(
-    'listing/deleteListing',
-    async (
-        { restaurantId, listingId }: { restaurantId: number; listingId: number },
-        { rejectWithValue, getState }
-    ) => {
+
+export const editListing = createAsyncThunk(
+    'listing/editListing',
+    async (payload: EditListingPayload, { rejectWithValue, getState }) => {
         try {
             const state = getState() as RootState;
             const token = state.user.token;
@@ -142,7 +92,36 @@ export const deleteListing = createAsyncThunk(
                 return rejectWithValue('No authentication token');
             }
 
-            await deleteListingAPI(restaurantId, listingId, token);
+            const formData = new FormData();
+            if (payload.title) formData.append('title', payload.title);
+            if (payload.description !== undefined) formData.append('description', payload.description);
+            if (payload.originalPrice) formData.append('original_price', payload.originalPrice.toString());
+            if (payload.pickUpPrice) formData.append('pick_up_price', payload.pickUpPrice.toString());
+            if (payload.deliveryPrice) formData.append('delivery_price', payload.deliveryPrice.toString());
+            if (payload.count) formData.append('count', payload.count.toString());
+            if (payload.consumeWithin) formData.append('consume_within', payload.consumeWithin.toString());
+            if (payload.image) formData.append('image', payload.image);
+
+            const response = await editListingAPI(payload.listingId, formData, token);
+            return response;
+        } catch (error) {
+            return rejectWithValue(`Failed to edit listing: ${error}`);
+        }
+    }
+);
+
+// Updated deleteListing thunk to match new API structure
+export const deleteListing = createAsyncThunk(
+    'listing/deleteListing',
+    async (listingId: number, { rejectWithValue, getState }) => {
+        try {
+            const state = getState() as RootState;
+            const token = state.user.token;
+            if (!token) {
+                return rejectWithValue('No authentication token');
+            }
+
+            await deleteListingAPI(listingId, token);
             return { listingId, success: true };
         } catch (error) {
             return rejectWithValue(`Failed to delete listing: ${error}`);
@@ -150,26 +129,3 @@ export const deleteListing = createAsyncThunk(
     }
 );
 
-// Get user's listings (for restaurant owners)
-export const getUserListings = createAsyncThunk(
-    'listing/getUserListings',
-    async (restaurantId: number, { rejectWithValue, getState }) => {
-        try {
-            const state = getState() as RootState;
-            const token = state.user.token;
-            if (!token) {
-                return rejectWithValue('No authentication token');
-            }
-
-            const queryParams = new URLSearchParams({
-                restaurant_id: restaurantId.toString(),
-                owner_view: 'true'
-            });
-
-            const response = await getListingsAPI(queryParams);
-            return response;
-        } catch (error) {
-            return rejectWithValue(`Failed to fetch user's listings: ${error}`);
-        }
-    }
-);

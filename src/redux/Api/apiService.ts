@@ -2,7 +2,7 @@
 // export const API_BASE_URL = 'https://freshdealapi-fkfaajfaffh4c0ex.uksouth-01.azurewebsites.net/v1';
 import {logout} from "../slices/userSlice.ts";
 
-export const API_BASE_URL = 'http://192.168.1.7:8000/v1';
+export const API_BASE_URL = 'http://192.168.1.3:8000/v1';
 //
 
 export const TOKEN_KEY = 'userToken';
@@ -13,12 +13,16 @@ export const setStoredToken = (token: string) => localStorage.setItem(TOKEN_KEY,
 export const removeStoredToken = () => localStorage.removeItem(TOKEN_KEY);
 
 
-export const getAuthHeaders = () => {
+export const getAuthHeaders = (isFormData: boolean = false) => {
     const token = localStorage.getItem(TOKEN_KEY);
     if (!token) {
         throw new Error('No authentication token found');
     }
-    return {
+
+    // Don't include Content-Type for FormData
+    return isFormData ? {
+        'Authorization': `Bearer ${token}`
+    } : {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
     };
@@ -26,40 +30,57 @@ export const getAuthHeaders = () => {
 
 export const handleAuthError = (error: any) => {
     if (error.status === 401) {
-        // Token expired or invalid
         localStorage.removeItem(TOKEN_KEY);
-        // You might want to dispatch logout action here
-        window.location.href = '/login'; // Or use your router navigation
+        window.location.href = '/login';
     }
     throw error;
 };
 
+// apiService.ts
 export const authenticatedApiCall = async (
     url: string,
     options: RequestInit = {},
     dispatch: any
 ) => {
     try {
-        const headers = getAuthHeaders();
+        // Check if the request body is FormData
+        const isFormData = options.body instanceof FormData;
+        const headers = getAuthHeaders(isFormData);
+
+        // Debug log the request
+        console.log('Request details:', {
+            url,
+            method: options.method,
+            isFormData,
+            headers
+        });
+
         const response = await fetch(url, {
             ...options,
             headers: {
                 ...headers,
-                ...options.headers
+                ...(isFormData ? {} : options.headers) // Only add additional headers if not FormData
             }
         });
+
+        // Debug log the response
+        console.log('Response status:', response.status);
 
         if (!response.ok) {
             if (response.status === 401) {
                 dispatch(logout());
                 throw new Error('Authentication expired');
             }
-            throw new Error(await response.text());
+
+            const errorText = await response.text();
+            console.log('Error response:', errorText);
+
+            throw new Error(errorText);
         }
 
         return await response.json();
     } catch (error) {
-        handleAuthError(error);
+        console.error('API call error:', error);
         throw error;
     }
 };

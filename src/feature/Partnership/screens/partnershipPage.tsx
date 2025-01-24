@@ -22,7 +22,9 @@ const PartnershipPage = () => {
             }}>
 
                 <AddBusinessModel/>
+
             </div>
+
         </>
 
     );

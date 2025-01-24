@@ -1,189 +1,259 @@
+/* addBusinessModel.module.css */
 
+/* Full Height Container to manage overall layout */
+.fullHeightContainer {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Changed from height to min-height */
+    width: 100%;
+    position: relative;
+    box-sizing: border-box; /* Include padding in width calculation */
+    overflow: visible !important; /* Allow modals to overflow */
+
+}
+
+/* Outer Div modifications */
 .outerDiv {
-    /* default state styles */
+
+
     display: flex;
     flex-direction: column;
     gap: 25px;
-    width: 75vw;
-    height: 500px;
+    width: 100%; /* Change from 75vw */
+    max-width: 1400px;
     background: white;
     border-radius: 16px;
     box-shadow: 0 2px 8px 2px rgba(0, 0, 0, 0.2);
-    margin-top: 5vh;      /* or use transform instead of margin-top */
+    margin: 5vh auto; /* Center horizontally */
     padding: 5vh;
     z-index: 2;
-    transition: all 0.4s ease-out; /* Combines all transitions for simplicity */
-
+    position: relative;
+    transition: transform 0.4s ease-out;
+    box-sizing: border-box;
+    overflow: visible ; /* Allow modals to overflow */
 }
 
+/* Modify the outer div show map class */
 .outerDivShowMap {
-    height: 300px;
-    position: absolute;
-    background: #1a1818;
-    gap: 0;
-    padding: 0;
-    transform: translateY(-280px);
-
-
+    transform: translateY(-35vh); /* Add this */
+    width: 80%;
+    overflow: hidden;
 }
 
 
+/* Map Container */
 .mapContainer {
-    position: absolute;
-    display: flex;
-    margin-top: 5vh;
-    height: 50vh;
-    width: 75vw;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 2px 8px 2px rgba(0, 0, 0, 0.2);
-    flex-direction: column;
-    z-index: 1;
+ /* hide the map contiaenr dont show it */
+    display: none;
 
 }
 
+/* Remove or modify mapContainerShowMap - no longer needed */
 .mapContainerShowMap {
-    display: flex;
-    margin-top: 5vh;
-    height: 50vh;
+    position: absolute;
+    bottom: 25vh; /* Change from margin-top to bottom */
+    left: 50%;
+    transform: translateX(-50%);
+    height: 75vh;
+
     width: 75vw;
+    max-width: 1400px;
     background: white;
     border-radius: 16px;
     box-shadow: 0 2px 8px 2px rgba(0, 0, 0, 0.2);
     flex-direction: column;
     z-index: 1;
+    box-sizing: border-box;}
+/* Responsive Styles */
 
+/* Form Columns - Handles layout of form sections */
+.formColumns {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 50px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-
-
-
-.inputContainer{
+/* Input Container - Individual Column */
+.inputContainer {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    width: 100%;
+    overflow: visible !important; /* Allow modals to overflow */
+
 }
 
+/* Section Titles */
+.sectionTitle {
+    font-style: normal;
+    font-weight: 300;
+    font-size: 22px;
+    margin-bottom: 10px;
+}
 
-.defaultInput  {
+/* Default Input Fields */
+.defaultInput {
     font-style: normal;
     font-weight: 300;
     font-size: 18px;
     width: 21vw;
     height: 50px;
     border-radius: 5px;
-    border: 0 solid #b0f484;
+    border: 1px solid #b0f484; /* Visible border */
     background-color: #f0f0f0;
     padding: 10px;
     margin-bottom: 10px;
-    transition: width 1.4s ease-out, margin-top 1.4s ease-out;
+    transition: border-color 0.3s ease-out;
+    box-sizing: border-box;
 }
 
+.defaultInputTime {
+    font-style: normal;
+    font-weight: 300;
+    font-size: 18px;
+    width: 10.25vw;
+    height: 50px;
+    border-radius: 5px;
+    border: 1px solid #b0f484; /* Visible border */
+    background-color: #f0f0f0;
+    padding: 10px;
+    margin-bottom: 10px;
+    transition: border-color 0.3s ease-out;
+    box-sizing: border-box;
+    appearance: textfield;
+    -moz-appearance: textfield;
+    -webkit-appearance: textfield;
+}
+
+/*.defaultInputTime::-webkit-datetime-edit-ampm-field {*/
+/*    display: none;*/
+/*}*/
+
+/* In case you want to remove the dropdown arrow as well */
+.defaultInputTime::-webkit-calendar-picker-indicator {
+    display: none;
+}
+
+/* Show Map Input Adjustment */
 .defaultInputShowMap {
-    position: absolute;
     width: 75vw;
 }
 
-.defaultInput:focus {
-    font-style: normal;
-    font-weight: 300;
-    font-size: 18px;
-    outline: none;
-    border: 1px solid #b0f484;
-
+/* Invalid Input Styling */
+.invalidInput {
+    border-color: darkred !important;
 }
 
-
-
-.defaultInputShowMap:focus {
-    font-style: normal;
-    font-weight: 300;
-    font-size: 18px;
-    outline: none;
-    border: 1px solid #b0f484;
-
+/* Phone Container - Holds area code button and phone input */
+.phoneContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+    position: relative; /* For positioning the modal */
 }
 
-
-
-.defaultInput:first-child {
-    margin-top: 20px;
-}
-
-
-
-.defaultInput::placeholder {
-
-    color: rgba(23, 21, 21, 0.62);
-    font-style: normal;
-    font-weight: 300;
-    font-size: 18px;
-}
-
-span{
-    font-style: normal;
-    font-weight: 300;
-    font-size: 22px;
-}
-
-.defaultInput:focus {
-    outline: none;
-    border: 1px solid #b0f484;
-
-}
-
-
-
-
-
-
-
-input[type="text"],
-input[type="time"],
-input[type="file"],
-textarea {
-    padding: 12px 15px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    transition: border-color 0.3s, box-shadow 0.3s;
-    background-color: #f9f9f9;
-}
-
-input[type="text"]:focus,
-input[type="time"]:focus,
-input[type="file"]:focus,
-textarea:focus {
-    border-color: #28a745;
-    box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
-    outline: none;
-}
-
-input::placeholder,
-textarea::placeholder {
-    color: #999;
-    font-style: italic;
-}
-
-input[readOnly] {
-    background-color: #e9ecef;
-    cursor: not-allowed;
-}
-
-
-
-.fileUploadContainer {
+/* Area Code Button */
+.areaCodeButton {
+    width: 20%;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: #f0f0f0;
+    border: 1px solid #b0f484;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Phone Number Input */
+.phoneNumberInput {
+    /*width: 80%;*/
+    width: 16vw;
+}
+
+/* Select Button - Used for Category and Open Days */
+.selectButton {
+    cursor: pointer;
+    text-align: center;
+    background-color: #f0f0f0;
+    border: 1px solid #b0f484;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Modal for Area Codes, Categories, Days */
+/* Update the .modal class in addBusinessModel.module.css */
+.modal {
+    position: absolute;
+    width: 20vw;
+    top: 100%; /* Position it right below the trigger element */
+    left: 0;
+    margin-top: 5px; /* Add some space between the button and modal */
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    padding: 10px;
+    z-index: 999;
+}
+
+/* Add this new class for container elements that will have modals */
+.modalContainer {
+    position: relative; /* This ensures the modal positions relative to this container */
+}
+
+/* Modal Buttons */
+.modalButton {
+    background-color: #f0f0f0;
+    border: none;
+    padding: 10px 20px;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: 300;
+    font-size: 20px;
+}
+
+.selectedButton {
+    background-color: #b0f484;
+}
+
+/* Close Modal Button */
+.closeModalButton {
     margin-top: 10px;
+    padding: 10px 20px;
+    border: none;
+    background-color: #d0d0d0;
+    cursor: pointer;
+    font-weight: 300;
+    font-size: 18px;
+    align-self: flex-end;
+    border-radius: 5px;
+}
+
+/* Time Container - Holds Open and Close Time Inputs */
+.timeContainer {
+    display: flex;
+    flex-direction: row;
+    /*justify-content: space-between;*/
+    gap: 10px;
+
+}
+
+/* File Upload Styles */
+.fileUploadContainer {
+    display: flex;
+
 }
 
 .fileInput {
-    display: none; /* Hide the default input */
+    display: none; /* Hide the default file input */
 }
-
-
 
 .fileLabel {
     display: flex;
@@ -198,6 +268,7 @@ input[readOnly] {
     text-align: center;
     background-color: #f9f9f9;
     transition: background-color 0.3s ease, border-color 0.3s ease;
+    box-sizing: border-box;
 }
 
 .fileLabel:hover {
@@ -205,9 +276,224 @@ input[readOnly] {
     border-color: #86e277;
 }
 
+.labelText {
+    font-size: 16px;
+    color: #555;
+}
+
+.successMessage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fileName {
+    font-size: 14px;
+    color: #28a745;
+}
+
+/* Continue and Complete Buttons */
+button.continueButton,
+button.completeButton {
+    flex: 1;
+    background-color: #86e277 !important;
+    color: rgb(26, 24, 24) !important;
+    font-weight: 300 !important;
+    font-size: 20px !important;
+    font-family: Poppins, sans-serif !important;
+    margin-top: 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+    text-decoration: none;
+    font-style: normal;
+    text-transform: none;
+    padding: 10px 20px !important; /* Added explicit padding */
+    width: auto; /* Add this to prevent width inheritance */
+    display: inline-flex; /* Add this to maintain proper button layout */
+    align-items: center; /* Add this to center content */
+    justify-content: center; /* Add this to center content */
+}
+
+.continueButton:hover,
+.completeButton:hover {
+    background-color: #86e277;
+}
+
+/* Pickup/Delivery Container */
+.pickupDeliveryContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    align-items: center;
+}
+
+/* Delivery Details Container */
+.deliveryDetailsContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+/* Input Group */
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.inputGroup label {
+    font-size: 16px;
+    font-weight: 300;
+}
+
+/* Checkbox Styles */
+.checkbox {
+    width: 20px;
+    height: 20px;
+}
+
+.invalidCheckbox {
+    outline: 2px solid darkred;
+}
+
+/* Step Two Container */
+.stepTwoContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Heading Styles */
+.heading {
+    font-weight: 320;
+    font-size: 24px;
+}
+
+
+/* Tablets and Small Desktops */
+@media (max-width: 1624px) {
+    .outerDiv,
+    .mapContainer {
+        width: 90vw;
+    }
+
+    .fileLabel,
+    .defaultInput {
+        font-size: 16px;
+        height: 45px;
+    }
 
 
 
-.fileInput {
-    display: none; /* Hide the default file input */
+    .phoneNumberInput {
+        max-width: 15vw ;
+    }
+
+    .defaultInputTime{
+        min-width: 100px;
+    }
+
+    /* Adjust map size */
+    .mapContainer {
+        height: 45vh;
+    }
+}
+
+/* Mobile Devices */
+@media (max-width: 768px) {
+    .outerDiv,
+    .mapContainer {
+        width: 95vw;
+        padding: 3vh;
+    }
+
+    /* Stack form columns vertically */
+    .formColumns {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    /* Make inputs full width */
+    .defaultInput,
+    .selectButton,
+    .areaCodeButton,
+    .fileLabel {
+        width: 100%;
+    }
+
+    .phoneNumberInput {
+        min-width: 85% ;
+    }
+
+    .defaultInputTime{
+        min-width: 49%;
+    }
+
+    /* Adjust map size */
+    .mapContainer {
+        width: 100%;
+        height: 40vh;
+    }
+
+    /* Adjust modals */
+    .modal {
+        width: 90%;
+        left: 5%;
+    }
+
+    /* Adjust heading font size */
+    .heading {
+        font-size: 20px;
+    }
+
+    /* Adjust modal buttons */
+    .modalButton {
+        font-size: 16px;
+        padding: 8px 16px;
+    }
+
+    .closeModalButton {
+        font-size: 16px;
+        padding: 8px 16px;
+    }
+}
+
+/* Extra Small Devices */
+@media (max-width: 480px) {
+    .outerDiv {
+        width: 100vw;
+        padding: 2vh;
+    }
+
+    .mapContainer {
+        height: 35vh;
+    }
+
+    /* Adjust heading font size */
+    .heading {
+        font-size: 18px;
+    }
+
+    /* Adjust modal widths */
+    .modal {
+        width: 95%;
+        left: 2.5%;
+    }
+
+    /* Adjust modal buttons */
+    .modalButton {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
+
+    .closeModalButton {
+        font-size: 14px;
+        padding: 6px 12px;
+    }
 }

@@ -16,22 +16,34 @@ export const addListingAPI = async (restaurantId: number, formData: FormData, to
 };
 
 export const getListingsAPI = async (queryParams: URLSearchParams) => {
-    const response = await axios.get(
-        `${API_BASE_URL}/listings?${queryParams.toString()}`
-    );
+    const response = await axios.get(`${API_BASE_URL}/listings?${queryParams.toString()}`);
     return response.data;
 };
 
 export const searchListingsAPI = async (queryParams: URLSearchParams) => {
-    const response = await axios.get(
-        `${API_BASE_URL}/search?${queryParams.toString()}`
+    const response = await axios.get(`${API_BASE_URL}/search?${queryParams.toString()}`);
+    return response.data;
+};
+
+// Add the new edit listing API function
+export const editListingAPI = async (listingId: number, formData: FormData, token: string) => {
+    const response = await axios.put(
+        `${API_BASE_URL}/listings/${listingId}`,
+        formData,
+        {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data'
+            }
+        }
     );
     return response.data;
 };
 
-export const deleteListingAPI = async (restaurantId: number, listingId: number, token: string) => {
+// Update the delete listing API function to match the new endpoint
+export const deleteListingAPI = async (listingId: number, token: string) => {
     const response = await axios.delete(
-        `${API_BASE_URL}/restaurants/${restaurantId}/listings/${listingId}`,
+        `${API_BASE_URL}/listings/${listingId}`,
         {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -40,3 +52,5 @@ export const deleteListingAPI = async (restaurantId: number, listingId: number, 
     );
     return response.data;
 };
+
+

@@ -7,7 +7,7 @@ import {
     updatePassword,
     updateUsername
 } from "../thunks/userThunks.ts";
-import {getStoredToken, removeStoredToken, setStoredToken} from "../Api/apiService.ts";
+import {getStoredToken, setStoredToken} from "../Api/apiService.ts";
 
 
 interface UserState {
@@ -54,7 +54,7 @@ const userSlice = createSlice({
         setToken(state, action: PayloadAction<string>) {
             state.token = action.payload;
         },
-        logout(state) {
+        logout() {
 
             return { ...initialState, token: null }; // Ensure token is null after logout
         },

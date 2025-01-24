@@ -186,8 +186,31 @@ const AddBusinessModel = () => {
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
         const { name, value, type } = e.target;
+
         if (type === "checkbox") {
-            setFormData((prev) => ({ ...prev, [name]: e.target.checked }));
+            setFormData((prev) => ({ ...prev, [name]: e.target }));
+        } else if (name === "workingHoursStart" || name === "workingHoursEnd") {
+            // Convert time to 24-hour format
+            const timeValue = value;
+            let hours = parseInt(timeValue.split(':')[0]);
+            const minutes = timeValue.split(':')[1];
+
+            // If it's in 12-hour format and PM, add 12 to hours (except for 12 PM)
+            if (hours < 12 && timeValue.toLowerCase().includes('pm')) {
+                hours += 12;
+            }
+            // If it's 12 AM, convert to 00
+            else if (hours === 12 && timeValue.toLowerCase().includes('am')) {
+                hours = 0;
+            }
+
+            // Format hours to ensure two digits
+            const formattedHours = hours.toString().padStart(2, '0');
+
+            // Set the time in 24-hour format
+            const time24 = `${formattedHours}:${minutes}`;
+
+            setFormData((prev) => ({ ...prev, [name]: time24 }));
         } else {
             setFormData((prev) => ({ ...prev, [name]: value }));
         }
@@ -195,7 +218,6 @@ const AddBusinessModel = () => {
         setInvalidFields((prevInvalid) => prevInvalid.filter((f) => f !== name));
     };
 
-    /** File input changes with file type validation */
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files?.length) {
             const file = e.target.files[0];
@@ -350,239 +372,141 @@ const AddBusinessModel = () => {
         invalidFields.includes(fieldName);
 
     return (
-
+        <div className={styles.fullHeightContainer}>
+            {/* outerDiv is reused for step 1 or step 2 */}
             <div
-                style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    height: "100vh",
-                }}
+                className={`${styles.outerDiv} ${
+                    searchingForAddress ? styles.outerDivShowMap : ""
+                }`}
             >
-                {/* outerDiv is reused for step 1 or step 2 */}
-                <div
-                    className={`${styles.outerDiv} ${
-                        searchingForAddress ? styles.outerDivShowMap : ""
-                    }`}
-                >
-                    {/* STEP 1 */}
-                    {currentStep === 1 && (
-                        <>
-                            <h2 style={{ fontWeight: 320 }}>
-                                Are you ready to run businesses with us?
-                            </h2>
-                            <form onSubmit={handleContinue} style={{ width: "100%" }}>
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        justifyContent: "flex-start",
-                                        gap: "50px",
-                                    }}
-                                >
-                                    {/* ------- COLUMN 1: OWNER INFO ------- */}
-                                    <div className={styles.inputContainer}>
-                    <span style={{ marginBottom: "10px" }}>
-                      Add your details
-                    </span>
-                                        <input
-                                            name="ownerEmail"
-                                            className={styles.defaultInput}
-                                            placeholder="Business Owner's E-mail"
-                                            onChange={handleChange}
-                                            value={formData.ownerEmail}
-                                            style={{
-                                                borderColor: isInvalid("ownerEmail") ? "darkred" : "",
-                                            }}
-                                        />
-                                        <div
-                                            style={{
-                                                display: "flex",
-                                                flexDirection: "row",
-                                                marginTop: "0px",
-                                                gap: "15px",
-                                            }}
-                                        >
-                                            <button
-                                                type="button"
-                                                style={{
-                                                    width: "20%",
-                                                    marginTop: "0px",
-                                                    borderColor: isInvalid("phoneNumber")
-                                                        ? "darkred"
-                                                        : "",
-                                                }}
-                                                className={styles.defaultInput}
-                                                onClick={togglePhoneModal}
-                                            >
-                                                <span>{selectedAreaCode}</span>
-                                            </button>
-                                            <input
-                                                name="phoneNumber"
-                                                style={{
-                                                    width: "80%",
-                                                    marginTop: "0px",
-                                                    borderColor: isInvalid("phoneNumber")
-                                                        ? "darkred"
-                                                        : "",
-                                                }}
-                                                className={styles.defaultInput}
-                                                placeholder="Phone Number"
-                                                inputMode="numeric"
-                                                onChange={handleChange}
-                                                value={formData.phoneNumber}
-                                            />
-                                            {phoneModalOpen && (
-                                                <div
-                                                    style={{
-                                                        position: "absolute",
-                                                        width: "5vw",
-                                                        top: "55%",
-                                                        backgroundColor: "#f0f0f0",
-                                                        display: "flex",
-                                                        flexDirection: "column",
-                                                        gap: "5px",
-                                                        boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
-                                                        borderRadius: "5px",
-                                                        overflow: "hidden",
-                                                        animation: "fadeIn 0.3s ease",
-                                                        zIndex: 999,
-                                                    }}
-                                                >
-                                                    {areaCodes.map((code) => (
-                                                        <button
-                                                            key={code}
-                                                            style={{
-                                                                backgroundColor:
-                                                                    code === selectedAreaCode
-                                                                        ? "#b0f484"
-                                                                        : "#f0f0f0",
-                                                                border: "none",
-                                                                padding: "10px 20px",
-                                                                textAlign: "left",
-                                                                cursor: "pointer",
-                                                                transition: "background-color 0.3s ease",
-                                                                fontWeight: 300,
-                                                                fontSize: "20px",
-                                                            }}
-                                                            onClick={() => {
-                                                                setSelectedAreaCode(code);
-                                                                togglePhoneModal();
-                                                            }}
-                                                        >
-                                                            {code}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* StandaloneSearchBox */}
-                                        <StandaloneSearchBox
-                                            onLoad={(ref) => (searchBoxRef.current = ref)}
-                                            onPlacesChanged={onPlacesChanged}
-                                        >
-                                            <input
-                                                type="text"
-                                                placeholder="Search for an address"
-                                                className={`${styles.defaultInput} ${
-                                                    searchingForAddress
-                                                        ? styles.defaultInputShowMap
-                                                        : ""
-                                                }`}
-                                                style={{
-                                                    marginTop: "0px",
-                                                    borderColor: isInvalid("longitude")
-                                                        ? "darkred"
-                                                        : "",
-                                                }}
-                                                onFocus={() => setSearchingForAddress(true)}
-                                                onBlur={() => setSearchingForAddress(false)}
-                                            />
-                                        </StandaloneSearchBox>
-                                    </div>
-
-                                    {/* ------- COLUMN 2: RESTAURANT INFO ------- */}
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            gap: "10px",
-                                        }}
-                                    >
-                    <span style={{ marginBottom: "10px" }}>
-                      Restaurant Details
-                    </span>
-                                        <input
-                                            name="restaurantName"
-                                            className={styles.defaultInput}
-                                            placeholder="Restaurant Name"
-                                            onChange={handleChange}
-                                            value={formData.restaurantName}
-                                            style={{
-                                                border: isInvalid("restaurantName") ? "2px solid darkred" : "",
-
-                                                borderColor: isInvalid("restaurantName")
-                                                    ? "darkred"
-                                                    : "",
-                                            }}
-                                        />
-                                        <input
-                                            name="restaurantDescription"
-                                            className={styles.defaultInput}
-                                            placeholder="Restaurant Description"
-                                            onChange={handleChange}
-                                            value={formData.restaurantDescription}
-                                            style={{
-                                                border: isInvalid("restaurantName") ? "2px solid darkred" : "",
-
-
-                                            }}
-                                        />
+                {/* STEP 1 */}
+                {currentStep === 1 && (
+                    <>
+                        <h2 className={styles.heading}>
+                            Are you ready to run businesses with us?
+                        </h2>
+                        <form onSubmit={handleContinue} className={styles.form}>
+                            <div className={styles.formColumns}>
+                                {/* ------- COLUMN 1: OWNER INFO ------- */}
+                                <div className={styles.inputContainer}>
+                                    <span className={styles.sectionTitle}>
+                                        Add your details
+                                    </span>
+                                    <input
+                                        name="ownerEmail"
+                                        className={`${styles.defaultInput} ${
+                                            isInvalid("ownerEmail") ? styles.invalidInput : ""
+                                        }`}
+                                        placeholder="Business Owner's E-mail"
+                                        onChange={handleChange}
+                                        value={formData.ownerEmail}
+                                    />
+                                    <div className={styles.phoneContainer}>
                                         <button
                                             type="button"
-                                            className={styles.defaultInput}
-                                            style={{
-                                                cursor: "pointer",
-                                                textAlign: "center",
-                                                borderColor: isInvalid("category") ? "darkred" : "",
-                                            }}
+                                            className={`${styles.defaultInput} ${styles.areaCodeButton} ${
+                                                isInvalid("phoneNumber") ? styles.invalidInput : ""
+                                            }`}
+                                            onClick={togglePhoneModal}
+                                        >
+                                            <span>{selectedAreaCode}</span>
+                                        </button>
+                                        <input
+                                            name="phoneNumber"
+                                            className={`${styles.defaultInput} ${styles.phoneNumberInput} ${
+                                                isInvalid("phoneNumber") ? styles.invalidInput : ""
+                                            }`}
+                                            placeholder="Phone Number"
+                                            inputMode="numeric"
+                                            onChange={handleChange}
+                                            value={formData.phoneNumber}
+                                        />
+                                        {phoneModalOpen && (
+                                            <div className={styles.modal}>
+                                                {areaCodes.map((code) => (
+                                                    <button
+                                                        key={code}
+                                                        type="button"
+                                                        className={`${styles.modalButton} ${
+                                                            code === selectedAreaCode
+                                                                ? styles.selectedButton
+                                                                : ""
+                                                        }`}
+                                                        onClick={() => {
+                                                            setSelectedAreaCode(code);
+                                                            togglePhoneModal();
+                                                        }}
+                                                    >
+                                                        {code}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* StandaloneSearchBox */}
+                                    <StandaloneSearchBox
+                                        onLoad={(ref) => (searchBoxRef.current = ref)}
+                                        onPlacesChanged={onPlacesChanged}
+                                    >
+                                        <input
+                                            type="text"
+                                            placeholder="Search for an address"
+                                            className={`${styles.defaultInput} ${
+                                                searchingForAddress ? styles.defaultInputShowMap : ""
+                                            } ${
+                                                isInvalid("longitude") ? styles.invalidInput : ""
+                                            }`}
+                                            onFocus={() => setSearchingForAddress(true)}
+                                            onBlur={() => setSearchingForAddress(false)}
+                                        />
+                                    </StandaloneSearchBox>
+                                </div>
+
+                                {/* ------- COLUMN 2: RESTAURANT INFO ------- */}
+                                <div className={styles.inputContainer}>
+                                    <span className={styles.sectionTitle}>
+                                        Restaurant Details
+                                    </span>
+                                    <input
+                                        name="restaurantName"
+                                        className={`${styles.defaultInput} ${
+                                            isInvalid("restaurantName") ? styles.invalidInput : ""
+                                        }`}
+                                        placeholder="Restaurant Name"
+                                        onChange={handleChange}
+                                        value={formData.restaurantName}
+                                    />
+                                    <input
+                                        name="restaurantDescription"
+                                        className={`${styles.defaultInput} ${
+                                            isInvalid("restaurantDescription") ? styles.invalidInput : ""
+                                        }`}
+                                        placeholder="Restaurant Description"
+                                        onChange={handleChange}
+                                        value={formData.restaurantDescription}
+                                    />
+                                    <div className={styles.modalContainer}>
+                                        <button
+                                            type="button"
+                                            className={`${styles.defaultInput} ${styles.selectButton} ${
+                                                isInvalid("category") ? styles.invalidInput : ""
+                                            }`}
                                             onClick={toggleCategoryModal}
                                         >
                                             {selectedCategory || "Select Category"}
                                         </button>
                                         {categoryModalOpen && (
-                                            <div
-                                                style={{
-                                                    position: "absolute",
-                                                    width: "20vw",
-                                                    top: "40%",
-                                                    left: "35%",
-                                                    backgroundColor: "#f0f0f0",
-                                                    boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
-                                                    borderRadius: "10px",
-                                                    padding: "10px",
-                                                    display: "flex",
-                                                    flexDirection: "column",
-                                                    gap: "10px",
-                                                    zIndex: 999,
-                                                }}
-                                            >
+                                            <div className={styles.modal}>
                                                 {restaurantCategories.map((category) => (
                                                     <button
                                                         key={category}
-                                                        style={{
-                                                            backgroundColor:
-                                                                category === selectedCategory
-                                                                    ? "#b0f484"
-                                                                    : "#f0f0f0",
-                                                            border: "none",
-                                                            padding: "10px 20px",
-                                                            textAlign: "left",
-                                                            cursor: "pointer",
-                                                            transition: "background-color 0.3s ease",
-                                                            fontWeight: 300,
-                                                            fontSize: "20px",
-                                                        }}
+                                                        type="button"
+                                                        className={`${styles.modalButton} ${
+                                                            category === selectedCategory
+                                                                ? styles.selectedButton
+                                                                : ""
+                                                        }`}
                                                         onClick={() => {
                                                             setSelectedCategory(category);
                                                             setFormData((prev) => ({
@@ -598,30 +522,22 @@ const AddBusinessModel = () => {
                                             </div>
                                         )}
                                     </div>
+                                </div>
 
-                                    {/* ------- COLUMN 3: EXTRA BUSINESS INFO ------- */}
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            gap: "10px",
-                                        }}
-                                    >
-                    <span style={{ marginBottom: "10px" }}>
-                      Extra Details
-                    </span>
 
-                                        {/* NEW FIELD: OPEN DAYS (Multi-select) */}
+
+                                {/* ------- COLUMN 3: EXTRA BUSINESS INFO ------- */}
+                                <div className={styles.inputContainer}>
+                                    <span className={styles.sectionTitle}>
+                                        Extra Details
+                                    </span>
+
+                                    <div className={styles.modalContainer}>
                                         <button
                                             type="button"
-                                            className={styles.defaultInput}
-                                            style={{
-                                                cursor: "pointer",
-                                                textAlign: "center",
-                                                borderColor: isInvalid("workingDays")
-                                                    ? "darkred"
-                                                    : "",
-                                            }}
+                                            className={`${styles.defaultInput} ${styles.selectButton} ${
+                                                isInvalid("workingDays") ? styles.invalidInput : ""
+                                            }`}
                                             onClick={toggleDaysModal}
                                         >
                                             {formData.workingDays.length
@@ -629,330 +545,225 @@ const AddBusinessModel = () => {
                                                 : "Select Open Days"}
                                         </button>
                                         {daysModalOpen && (
-                                            <div
-                                                ref={daysModalRef}
-
-                                                style={{
-                                                    position: "absolute",
-                                                    width: "20vw",
-                                                    top: "34.5%",
-                                                    left: "42%",
-                                                    backgroundColor: "#f0f0f0",
-                                                    boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
-                                                    borderRadius: "10px",
-                                                    padding: "10px",
-                                                    display: "flex",
-                                                    flexDirection: "column",
-                                                    gap: "10px",
-                                                    zIndex: 999,
-                                                }}
-                                                onClick={(e) => e.stopPropagation()} // prevent form submission when clicking inside
-
-                                            >
-                                                {daysOfWeek.map((day) => (
+                                            <div className={styles.modal}>
+                                                <div
+                                                    ref={daysModalRef}
+                                                    className={styles.modal}
+                                                    onClick={(e) => e.stopPropagation()} // prevent form submission when clicking inside
+                                                >
+                                                    {daysOfWeek.map((day) => (
+                                                        <button
+                                                            key={day}
+                                                            type="button"
+                                                            className={`${styles.modalButton} ${
+                                                                formData.workingDays.includes(day)
+                                                                    ? styles.selectedButton
+                                                                    : ""
+                                                            }`}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleDaySelection(day);
+                                                            }}
+                                                        >
+                                                            {day}
+                                                        </button>
+                                                    ))}
                                                     <button
-                                                        key={day}
-                                                        type="button"  // ensures it does not submit the form
-
-                                                        style={{
-                                                            backgroundColor: formData.workingDays.includes(day)
-                                                                ? "#b0f484"
-                                                                : "#f0f0f0",
-                                                            border: "none",
-                                                            padding: "10px 20px",
-                                                            textAlign: "left",
-                                                            cursor: "pointer",
-                                                            transition: "background-color 0.3s ease",
-                                                            fontWeight: 300,
-                                                            fontSize: "20px",
-                                                        }}
+                                                        type="button"
+                                                        className={styles.closeModalButton}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
-                                                            handleDaySelection(day);
-                                                        }}                                                    >
-                                                        {day}
+                                                            toggleDaysModal();
+                                                        }}
+                                                    >
+                                                        Close
                                                     </button>
-                                                ))}
-                                                <button
-                                                    type="button"  // ensures this button does not submit the form
-
-                                                    style={{
-                                                        marginTop: "10px",
-                                                        padding: "10px 20px",
-                                                        border: "none",
-                                                        backgroundColor: "#d0d0d0",
-                                                        cursor: "pointer",
-                                                        fontWeight: 300,
-                                                        fontSize: "18px",
-                                                        alignSelf: "flex-end",
-                                                    }}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        toggleDaysModal();
-                                                    }}                                                >
-                                                    Close
-                                                </button>
+                                                </div>
                                             </div>
                                         )}
+                                    </div>
 
-                                        <div
-                                            style={{
-                                                display: "flex",
-                                                justifyItems: "center",
-                                                flexDirection: "row",
-                                                alignItems: "center",
-                                                gap: "10px",
-                                                justifyContent: "space-between",
-                                            }}
+
+                                    <div className={styles.timeContainer}>
+                                        <input
+                                            type="time"
+                                            name="workingHoursStart"
+                                            className={`${styles.defaultInputTime} ${
+                                                isInvalid("workingHoursStart") ? styles.invalidInput : ""
+                                            }`}
+                                            placeholder="Open Time"
+                                            value={formData.workingHoursStart}
+                                            onChange={handleChange}
+                                        />
+                                        <input
+                                            type="time"
+                                            name="workingHoursEnd"
+                                            className={`${styles.defaultInputTime} ${
+                                                isInvalid("workingHoursEnd") ? styles.invalidInput : ""
+                                            }`}
+                                            placeholder="Close Time"
+                                            value={formData.workingHoursEnd}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                    {/* Image Upload */}
+                                    <div className={styles.fileUploadContainer}>
+                                        <input
+                                            type="file"
+                                            id="fileUpload"
+                                            className={styles.fileInput}
+                                            accept="image/*"
+                                            onChange={handleFileChange}
+                                        />
+                                        <label
+                                            htmlFor="fileUpload"
+                                            className={`${styles.fileLabel} ${
+                                                isInvalid("image") ? styles.invalidInput : ""
+                                            }`}
                                         >
-                                            <input
-                                                type="time"
-                                                name="workingHoursStart"
-                                                className={styles.defaultInput}
-                                                style={{
-                                                    width: "48%",
-                                                    margin: "0px",
-                                                    borderColor: isInvalid("workingHoursStart")
-                                                        ? "darkred"
-                                                        : "",
-                                                }}
-                                                placeholder="Open Time"
-                                                value={formData.workingHoursStart}
-                                                onChange={handleChange}
-                                            />
-                                            <input
-                                                type="time"
-                                                name="workingHoursEnd"
-                                                className={styles.defaultInput}
-                                                style={{
-                                                    width: "48%",
-                                                    margin: "0px",
-                                                    borderColor: isInvalid("workingHoursEnd")
-                                                        ? "darkred"
-                                                        : "",
-                                                }}
-                                                placeholder="Close Time"
-                                                value={formData.workingHoursEnd}
-                                                onChange={handleChange}
-                                            />
-                                        </div>
-
-                                        {/* If you want an image upload */}
-                                        <div className={styles.fileUploadContainer}>
-                                            <input
-                                                type="file"
-                                                id="fileUpload"
-                                                className={styles.fileInput}
-                                                accept="image/*"
-                                                onChange={handleFileChange}
-                                            />
-                                            <label
-                                                htmlFor="fileUpload"
-                                                className={styles.fileLabel}
-                                                style={{
-                                                    borderColor: isInvalid("image") ? "darkred" : "",
-                                                }}
-                                            >
-                                                {!uploadedFile ? (
-                                                    <span className={styles.labelText}>
-                            Add your restaurant image
-                          </span>
-                                                ) : (
-                                                    <div className={styles.successMessage}>
-                            <span className={styles.fileName}>
-                              {uploadedFile.name}
-                            </span>
-                                                    </div>
-                                                )}
-                                            </label>
-                                        </div>
-
-                                        {!searchingForAddress && (
-                                            <Button
-                                                type="submit"
-                                                style={{
-                                                    backgroundColor: "#b0f484",
-                                                    color: "white",
-                                                    fontWeight: 300,
-                                                    width: "60%",
-                                                    fontSize: "20px",
-                                                    padding: "10px 20px",
-                                                    border: "none",
-                                                    cursor: "pointer",
-                                                    alignSelf: "flex-end",
-                                                    borderRadius: "10px",
-                                                    textDecoration: "none",
-                                                    fontStyle: "normal",
-                                                    textTransform: "none",
-                                                    marginTop: "0.5vw",
-                                                }}
-                                            >
-                                                <span>Continue</span>
-                                            </Button>
-                                        )}
+                                            {!uploadedFile ? (
+                                                <span className={styles.labelText}>
+                                                    Add your restaurant image
+                                                </span>
+                                            ) : (
+                                                <div className={styles.successMessage}>
+                                                    <span className={styles.fileName}>
+                                                        {uploadedFile.name}
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </label>
                                     </div>
+
+                                    {!searchingForAddress && (
+                                        <Button
+                                            type="submit"
+                                            className={styles.continueButton}
+                                        >
+                                            <span>Continue</span>
+                                        </Button>
+                                    )}
                                 </div>
-                            </form>
-                        </>
-                    )}
-
-                    {/* STEP 2: Show only if currentStep === 2 */}
-                    {currentStep === 2 && (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                            <h2 style={{ fontWeight: 320 }}>Pickup/Delivery Info</h2>
-
-                            {/* Section to select pickup or delivery */}
-                            <div
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    gap: "30px",
-                                    alignItems: "center",
-                                }}
-                            >
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        name="pickup"
-                                        checked={formData.pickup}
-                                        onChange={handleChange}
-                                        style={{
-                                            width: "20px",
-                                            height: "20px",
-                                            borderColor: isInvalid("pickupOrDelivery")
-                                                ? "darkred"
-                                                : "",
-                                        }}
-                                    />{" "}
-                                    Pickup
-                                </label>
-
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        name="delivery"
-                                        checked={formData.delivery}
-                                        onChange={handleChange}
-                                        style={{
-                                            width: "20px",
-                                            height: "20px",
-                                            borderColor: isInvalid("pickupOrDelivery")
-                                                ? "darkred"
-                                                : "",
-                                        }}
-                                    />{" "}
-                                    Delivery
-                                </label>
                             </div>
+                        </form>
+                    </>
+                )}
 
-                            {/* If delivery is selected, ask for more fields */}
-                            {formData.delivery && (
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        gap: "30px",
-                                        flexWrap: "wrap",
-                                    }}
-                                >
-                                    <div style={{ display: "flex", flexDirection: "column" }}>
-                                        <label>Max Delivery Distance</label>
-                                        <input
-                                            type="text"
-                                            name="maxDeliveryDistance"
-                                            placeholder="Max distance in km"
-                                            onChange={handleChange}
-                                            value={formData.maxDeliveryDistance}
-                                            style={{
-                                                borderColor: isInvalid("maxDeliveryDistance")
-                                                    ? "darkred"
-                                                    : "",
-                                            }}
-                                            className={styles.defaultInput}
-                                        />
-                                    </div>
-                                    <div style={{ display: "flex", flexDirection: "column" }}>
-                                        <label>Delivery Fee</label>
-                                        <input
-                                            type="text"
-                                            name="deliveryFee"
-                                            placeholder="Fee for delivery"
-                                            onChange={handleChange}
-                                            value={formData.deliveryFee}
-                                            style={{
-                                                borderColor: isInvalid("deliveryFee") ? "darkred" : "",
-                                            }}
-                                            className={styles.defaultInput}
-                                        />
-                                    </div>
-                                    <div style={{ display: "flex", flexDirection: "column" }}>
-                                        <label>Minimum Order Amount</label>
-                                        <input
-                                            type="text"
-                                            name="minOrderAmount"
-                                            placeholder="Min order cost"
-                                            onChange={handleChange}
-                                            value={formData.minOrderAmount}
-                                            style={{
-                                                borderColor: isInvalid("minOrderAmount")
-                                                    ? "darkred"
-                                                    : "",
-                                            }}
-                                            className={styles.defaultInput}
-                                        />
-                                    </div>
-                                </div>
-                            )}
+                {/* STEP 2: Show only if currentStep === 2 */}
+                {currentStep === 2 && (
+                    <div className={styles.stepTwoContainer}>
+                        <h2 className={styles.heading}>Pickup/Delivery Info</h2>
 
-                            <Button
-                                onClick={handleComplete}
-                                style={{
-                                    backgroundColor: "#b0f484",
-                                    color: "white",
-                                    fontWeight: 300,
-                                    width: "20%",
-                                    fontSize: "20px",
-                                    padding: "10px 20px",
-                                    border: "none",
-                                    cursor: "pointer",
-                                    borderRadius: "10px",
-                                    textDecoration: "none",
-                                    fontStyle: "normal",
-                                    textTransform: "none",
-                                }}
-                            >
-                                Complete
-                            </Button>
+                        {/* Section to select pickup or delivery */}
+                        <div className={styles.pickupDeliveryContainer}>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="pickup"
+                                    checked={formData.pickup}
+                                    onChange={handleChange}
+                                    className={`${styles.checkbox} ${
+                                        isInvalid("pickupOrDelivery") ? styles.invalidCheckbox : ""
+                                    }`}
+                                />{" "}
+                                Pickup
+                            </label>
+
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    name="delivery"
+                                    checked={formData.delivery}
+                                    onChange={handleChange}
+                                    className={`${styles.checkbox} ${
+                                        isInvalid("pickupOrDelivery") ? styles.invalidCheckbox : ""
+                                    }`}
+                                />{" "}
+                                Delivery
+                            </label>
                         </div>
-                    )}
-                </div>
 
-                {/* Map Section (always rendered separate from the form) */}
-                <div
-                    className={
-                        !searchingForAddress
-                            ? styles.mapContainer
-                            : styles.mapContainerShowMap
-                    }
-                >
-                    <GoogleMap
-                        mapContainerStyle={MAP_CONTAINER_STYLE}
-                        center={mapCenter}
-                        zoom={12}
-                        // onClick={onMapClick}
-                    >
-                        <Marker position={markerPosition} />
-                        {userLocation && (
-                            <Marker
-                                position={userLocation}
-                                icon={{
-                                    url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-                                }}
-                            />
+                        {/* If delivery is selected, ask for more fields */}
+                        {formData.delivery && (
+                            <div className={styles.deliveryDetailsContainer}>
+                                <div className={styles.inputGroup}>
+                                    <label>Max Delivery Distance</label>
+                                    <input
+                                        type="text"
+                                        name="maxDeliveryDistance"
+                                        placeholder="Max distance in km"
+                                        onChange={handleChange}
+                                        value={formData.maxDeliveryDistance}
+                                        className={`${styles.defaultInput} ${
+                                            isInvalid("maxDeliveryDistance") ? styles.invalidInput : ""
+                                        }`}
+                                    />
+                                </div>
+                                <div className={styles.inputGroup}>
+                                    <label>Delivery Fee</label>
+                                    <input
+                                        type="text"
+                                        name="deliveryFee"
+                                        placeholder="Fee for delivery"
+                                        onChange={handleChange}
+                                        value={formData.deliveryFee}
+                                        className={`${styles.defaultInput} ${
+                                            isInvalid("deliveryFee") ? styles.invalidInput : ""
+                                        }`}
+                                    />
+                                </div>
+                                <div className={styles.inputGroup}>
+                                    <label>Minimum Order Amount</label>
+                                    <input
+                                        type="text"
+                                        name="minOrderAmount"
+                                        placeholder="Min order cost"
+                                        onChange={handleChange}
+                                        value={formData.minOrderAmount}
+                                        className={`${styles.defaultInput} ${
+                                            isInvalid("minOrderAmount") ? styles.invalidInput : ""
+                                        }`}
+                                    />
+                                </div>
+                            </div>
                         )}
-                    </GoogleMap>
-                </div>
+
+                        <Button
+                            onClick={handleComplete}
+                            className={styles.completeButton}
+                        >
+                            Complete
+                        </Button>
+                    </div>
+                )}
             </div>
+
+            {/* Map Section (always rendered separate from the form) */}
+            <div
+                className={
+                    !searchingForAddress
+                        ? styles.mapContainer
+                        : styles.mapContainerShowMap
+                }
+            >
+                <GoogleMap
+                    mapContainerStyle={MAP_CONTAINER_STYLE}
+                    center={mapCenter}
+                    zoom={12}
+                    // onClick={onMapClick}
+                >
+                    <Marker position={markerPosition} />
+                    {userLocation && (
+                        <Marker
+                            position={userLocation}
+                            icon={{
+                                url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                            }}
+                        />
+                    )}
+                </GoogleMap>
+            </div>
+        </div>
     );
 };
 

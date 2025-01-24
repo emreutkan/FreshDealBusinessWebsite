@@ -1,0 +1,232 @@
+.purchasesCard {
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.purchasesList {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.purchaseItem {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    transition: all 0.3s ease;
+}
+
+.purchaseHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.orderId {
+    font-weight: bold;
+    color: #333;
+}
+
+.status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.date {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.orderDetails {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 12px 0;
+}
+
+.itemTitle {
+    font-size: 1.1em;
+    color: #333;
+}
+
+.totalPrice {
+    font-weight: bold;
+    color: #2c5282;
+}
+
+.deliveryInfo {
+    background: #f7fafc;
+    padding: 12px;
+    border-radius: 4px;
+    margin: 12px 0;
+}
+
+.deliveryInfo strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #4a5568;
+}
+
+.imageContainer {
+    margin: 12px 0;
+}
+
+.completionImage {
+    max-width: 100%;
+    border-radius: 4px;
+}
+
+.purchaseActions {
+    margin-top: 16px;
+    display: flex;
+    gap: 8px;
+}
+
+.acceptButton,
+.uploadButton,
+.addImageButton,
+.cancelButton {
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.acceptButton {
+    background: #48bb78;
+    color: white;
+}
+
+.uploadButton {
+    background: #4299e1;
+    color: white;
+}
+
+.addImageButton {
+    background: #667eea;
+    color: white;
+}
+
+.cancelButton {
+    background: #e53e3e;
+    color: white;
+}
+
+.imageUploadSection {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.imageUploadControls {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.fileInput {
+    display: none;
+}
+
+.fileInputLabel {
+    padding: 12px;
+    background-color: #f3f4f6;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    color: #4b5563;
+    transition: all 0.2s ease;
+}
+
+.fileInputLabel:hover {
+    background-color: #e5e7eb;
+    border-color: #9ca3af;
+}
+
+.imagePreview {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.previewImage {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+.uploadButtons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.loading {
+    color: #4a5568;
+    text-align: center;
+    padding: 20px;
+}
+
+.error {
+    color: #e53e3e;
+    text-align: center;
+    padding: 20px;
+}
+
+.noOrders {
+    text-align: center;
+    padding: 40px;
+    color: #718096;
+    font-style: italic;
+}
+
+/* Status-specific styles */
+.pending {
+    border-left: 4px solid #ecc94b;
+}
+
+.accepted {
+    border-left: 4px solid #48bb78;
+}
+
+.completed {
+    border-left: 4px solid #4299e1;
+}
+
+.rejected {
+    border-left: 4px solid #e53e3e;
+}
+
+/* Responsive styles */
+@media (max-width: 640px) {
+    .purchaseHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .imageUploadSection {
+        flex-direction: column;
+    }
+
+    .uploadButtons {
+        flex-direction: column;
+    }
+
+    .uploadButton,
+    .cancelButton {
+        width: 100%;
+    }
+}

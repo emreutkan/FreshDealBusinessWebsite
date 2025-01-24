@@ -75,6 +75,7 @@ const restaurantSlice = createSlice({
         builder.addCase(getRestaurantsOfUserThunk.fulfilled, (state, action: PayloadAction<Restaurant[]>) => {
             state.status = 'succeeded';
             state.ownedRestaurants = action.payload;
+            console.log('state.ownedRestaurants', state.ownedRestaurants);
         });
         builder.addCase(getRestaurantsOfUserThunk.rejected, (state, action) => {
             state.status = 'failed';

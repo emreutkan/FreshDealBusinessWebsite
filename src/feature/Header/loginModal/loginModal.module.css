@@ -1,4 +1,4 @@
-.loginModal {
+.registerModal {
     position: fixed; /* Makes the div independent of other components */
     flex-grow: inherit;
     display: flex; /* Enable Flexbox */
@@ -16,8 +16,9 @@
     animation: fadeIn 0.3s ease-out;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     padding: 20px;
-    z-index: 999;
 }
+
+
 
 
 
@@ -33,15 +34,3 @@
     }
 }
 
-@media (max-width: 768px) {
-    .loginModal {
-        width: 90%; /* Adjust modal width for smaller screens */
-        min-height: auto; /* Flexible height */
-        padding: 15px; /* Adjust padding */
-    }
-
-    .loginModal input,
-    .loginModal button {
-        width: 100%; /* Full width for inputs and buttons */
-    }
-}
