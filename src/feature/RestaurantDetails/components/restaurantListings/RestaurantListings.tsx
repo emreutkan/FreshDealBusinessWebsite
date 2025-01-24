@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './RestaurantListings.module.css';
+import {Listing} from "../../../../types/listingRelated.ts";
 
 
 

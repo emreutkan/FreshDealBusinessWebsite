@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef,  } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './Orders.module.css';
-import { fetchRestaurantPurchases, acceptPurchaseOrder, addCompletionImage } from '../../../../redux/thunks/purchaseThunks.ts';
+import {
+    fetchRestaurantPurchases,
+    acceptPurchaseOrder,
+    addCompletionImage,
+    rejectPurchaseOrder
+} from '../../../../redux/thunks/purchaseThunks.ts';
 import { AppDispatch, RootState } from "../../../../redux/store.ts";
 import {Purchase} from "../../../../redux/slices/purchaseSlice.ts";
 
@@ -42,6 +47,30 @@ const Orders: React.FC<OrdersProps> = ({ restaurantId }) => {
         return `$${parseFloat(price).toFixed(2)}`;
     };
 
+    const [rejectingOrder, setRejectingOrder] = useState<number | null>(null);
+
+    const handleRejectOrder = async (purchaseId: number) => {
+        if (!purchaseId) {
+            console.error('Purchase ID is undefined');
+            return;
+        }
+
+        if (!window.confirm('Are you sure you want to reject this order?')) {
+            return;
+        }
+
+        setRejectingOrder(purchaseId);
+        try {
+            console.log('Rejecting order:', purchaseId);
+            const result = await dispatch(rejectPurchaseOrder(purchaseId)).unwrap();
+            console.log('Reject order result:', result);
+            await dispatch(fetchRestaurantPurchases(restaurantId));
+        } catch (error) {
+            console.error('Failed to reject order:', error);
+        } finally {
+            setRejectingOrder(null);
+        }
+    };
     // Function to get status-specific className
     const getStatusClassName = (status: Purchase['status']) => {
         switch (status) {
@@ -151,7 +180,6 @@ const Orders: React.FC<OrdersProps> = ({ restaurantId }) => {
             await dispatch(fetchRestaurantPurchases(restaurantId));
         } catch (error) {
             console.error('Failed to upload image:', error);
-            alert(error.message || 'Failed to upload image. Please try again.');
         }
     };
 
@@ -210,13 +238,22 @@ const Orders: React.FC<OrdersProps> = ({ restaurantId }) => {
 
                         <div className={styles.purchaseActions}>
                             {purchase.status === 'PENDING' && (
-                                <button
-                                    className={styles.acceptButton}
-                                    onClick={() => handleAcceptOrder(purchase.purchase_id)}
-                                    disabled={acceptingOrder === purchase.purchase_id}
-                                >
-                                    {acceptingOrder === purchase.purchase_id ? 'Accepting...' : 'Accept Order'}
-                                </button>
+                                <>
+                                    <button
+                                        className={styles.acceptButton}
+                                        onClick={() => handleAcceptOrder(purchase.purchase_id)}
+                                        disabled={acceptingOrder === purchase.purchase_id}
+                                    >
+                                        {acceptingOrder === purchase.purchase_id ? 'Accepting...' : 'Accept Order'}
+                                    </button>
+                                    <button
+                                        className={styles.rejectButton}
+                                        onClick={() => handleRejectOrder(purchase.purchase_id)}
+                                        disabled={rejectingOrder === purchase.purchase_id}
+                                    >
+                                        {rejectingOrder === purchase.purchase_id ? 'Rejecting...' : 'Reject Order'}
+                                    </button>
+                                </>
                             )}
 
                             {purchase.status === 'ACCEPTED' && !purchase.completion_image_url && (
