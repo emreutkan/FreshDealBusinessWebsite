@@ -28,6 +28,8 @@ export interface Restaurant {
     maxDeliveryDistance: number;
     deliveryFee: number;
     minOrderAmount: number;
+    restaurantEmail: string;
+    restaurantPhone: string;
 }
 
 interface RestaurantState {

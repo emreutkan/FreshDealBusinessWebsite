@@ -23,6 +23,8 @@ export interface AddRestaurantPayload {
     maxDeliveryDistance: number;
     deliveryFee: number;
     minOrderAmount: number;
+    restaurantEmail: string;
+    restaurantPhone: string;
 }
 
 export const addRestaurant = createAsyncThunk(
@@ -51,6 +53,9 @@ export const addRestaurant = createAsyncThunk(
                 formData.append('minOrderAmount', payload.minOrderAmount.toString());
             }
             if (payload.image) formData.append('image', payload.image);
+
+            formData.append('restaurantEmail', payload.restaurantEmail);
+            formData.append('restaurantPhone', payload.restaurantPhone);
 
             return await addRestaurantAPI(formData, token);
         } catch (error) {

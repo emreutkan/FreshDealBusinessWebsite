@@ -26,6 +26,7 @@ export const searchListingsAPI = async (queryParams: URLSearchParams) => {
 };
 
 // Add the new edit listing API function
+// Edit listing
 export const editListingAPI = async (listingId: number, formData: FormData, token: string) => {
     const response = await axios.put(
         `${API_BASE_URL}/listings/${listingId}`,
@@ -40,7 +41,7 @@ export const editListingAPI = async (listingId: number, formData: FormData, toke
     return response.data;
 };
 
-// Update the delete listing API function to match the new endpoint
+// Delete listing
 export const deleteListingAPI = async (listingId: number, token: string) => {
     const response = await axios.delete(
         `${API_BASE_URL}/listings/${listingId}`,
@@ -50,7 +51,7 @@ export const deleteListingAPI = async (listingId: number, token: string) => {
             }
         }
     );
+
+
     return response.data;
 };
-
-

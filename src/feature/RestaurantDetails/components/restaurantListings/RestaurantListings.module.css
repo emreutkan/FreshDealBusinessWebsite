@@ -1,71 +1,214 @@
 .listingsCard {
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     padding: 2rem;
     margin-bottom: 2rem;
 }
 
+.sectionTitle {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #2d3436;
+    margin-bottom: 1.5rem;
+}
+
 .listingsGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
     margin-top: 1.5rem;
 }
 
 .listingItem {
     background: #ffffff;
-    border-radius: 12px;
+    border-radius: 16px;
     overflow: hidden;
-    border: 1px solid #e9ecef;
-    transition: all 0.3s ease;
+    border: 1px solid #f0f2f5;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
 }
 
 .listingItem:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+.imageContainer {
+    position: relative;
+    padding-top: 56.25%; /* 16:9 aspect ratio */
+    overflow: hidden;
 }
 
 .listingImage {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 160px;
+    height: 100%;
     object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.listingItem:hover .listingImage {
+    transform: scale(1.05);
+}
+
+.listingActions {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 8px;
+    z-index: 2;
+}
+
+.actionButton {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(4px);
+    padding: 8px !important;
+}
+
+.editButton:hover {
+    background-color: rgba(176, 244, 132, 0.9) !important;
+}
+
+.deleteButton:hover {
+    background-color: rgba(244, 67, 54, 0.9) !important;
 }
 
 .listingInfo {
-    padding: 1rem;
+    padding: 1.5rem;
 }
 
-.listingInfo h3 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.1rem;
+.listingTitle {
+    margin: 0 0 0.75rem 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2d3436;
 }
 
-.listingPrices {
+.listingDescription {
+    color: #636e72;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.priceSection {
+    margin: 1rem 0;
+}
+
+.mainPrice {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2d3436;
+    margin-bottom: 0.75rem;
+}
+
+.priceIcon {
+    color: #00b894;
+    font-size: 1.25rem;
+}
+
+.alternativePrices {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin: 0.5rem 0;
 }
 
-.listingPrices span {
-    background: #e9ecef;
-    padding: 0.25rem 0.75rem;
+.priceTag {
+    background: #f5f6fa;
+    color: #636e72;
+    padding: 0.35rem 0.75rem;
     border-radius: 1rem;
     font-size: 0.875rem;
+    transition: background-color 0.2s ease;
 }
 
-.listingDetails {
+.priceTag:hover {
+    background: #e9ecef;
+}
+
+.listingMetrics {
     display: flex;
     justify-content: space-between;
-    margin-top: 0.75rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f2f5;
+}
+
+.metric {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #636e72;
     font-size: 0.875rem;
-    color: #6c757d;
+}
+
+.metricIcon {
+    font-size: 1.125rem;
+    color: #00b894;
+}
+
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+}
+
+.loader {
+    border: 3px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 3px solid #00b894;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.modalContent {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 16px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
 }
 
 @media (max-width: 768px) {
     .listingsGrid {
         grid-template-columns: 1fr;
+    }
+
+    .listingInfo {
+        padding: 1rem;
+    }
+
+    .mainPrice {
+        font-size: 1.25rem;
     }
 }

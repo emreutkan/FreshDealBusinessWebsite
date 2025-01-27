@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {Button} from "@mui/material";
 import {AppDispatch} from "../../../../redux/store";
 import {
@@ -8,6 +8,7 @@ import {
 } from "../../../../redux/thunks/listingThunks";
 import styles from "./ListingModel.module.css";
 import {AddListingPayload, Listing} from "../../../../types/listingRelated.ts";
+import {RootState} from "@reduxjs/toolkit/query";
 
 
 interface ListingModelProps {
@@ -16,6 +17,27 @@ interface ListingModelProps {
     listing?: Listing,
     isEditing?: boolean,
 }
+
+
+interface FormData {
+    title: string;
+    description: string;
+    original_price: string;
+    pick_up_price: string;
+    delivery_price: string;
+    count: string;
+    consume_within: string;
+}
+
+const initialFormData: FormData = {
+    title: "",
+    description: "",
+    original_price: "",
+    pick_up_price: "",
+    delivery_price: "",
+    count: "",
+    consume_within: "",
+};
 
 const ListingModel: React.FC<ListingModelProps> = ({
                                                        restaurantId,
@@ -26,32 +48,26 @@ const ListingModel: React.FC<ListingModelProps> = ({
     const dispatch = useDispatch<AppDispatch>();
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
     const [invalidFields, setInvalidFields] = useState<string[]>([]);
+    const [formData, setFormData] = useState<FormData>(initialFormData);
+    const restaurant = useSelector((state: RootState) => state.restaurant.ownedRestaurants.find(
+        (restaurant: { id: number; }) => restaurant.id === restaurantId
+    ));
 
-    const [formData, setFormData] = useState({
-        title: "",
-        description: "",
-        originalPrice: "",
-        pickUpPrice: "",
-        deliveryPrice: "",
-        count: "",
-        consumeWithin: "",
-    });
 
-    // Initialize form data if editing
     useEffect(() => {
         if (isEditing && listing) {
+            // Set form data for editing
             setFormData({
-                title: listing.title,
+                title: listing.title || "",
                 description: listing.description || "",
-                originalPrice: listing.originalPrice.toString(),
-                pickUpPrice: listing.pickUpPrice?.toString() || "",
-                deliveryPrice: listing.deliveryPrice?.toString() || "",
-                count: listing.count.toString(),
-                consumeWithin: listing.consumeWithin.toString(),
+                original_price: listing.original_price ? listing.original_price.toString() : "",
+                pick_up_price: listing.pick_up_price ? listing.pick_up_price.toString() : "",
+                delivery_price: listing.delivery_price ? listing.delivery_price.toString() : "",
+                count: listing.count ? listing.count.toString() : "",
+                consume_within: listing.consume_within ? listing.consume_within.toString() : "",
             });
-        }
+        } 
     }, [isEditing, listing]);
-
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
@@ -76,9 +92,9 @@ const ListingModel: React.FC<ListingModelProps> = ({
     const validateForm = () => {
         const requiredFields = [
             "title",
-            "originalPrice",
+            "original_price",
             "count",
-            "consumeWithin"
+            "consume_within"
         ];
 
         const invalids: string[] = [];
@@ -108,11 +124,11 @@ const ListingModel: React.FC<ListingModelProps> = ({
             restaurantId,
             title: formData.title,
             description: formData.description,
-            originalPrice: parseFloat(formData.originalPrice),
-            pickUpPrice: formData.pickUpPrice ? parseFloat(formData.pickUpPrice) : undefined,
-            deliveryPrice: formData.deliveryPrice ? parseFloat(formData.deliveryPrice) : undefined,
+            originalPrice: parseFloat(formData.original_price),
+            pickUpPrice: formData.pick_up_price ? parseFloat(formData.pick_up_price) : undefined,
+            deliveryPrice: formData.delivery_price ? parseFloat(formData.delivery_price) : undefined,
             count: parseInt(formData.count),
-            consumeWithin: parseInt(formData.consumeWithin),
+            consumeWithin: parseInt(formData.consume_within),
             image: uploadedFile as File,
         };
 
@@ -121,8 +137,7 @@ const ListingModel: React.FC<ListingModelProps> = ({
                 await dispatch(editListing({
                     ...payload,
                     listingId: listing.id,
-                    // Only include image if a new one was uploaded
-                    ...(uploadedFile ? {image: uploadedFile} : {})
+                    ...(uploadedFile ? { image: uploadedFile } : {})
                 })).unwrap();
                 alert("Listing updated successfully!");
             } else {
@@ -134,6 +149,7 @@ const ListingModel: React.FC<ListingModelProps> = ({
             alert(`Failed to ${isEditing ? 'update' : 'add'} listing: ${error}`);
         }
     };
+
 
     const isInvalid = (fieldName: string): boolean =>
         invalidFields.includes(fieldName);
@@ -161,32 +177,35 @@ const ListingModel: React.FC<ListingModelProps> = ({
 
                     <div className={styles.priceGroup}>
                         <input
-                            name="originalPrice"
+                            name="original_price"  // Changed from originalPrice to match your formData structure
                             type="number"
-                            step="0.01"
                             className={`${styles.input} ${isInvalid("originalPrice") ? styles.invalid : ""}`}
                             placeholder="Original Price"
-                            value={formData.originalPrice}
+                            value={formData.original_price}
                             onChange={handleChange}
                         />
-                        <input
-                            name="pickUpPrice"
-                            type="number"
-                            step="0.01"
-                            className={styles.input}
-                            placeholder="Pickup Price (optional)"
-                            value={formData.pickUpPrice}
-                            onChange={handleChange}
-                        />
-                        <input
-                            name="deliveryPrice"
-                            type="number"
-                            step="0.01"
-                            className={styles.input}
-                            placeholder="Delivery Price (optional)"
-                            value={formData.deliveryPrice}
-                            onChange={handleChange}
-                        />
+                        {restaurant.pickup && (
+                            <input
+                                name="pick_up_price"
+                                type="number"
+                                step="0.01"
+                                className={styles.input}
+                                placeholder="Pickup Price (optional)"
+                                value={formData.pick_up_price}
+                                onChange={handleChange}
+                            />
+                        )}
+                        {restaurant.delivery && (
+                            <input
+                                name="delivery_price"
+                                type="number"
+                                step="0.01"
+                                className={styles.input}
+                                placeholder="Delivery Price (optional)"
+                                value={formData.delivery_price}
+                                onChange={handleChange}
+                            />
+                        )}
                     </div>
 
                     <div className={styles.countGroup}>
@@ -199,11 +218,11 @@ const ListingModel: React.FC<ListingModelProps> = ({
                             onChange={handleChange}
                         />
                         <input
-                            name="consumeWithin"
+                            name="consume_within"
                             type="number"
                             className={`${styles.input} ${isInvalid("consumeWithin") ? styles.invalid : ""}`}
                             placeholder="Consume Within (days)"
-                            value={formData.consumeWithin}
+                            value={formData.consume_within}
                             onChange={handleChange}
                         />
                     </div>

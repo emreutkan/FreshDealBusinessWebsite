@@ -1,36 +1,284 @@
+/* RestaurantInfo.module.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Main container styles */
 .detailsCard {
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 2rem;
-    margin-bottom: 2rem;
+    border-radius: 24px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    margin: 2rem auto;
+    max-width: 900px;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Image section styles */
+.imageWrapper {
+    position: relative;
+    width: 100%;
+    height: 400px;
 }
 
 .restaurantImage {
     width: 100%;
-    height: 300px;
+    height: 100%;
     object-fit: cover;
-    border-radius: 8px;
-    margin: 1rem 0;
 }
 
-.detailsInfo {
-    margin: 1rem 0;
+.ratingBadge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #FFD700;
+    padding: 8px 16px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    backdrop-filter: blur(4px);
 }
 
-.addListingButton {
-    background-color: #b0f484;
+/* Content section styles */
+.content {
+    padding: 2.5rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #2D3436;
+    margin: 0;
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+}
+
+.editButton, .deleteButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.editButton {
+    background: #6c5ce7;
+    color: white;
+}
+
+.editButton:hover {
+    background: #5f4ed6;
+    transform: translateY(-2px);
+}
+
+.deleteButton {
+    background: #ff7675;
+    color: white;
+}
+
+.deleteButton:hover {
+    background: #e66767;
+    transform: translateY(-2px);
+}
+
+.category {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #F0F2F5;
+    padding: 8px 16px;
+    border-radius: 12px;
+    color: #636E72;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+}
+
+.description {
+    color: #636E72;
+    line-height: 1.6;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+.details {
+    margin-bottom: 2rem;
+}
+
+.hours {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #2D3436;
+    font-size: 1rem;
+}
+
+.addButton {
+    background: linear-gradient(135deg, #00B894, #00CEC9);
     color: white;
     border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-size: 16px;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 500;
     cursor: pointer;
-    margin-top: 20px;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
     width: 100%;
+    font-family: 'Poppins', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.addListingButton:hover {
-    background-color: #9ee373;
+.addButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 184, 148, 0.2);
 }
+
+/* Modal styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.modal {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.modal h2 {
+    color: #2D3436;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.modal p {
+    color: #636E72;
+    margin-bottom: 1rem;
+}
+
+.warning {
+    color: #ff7675 !important;
+    font-weight: 500;
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 2rem;
+}
+
+.cancelButton, .confirmButton {
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.cancelButton {
+    background: #F0F2F5;
+    color: #636E72;
+}
+
+.cancelButton:hover {
+    background: #E4E7EB;
+}
+
+.confirmButton {
+    background: #ff7675;
+    color: white;
+}
+
+.confirmButton:hover {
+    background: #e66767;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .detailsCard {
+        margin: 1rem;
+        border-radius: 16px;
+    }
+
+    .imageWrapper {
+        height: 300px;
+    }
+
+    .content {
+        padding: 1.5rem;
+    }
+
+    .header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .actions {
+        width: 100%;
+    }
+
+    .editButton, .deleteButton {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .modal {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+
+    .modalActions {
+        flex-direction: column;
+    }
+
+    .cancelButton, .confirmButton {
+        width: 100%;
+    }
+}
+.editModalContent {
+    background: white;
+    /*width: 95%;*/
+    /*max-width: 1200px;*/
+    /*max-height: 90vh;*/
+    overflow-y: auto;
+    border-radius: 16px;
+    /*position: relative;*/
+}
+

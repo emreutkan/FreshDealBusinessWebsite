@@ -23,18 +23,66 @@ const MAP_CONTAINER_STYLE = {
     height: "100%",
 };
 
-const AddBusinessModel = () => {
+interface BusinessModelProps {
+    isEditing?: boolean;
+    restaurant?: {
+        id: string;
+        restaurantName: string;
+        restaurantDescription: string;
+        longitude: number;
+        latitude: number;
+        category: string;
+        workingDays: string[];
+        workingHoursStart: string;
+        workingHoursEnd: string;
+        pickup: boolean;
+        delivery: boolean;
+        maxDeliveryDistance: number;
+        deliveryFee: number;
+        minOrderAmount: number;
+        restaurantEmail: string
+        restaurantPhone: string
+        image_url: string;
+    };
+}
+
+const AddBusinessModel: React.FC<BusinessModelProps> = ({
+                                                         isEditing = false,
+                                                         restaurant,
+                                                     }) => {
+    // Initialize form data with restaurant data if editing
+    const [formData, setFormData] = useState({
+        restaurantName: isEditing ? restaurant?.restaurantName || "" : "",
+        restaurantDescription: isEditing ? restaurant?.restaurantDescription || "" : "",
+        longitude: isEditing && restaurant?.longitude ? restaurant.longitude.toString() : "",
+        latitude: isEditing && restaurant?.latitude ? restaurant.latitude.toString() : "",
+        category: isEditing ? restaurant?.category || "" : "",
+        workingDays: isEditing ? restaurant?.workingDays || [] : [],
+        workingHoursStart: isEditing ? restaurant?.workingHoursStart || "" : "",
+        workingHoursEnd: isEditing ? restaurant?.workingHoursEnd || "" : "",
+        restaurantEmail: isEditing ? restaurant?.restaurantEmail || "" : "",
+        restaurantPhone: isEditing ? restaurant?.restaurantPhone || "" : "",
+        pickup: isEditing ? restaurant?.pickup || false : false,
+        delivery: isEditing ? restaurant?.delivery || false : false,
+        maxDeliveryDistance: isEditing && restaurant?.maxDeliveryDistance ? restaurant.maxDeliveryDistance.toString() : "",
+        deliveryFee: isEditing && restaurant?.deliveryFee ? restaurant.deliveryFee.toString() : "",
+        minOrderAmount: isEditing && restaurant?.minOrderAmount ? restaurant.minOrderAmount.toString() : "",
+    });
     const [currentStep, setCurrentStep] = useState(1);
     const [phoneModalOpen, setPhoneModalOpen] = useState(false);
     const [categoryModalOpen, setCategoryModalOpen] = useState(false);
     const [selectedAreaCode, setSelectedAreaCode] = useState("+90");
-    const [selectedCategory, setSelectedCategory] = useState("");
-    const [searchingForAddress, setSearchingForAddress] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState(
+        isEditing ? restaurant?.category || "" : ""
+    );    const [searchingForAddress, setSearchingForAddress] = useState(false);
     const [daysModalOpen, setDaysModalOpen] = useState(false);
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
     const searchBoxRef = useRef<google.maps.places.SearchBox | null>(null);
-    const [markerPosition, setMarkerPosition] =
-        useState<google.maps.LatLngLiteral>(DEFAULT_CENTER);
+    const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral>(
+        isEditing && restaurant
+            ? { lat: restaurant.latitude, lng: restaurant.longitude }
+            : DEFAULT_CENTER
+    );
     const [userLocation, setUserLocation] =
         useState<google.maps.LatLngLiteral | null>(null);
 
@@ -82,25 +130,6 @@ const AddBusinessModel = () => {
         "Sunday",
     ];
 
-    const [formData, setFormData] = useState({
-        restaurantName: "",
-        restaurantDescription: "",
-        longitude: "",
-        latitude: "",
-        category: "",
-        workingDays: [] as string[],
-        workingHoursStart: "",
-        workingHoursEnd: "",
-        // Additional fields:
-        ownerEmail: "",
-        phoneNumber: "",
-        // Pickup/Delivery fields:
-        pickup: false,
-        delivery: false,
-        maxDeliveryDistance: "",
-        deliveryFee: "",
-        minOrderAmount: "",
-    });
 
     /** ─────────────────────────────────────────
      *   GOOGLE MAPS - Attempting to get user location
@@ -188,7 +217,10 @@ const AddBusinessModel = () => {
         const { name, value, type } = e.target;
 
         if (type === "checkbox") {
-            setFormData((prev) => ({ ...prev, [name]: e.target }));
+            setFormData((prev) => ({
+                ...prev,
+                [name]: (e.target as HTMLInputElement).checked
+            }));
         } else if (name === "workingHoursStart" || name === "workingHoursEnd") {
             // Convert time to 24-hour format
             const timeValue = value;
@@ -247,8 +279,8 @@ const AddBusinessModel = () => {
     /** Validate Step 1 fields */
     const validateStep1 = () => {
         const requiredFields = [
-            "ownerEmail",
-            "phoneNumber",
+            "restaurantEmail",
+            "restaurantPhone",
             "restaurantName",
             "restaurantDescription",
             "category",
@@ -323,6 +355,8 @@ const AddBusinessModel = () => {
         finalData.append("workingHoursEnd", formData.workingHoursEnd);
         finalData.append("pickup", formData.pickup ? "true" : "false");
         finalData.append("delivery", formData.delivery ? "true" : "false");
+        finalData.append("restaurantEmail", formData.restaurantEmail);
+        finalData.append("restaurantPhone", formData.restaurantPhone);
         if (formData.delivery) {
             finalData.append("maxDeliveryDistance", formData.maxDeliveryDistance);
             finalData.append("deliveryFee", formData.deliveryFee);
@@ -337,6 +371,8 @@ const AddBusinessModel = () => {
 
 
         const payload: AddRestaurantPayload = {
+            restaurantEmail: formData.restaurantEmail,
+            restaurantPhone: selectedAreaCode+formData.restaurantPhone,
             restaurantName: formData.restaurantName,
             restaurantDescription: formData.restaurantDescription,
             longitude: parseFloat(formData.longitude),
@@ -354,7 +390,7 @@ const AddBusinessModel = () => {
             deliveryFee: formData.delivery ? parseFloat(formData.deliveryFee) : 0,
             minOrderAmount: formData.delivery
                 ? parseFloat(formData.minOrderAmount)
-                : 0,
+                : 0
         };
 
         await dispatch(addRestaurant(payload));
@@ -373,13 +409,11 @@ const AddBusinessModel = () => {
 
     return (
         <div className={styles.fullHeightContainer}>
-            {/* outerDiv is reused for step 1 or step 2 */}
             <div
                 className={`${styles.outerDiv} ${
                     searchingForAddress ? styles.outerDivShowMap : ""
                 }`}
             >
-                {/* STEP 1 */}
                 {currentStep === 1 && (
                     <>
                         <h2 className={styles.heading}>
@@ -387,39 +421,38 @@ const AddBusinessModel = () => {
                         </h2>
                         <form onSubmit={handleContinue} className={styles.form}>
                             <div className={styles.formColumns}>
-                                {/* ------- COLUMN 1: OWNER INFO ------- */}
                                 <div className={styles.inputContainer}>
                                     <span className={styles.sectionTitle}>
                                         Add your details
                                     </span>
                                     <input
-                                        name="ownerEmail"
+                                        name="restaurantEmail"
                                         className={`${styles.defaultInput} ${
-                                            isInvalid("ownerEmail") ? styles.invalidInput : ""
+                                            isInvalid("restaurantEmail") ? styles.invalidInput : ""
                                         }`}
-                                        placeholder="Business Owner's E-mail"
+                                        placeholder="Business E-mail"
                                         onChange={handleChange}
-                                        value={formData.ownerEmail}
+                                        value={formData.restaurantEmail}
                                     />
                                     <div className={styles.phoneContainer}>
                                         <button
                                             type="button"
                                             className={`${styles.defaultInput} ${styles.areaCodeButton} ${
-                                                isInvalid("phoneNumber") ? styles.invalidInput : ""
+                                                isInvalid("restaurantPhone") ? styles.invalidInput : ""
                                             }`}
                                             onClick={togglePhoneModal}
                                         >
                                             <span>{selectedAreaCode}</span>
                                         </button>
                                         <input
-                                            name="phoneNumber"
+                                            name="restaurantPhone"
                                             className={`${styles.defaultInput} ${styles.phoneNumberInput} ${
-                                                isInvalid("phoneNumber") ? styles.invalidInput : ""
+                                                isInvalid("restaurantPhone") ? styles.invalidInput : ""
                                             }`}
                                             placeholder="Phone Number"
                                             inputMode="numeric"
                                             onChange={handleChange}
-                                            value={formData.phoneNumber}
+                                            value={formData.restaurantPhone}
                                         />
                                         {phoneModalOpen && (
                                             <div className={styles.modal}>
@@ -451,7 +484,11 @@ const AddBusinessModel = () => {
                                     >
                                         <input
                                             type="text"
-                                            placeholder="Search for an address"
+                                            placeholder={
+                                                isEditing && restaurant
+                                                    ? `Coordinates: ${restaurant.latitude}, ${restaurant.longitude}`
+                                                    : "Search for an address"
+                                            }
                                             className={`${styles.defaultInput} ${
                                                 searchingForAddress ? styles.defaultInputShowMap : ""
                                             } ${
@@ -463,7 +500,6 @@ const AddBusinessModel = () => {
                                     </StandaloneSearchBox>
                                 </div>
 
-                                {/* ------- COLUMN 2: RESTAURANT INFO ------- */}
                                 <div className={styles.inputContainer}>
                                     <span className={styles.sectionTitle}>
                                         Restaurant Details

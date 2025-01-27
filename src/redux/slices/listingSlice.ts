@@ -7,11 +7,11 @@ interface Listing {
     title: string;
     description?: string;
     imageUrl: string;
-    originalPrice: number;
-    pickUpPrice?: number;
-    deliveryPrice?: number;
+    original_price: number;
+    pick_up_price?: number;
+    delivery_price?: number;
     count: number;
-    consumeWithin: number;
+    consume_within: number;
     availableForDelivery: boolean;
     availableForPickup: boolean;
 }
