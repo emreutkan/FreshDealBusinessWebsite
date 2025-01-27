@@ -642,7 +642,6 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                             onChange={handleChange}
                                         />
                                     </div>
-                                    {/* Image Upload */}
                                     <div className={styles.fileUploadContainer}>
                                         <input
                                             type="file"
