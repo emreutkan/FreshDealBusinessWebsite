@@ -31,6 +31,7 @@ jobs:
           npm ci || npm install
           npm install --save-dev vite-plugin-compression terser
 
+      # Create the .env.production file so Vite can see the key at build time
       - name: Create production env file
         run: |
           echo "VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}" > .env.production
@@ -43,15 +44,11 @@ jobs:
 
       - name: Optimize Build
         run: |
-          # Remove source maps in production
           find dist -name "*.map" -delete
-          # Remove any development-only files
           find dist -name "*.development.js" -delete
 
       - name: Check Build Size
-        run: |
-          echo "Build size before compression:"
-          du -sh dist/
+        run: du -sh dist/
 
       - name: Deploy to Azure Static Web Apps
         id: builddeploy

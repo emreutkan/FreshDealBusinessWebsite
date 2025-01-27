@@ -8,10 +8,7 @@ export default defineConfig({
     compression(), // Adds gzip compression
 
   ],
-  define: {
-    // Maintain your existing environment variable configuration
-    'process.env.VITE_GOOGLE_MAPS_API_KEY': JSON.stringify(process.env.VITE_GOOGLE_MAPS_API_KEY)
-  },
+
   build: {
     rollupOptions: {
       output: {
@@ -27,8 +24,6 @@ export default defineConfig({
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true, // Removes console.logs in production
-        drop_debugger: true
       }
     },
     // Don't generate source maps in production
