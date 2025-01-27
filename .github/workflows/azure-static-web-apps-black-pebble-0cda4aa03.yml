@@ -23,24 +23,42 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20' # Ensure Node.js 20 is used
+          node-version: '20'
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm install
+        run: |
+          npm ci
+          # If npm ci fails, fall back to npm install
+          if [ $? -ne 0 ]; then
+            npm install
+          fi
+
+      - name: Create env file
+        run: |
+          echo "VITE_GOOGLE_MAPS_API_KEY=${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}" > .env
+          echo "Environment file created with Google Maps API key"
 
       - name: Build Application
         run: npm run build
+        env:
+          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
+          # Add any other environment variables you need here
+          NODE_ENV: production
 
       - name: Deploy to Azure Static Web Apps
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_BLACK_PEBBLE_0CDA4AA03 }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e., PR comments)
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
-          app_location: "/" # Path to your Vite app's root directory
-          output_location: "dist" # Path to your build output folder
+          app_location: "/"
+          output_location: "dist"
+          skip_app_build: true # Since we're building the app in a previous step
+        env:
+          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
+          # Add any other environment variables needed during deployment
 
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
