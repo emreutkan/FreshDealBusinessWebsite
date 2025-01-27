@@ -15,7 +15,7 @@ const GOOGLE_MAPS_LIBRARIES: Libraries = ['places'];
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 // Should be using import.meta.env for Vite
 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-console.log(apiKey);
+console.log(apiKey, "apiKey");
 if (!GOOGLE_MAPS_API_KEY) {
     console.error('Google Maps API key is missing. Please check your environment variables.');
 }

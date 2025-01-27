@@ -20,7 +20,7 @@ const AboutUs: React.FC = () => {
                         <h1>Our Mission</h1>
                         <p className={styles.cardText}>
                             At Fresh Deal, we prevent premium food waste and offer everyone unbeatable prices on
-                            high-quality meals and groceries.
+                            high-quality meals and groceries
                         </p>
                     </div>
                     <img
@@ -34,7 +34,7 @@ const AboutUs: React.FC = () => {
                     <div className={styles.cardContent}>
                         <h1>Our Vision</h1>
                         <p className={styles.cardText}>
-                            By combining sustainability with affordability, we ensure no premium product goes unused, letting everyone enjoy the best at a better price.
+                            By combining sustainability with affordability, we ensure no premium product goes unused, letting everyone enjoy the best at a better price
                         </p>
                     </div>
                     <img
@@ -48,7 +48,7 @@ const AboutUs: React.FC = () => {
                     <div className={styles.cardContent}>
                         <h1>Our Values</h1>
                         <p className={styles.cardText}>
-                            We preserve premium quality, make it affordable, and reduce waste, creating value for users, businesses, and the planet.
+                            We preserve premium quality, make it affordable, and reduce waste, creating value for users, businesses, and the planet
                         </p>
                     </div>
                     <img
