@@ -45,7 +45,7 @@ export const addListing = createAsyncThunk(
 export const getListings = createAsyncThunk(
     'listing/getListings',
     async (
-        { restaurantId, page = 1, perPage = 10 }: { restaurantId?: number; page?: number; perPage?: number },
+        { restaurantId, page = 1, perPage = 10 }: { restaurantId?: string; page?: number; perPage?: number },
         { rejectWithValue }
     ) => {
         try {

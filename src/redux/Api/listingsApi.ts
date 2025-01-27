@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { API_BASE_URL} from "./apiService.ts";
 
-export const addListingAPI = async (restaurantId: number, formData: FormData, token: string) => {
+export const addListingAPI = async (restaurantId: string, formData: FormData, token: string) => {
     const response = await axios.post(
         `${API_BASE_URL}/restaurants/${restaurantId}/listings`,
         formData,

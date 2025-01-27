@@ -1,47 +1,54 @@
 // api/apiService.ts
+import { Dispatch } from 'redux';
+import { logout } from "../slices/userSlice.ts";
+
 export const API_BASE_URL = 'https://freshdealapi-fkfaajfaffh4c0ex.uksouth-01.azurewebsites.net/v1';
-import {logout} from "../slices/userSlice.ts";
-
-// export const API_BASE_URL = 'http://192.168.1.7:8000/v1';
-//
-
 export const TOKEN_KEY = 'userToken';
 
-// Helper functions for token management
-export const getStoredToken = () => localStorage.getItem(TOKEN_KEY);
-export const setStoredToken = (token: string) => localStorage.setItem(TOKEN_KEY, token);
-export const removeStoredToken = () => localStorage.removeItem(TOKEN_KEY);
+interface AuthHeaders {
+    Authorization: string;
+    'Content-Type'?: string;
+}
 
+interface ApiResponse<T> {
+    data?: T;
+    error?: string;
+    status: number;
+}
 
-export const getAuthHeaders = (isFormData: boolean = false) => {
-    const token = localStorage.getItem(TOKEN_KEY);
+interface ApiCallOptions extends RequestInit {
+    headers?: HeadersInit;
+}
+
+export const getStoredToken = (): string | null => localStorage.getItem(TOKEN_KEY);
+export const setStoredToken = (token: string): void => localStorage.setItem(TOKEN_KEY, token);
+
+export const getAuthHeaders = (isFormData = false): AuthHeaders => {
+    const token = getStoredToken();
     if (!token) {
         throw new Error('No authentication token found');
     }
 
-    // Don't include Content-Type for FormData
-    return isFormData ? {
-        'Authorization': `Bearer ${token}`
-    } : {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+    const headers: AuthHeaders = {
+        Authorization: `Bearer ${token}`
     };
+
+    if (!isFormData) {
+        headers['Content-Type'] = 'application/json';
+    }
+
+    return headers;
 };
 
-
-
-// apiService.ts
-export const authenticatedApiCall = async (
+export const authenticatedApiCall = async <T>(
     url: string,
-    options: RequestInit = {},
-    dispatch: any
-) => {
+    options: ApiCallOptions = {},
+    dispatch: Dispatch
+): Promise<ApiResponse<T>> => {
     try {
-        // Check if the request body is FormData
         const isFormData = options.body instanceof FormData;
         const headers = getAuthHeaders(isFormData);
 
-        // Debug log the request
         console.log('Request details:', {
             url,
             method: options.method,
@@ -49,32 +56,43 @@ export const authenticatedApiCall = async (
             headers
         });
 
-        const response = await fetch(url, {
+        const requestInit: RequestInit = {
             ...options,
-            headers: {
+            headers: new Headers({
                 ...headers,
-                ...(isFormData ? {} : options.headers) // Only add additional headers if not FormData
-            }
-        });
+                ...(isFormData ? {} : options.headers || {})
+            })
+        };
 
-        // Debug log the response
+        const response = await fetch(url, requestInit);
         console.log('Response status:', response.status);
 
         if (!response.ok) {
             if (response.status === 401) {
                 dispatch(logout());
-                throw new Error('Authentication expired');
+                console.error('Authentication expired');
             }
 
             const errorText = await response.text();
             console.log('Error response:', errorText);
 
-            throw new Error(errorText);
+            return {
+                error: errorText,
+                status: response.status
+            };
         }
 
-        return await response.json();
+        const data = await response.json();
+        return {
+            data: data as T,
+            status: response.status
+        };
+
     } catch (error) {
         console.error('API call error:', error);
-        throw error;
+        return {
+            error: error instanceof Error ? error.message : 'Unknown error occurred',
+            status: 500
+        };
     }
 };

@@ -5,8 +5,7 @@ import { Modal } from '@mui/material';
 import { RootState } from '../../../redux/store';
 import {
     fetchRestaurantPurchases,
-    acceptPurchaseOrder,
-    addCompletionImage
+
 } from '../../../redux/thunks/purchaseThunks.ts';
 import { getListings } from '../../../redux/thunks/listingThunks';
 import styles from './RestaurantDetails.module.css';
@@ -15,7 +14,6 @@ import ListingModel from "../components/addListingModel/ListingModel.tsx";
 import RestaurantInfo from "../components/restaurantDetails/RestaurantInfo.tsx";
 import RestaurantListings from "../components/restaurantListings/RestaurantListings.tsx";
 import Orders from "../components/Orders/Orders.tsx";
-import {removeRestaurant} from "../../../redux/thunks/restaurantThunk.ts";
 
 
 
@@ -29,14 +27,14 @@ const RestaurantDetails: React.FC = () => {
     const [isAddListingModalOpen, setIsAddListingModalOpen] = useState(false);
 
     const restaurant = ownedRestaurants.find(
-        (restaurant) => restaurant.id === Number(restaurantId)
+        (restaurant) => restaurant.id === restaurantId
     );
 
     // Effects
     useEffect(() => {
         if (restaurantId) {
-            dispatch(fetchRestaurantPurchases(Number(restaurantId)));
-            dispatch(getListings({ restaurantId: Number(restaurantId) }));
+            dispatch(fetchRestaurantPurchases(restaurantId));
+            dispatch(getListings({ restaurantId: restaurantId }));
         }
     }, [dispatch, restaurantId]);
 
@@ -45,7 +43,7 @@ const RestaurantDetails: React.FC = () => {
 
     const handleCloseModal = () => {
         setIsAddListingModalOpen(false);
-        dispatch(getListings({ restaurantId: Number(restaurantId) }));
+        dispatch(getListings({ restaurantId: restaurantId }));
     };
 
     if (!restaurant) {
@@ -68,10 +66,11 @@ const RestaurantDetails: React.FC = () => {
                             onAddListing={() => setIsAddListingModalOpen(true)}
                         />
 
+
                         <RestaurantListings
                             listings={listings}
                             loading={listingsLoading}
-                            restaurantId={Number(restaurantId)}
+                            restaurantId={restaurantId as string}
                         />
                     </div>
 
@@ -93,7 +92,7 @@ const RestaurantDetails: React.FC = () => {
             >
                 <div className={styles.modalContainer}>
                     <ListingModel
-                        restaurantId={Number(restaurantId)}
+                        restaurantId={restaurantId as string}
                         onClose={handleCloseModal}
                     />
                 </div>

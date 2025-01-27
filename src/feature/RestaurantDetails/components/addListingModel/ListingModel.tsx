@@ -8,11 +8,11 @@ import {
 } from "../../../../redux/thunks/listingThunks";
 import styles from "./ListingModel.module.css";
 import {AddListingPayload, Listing} from "../../../../types/listingRelated.ts";
-import {RootState} from "@reduxjs/toolkit/query";
+import {RootState} from "../../../../redux/store";
 
 
 interface ListingModelProps {
-    restaurantId: number,
+    restaurantId: string,
     onClose?: () => void,
     listing?: Listing,
     isEditing?: boolean,
@@ -50,7 +50,7 @@ const ListingModel: React.FC<ListingModelProps> = ({
     const [invalidFields, setInvalidFields] = useState<string[]>([]);
     const [formData, setFormData] = useState<FormData>(initialFormData);
     const restaurant = useSelector((state: RootState) => state.restaurant.ownedRestaurants.find(
-        (restaurant: { id: number; }) => restaurant.id === restaurantId
+        (restaurant: { id: string; }) => restaurant.id === restaurantId
     ));
 
 
@@ -154,6 +154,9 @@ const ListingModel: React.FC<ListingModelProps> = ({
     const isInvalid = (fieldName: string): boolean =>
         invalidFields.includes(fieldName);
 
+    if (!restaurant) {
+        return <div>Restaurant not found</div>;
+    }
     return (
         <div className={styles.container}>
             <h2>{isEditing ? 'Edit Listing' : 'Add New Listing'}</h2>

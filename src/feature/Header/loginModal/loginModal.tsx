@@ -38,7 +38,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
         //     return;
         // }
         try {
-            const result = await dispatch(
+             await dispatch(
                 loginUser({
                     email: email,
                     password: password,
@@ -46,8 +46,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose }) => {
                     password_login: true,
                 })
             ).unwrap(); // Use unwrap() to handle fulfilled/rejected states
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (err) {
+            console.error("Failed to login:", err);
         }
     }
 

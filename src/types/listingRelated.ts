@@ -18,7 +18,7 @@ export interface Listing {
 
 
 export interface AddListingPayload {
-    restaurantId: number;
+    restaurantId: string;
     title: string;
     description?: string;
     originalPrice: number;
