@@ -2,8 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import styles from "./addBusinessModel.module.css";
 import { Button } from "@mui/material";
 import {
-    GoogleMap,
-    Marker,
+
     StandaloneSearchBox,
 } from "@react-google-maps/api";
 import { useDispatch } from "react-redux";
@@ -12,6 +11,7 @@ import {
     addRestaurant,
     AddRestaurantPayload,
 } from "../../../../redux/thunks/restaurantThunk.ts";
+import MapWrapper from "../mapwrapper/MapWrapper.tsx";
 
 const DEFAULT_CENTER = {
     lat: 37.7749,
@@ -781,22 +781,19 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                         : styles.mapContainerShowMap
                 }
             >
-                <GoogleMap
+                <MapWrapper
                     mapContainerStyle={MAP_CONTAINER_STYLE}
                     center={mapCenter}
                     zoom={12}
-                    // onClick={onMapClick}
-                >
-                    <Marker position={markerPosition} />
-                    {userLocation && (
-                        <Marker
-                            position={userLocation}
-                            icon={{
-                                url: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-                            }}
-                        />
-                    )}
-                </GoogleMap>
+                    markerPosition={markerPosition}
+                    userLocation={userLocation}
+                    onPlacesChanged={onPlacesChanged}
+                    searchBoxRef={searchBoxRef}
+                    searchingForAddress={searchingForAddress}
+                    setSearchingForAddress={setSearchingForAddress} // Add this line
+                    isEditing={isEditing}
+                    restaurant={restaurant}
+                />
             </div>
         </div>
     );

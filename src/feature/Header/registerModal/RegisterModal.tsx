@@ -80,7 +80,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({ onClose }) => {
         setPhoneValid(isPhoneValid);
 
         // If all fields are valid, proceed with registration
-        if (isNameValid && isEmailValid && isPasswordValid && isPhoneValid) {
+        if (isNameValid && isEmailValid && isPhoneValid) {
             try {
                 const result = await dispatch(
                     registerUser({

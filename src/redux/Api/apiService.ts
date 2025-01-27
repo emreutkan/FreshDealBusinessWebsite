@@ -2,7 +2,7 @@
 export const API_BASE_URL = 'https://freshdealapi-fkfaajfaffh4c0ex.uksouth-01.azurewebsites.net/v1';
 import {logout} from "../slices/userSlice.ts";
 
-// export const API_BASE_URL = 'http://192.168.1.3:8000/v1';
+// export const API_BASE_URL = 'http://192.168.1.7:8000/v1';
 //
 
 export const TOKEN_KEY = 'userToken';
@@ -28,13 +28,7 @@ export const getAuthHeaders = (isFormData: boolean = false) => {
     };
 };
 
-export const handleAuthError = (error: any) => {
-    if (error.status === 401) {
-        localStorage.removeItem(TOKEN_KEY);
-        window.location.href = '/login';
-    }
-    throw error;
-};
+
 
 // apiService.ts
 export const authenticatedApiCall = async (
