@@ -12,7 +12,7 @@ import {RootState} from "../../../../redux/store";
 
 
 interface ListingModelProps {
-    restaurantId: string,
+    restaurantId: number,
     onClose?: () => void,
     listing?: Listing,
     isEditing?: boolean,
@@ -50,7 +50,7 @@ const ListingModel: React.FC<ListingModelProps> = ({
     const [invalidFields, setInvalidFields] = useState<string[]>([]);
     const [formData, setFormData] = useState<FormData>(initialFormData);
     const restaurant = useSelector((state: RootState) => state.restaurant.ownedRestaurants.find(
-        (restaurant: { id: string; }) => restaurant.id === restaurantId
+        (restaurant: { id: string; }) => restaurant.id === Number(restaurantId)
     ));
 
 

@@ -17,7 +17,7 @@ interface PaginationParams {
 // Restaurant-related purchase thunks
 export const fetchRestaurantPurchases = createAsyncThunk(
     'purchases/fetchByRestaurant',
-    async (restaurantId: string, { dispatch, rejectWithValue }) => {
+    async (restaurantId: number, { dispatch, rejectWithValue }) => {
         try {
             return await authenticatedApiCall(
                 `${API_BASE_URL}/restaurant/${restaurantId}/purchases`,
@@ -25,7 +25,7 @@ export const fetchRestaurantPurchases = createAsyncThunk(
                 dispatch
             );
         } catch (error) {
-            return rejectWithValue(error);
+            return rejectWithValue(error.message);
         }
     }
 );
@@ -47,7 +47,7 @@ export const createPurchaseOrder = createAsyncThunk(
                 dispatch
             );
         } catch (error) {
-            return rejectWithValue(error);
+            return rejectWithValue(error.message);
         }
     }
 );
@@ -62,7 +62,7 @@ export const fetchUserActiveOrders = createAsyncThunk(
                 dispatch
             );
         } catch (error) {
-            return rejectWithValue(error);
+            return rejectWithValue(error.message);
         }
     }
 );
@@ -82,7 +82,7 @@ export const fetchUserPreviousOrders = createAsyncThunk(
                 dispatch
             );
         } catch (error) {
-            return rejectWithValue(error);
+            return rejectWithValue(error.message);
         }
     }
 );
@@ -97,7 +97,7 @@ export const fetchOrderDetails = createAsyncThunk(
                 dispatch
             );
         } catch (error) {
-            return rejectWithValue(error);
+            return rejectWithValue(error.message);
         }
     }
 );
@@ -120,7 +120,7 @@ export const handlePurchaseResponse = createAsyncThunk(
                 dispatch
             );
         } catch (error) {
-            return rejectWithValue(error);
+            return rejectWithValue(error.message);
         }
     }
 );
@@ -136,7 +136,7 @@ export const acceptPurchaseOrder = createAsyncThunk(
             );
         } catch (error) {
             console.log(error);
-            return rejectWithValue(error);
+            return rejectWithValue(error.message);
         }
     }
 );
@@ -151,7 +151,7 @@ export const rejectPurchaseOrder = createAsyncThunk(
                 dispatch
             );
         } catch (error) {
-            return rejectWithValue(error);
+            return rejectWithValue(error.message);
         }
     }
 );
@@ -198,8 +198,8 @@ export const addCompletionImage = createAsyncThunk(
         } catch (error) {
             console.error('Upload error:', error);
             return rejectWithValue(
-                error && typeof error === 'string'
-                    ? JSON.parse(error)
+                error.message && typeof error.message === 'string'
+                    ? JSON.parse(error.message)
                     : 'Failed to upload image'
             );
         }

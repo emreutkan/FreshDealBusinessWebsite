@@ -37,7 +37,7 @@ const RestaurantInfo: React.FC<RestaurantInfoProps> = ({ restaurant, onAddListin
 
     const handleDelete = async () => {
         try {
-            dispatch(removeRestaurant(restaurant.id));
+            await dispatch(removeRestaurant(restaurant.id));
             setShowDeleteModal(false);
         } catch (error) {
             console.error('Failed to delete restaurant:', error);

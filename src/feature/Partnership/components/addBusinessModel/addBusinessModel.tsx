@@ -536,11 +536,9 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                     </div>
                                 </div>
 
-                                {/* Column 3 */}
                                 <div className={styles.inputContainer}>
                                     <span className={styles.sectionTitle}>Extra Details</span>
 
-                                    {/* Working days */}
                                     <div className={styles.modalContainer}>
                                         <button
                                             type="button"
@@ -588,7 +586,6 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                         )}
                                     </div>
 
-                                    {/* Working hours with custom time logic */}
                                     <div className={styles.timeContainer}>
                                         <input
                                             type="text"
@@ -614,7 +611,6 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                         />
                                     </div>
 
-                                    {/* File Upload */}
                                     <div className={styles.fileUploadContainer}>
                                         <input
                                             type="file"
@@ -641,7 +637,6 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                         </label>
                                     </div>
 
-                                    {/* Continue Button */}
                                     {!searchingForAddress && (
                                         <Button type="submit" className={styles.continueButton}>
                                             <span>Continue</span>
@@ -653,7 +648,6 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                     </>
                 )}
 
-                {/* STEP 2 */}
                 {currentStep === 2 && (
                     <div className={styles.stepTwoContainer}>
                         <h2 className={styles.heading}>Pickup/Delivery Info</h2>
@@ -737,7 +731,6 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                 )}
             </div>
 
-            {/* ------- RIGHT SIDE MAP ------- */}
             <div
                 className={
                     !searchingForAddress ? styles.mapContainer : styles.mapContainerShowMap

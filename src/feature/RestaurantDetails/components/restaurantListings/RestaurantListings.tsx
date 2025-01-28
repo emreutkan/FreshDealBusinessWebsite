@@ -15,7 +15,7 @@ import { deleteListing } from "../../../../redux/thunks/listingThunks";
 interface RestaurantListingsProps {
     listings: Listing[];
     loading: boolean;
-    restaurantId: string;
+    restaurantId: number;
 }
 
 const RestaurantListings: React.FC<RestaurantListingsProps> = ({ listings, loading, restaurantId }) => {
