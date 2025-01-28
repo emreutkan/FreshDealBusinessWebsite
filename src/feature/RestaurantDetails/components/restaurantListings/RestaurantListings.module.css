@@ -36,8 +36,20 @@
 
 .imageContainer {
     position: relative;
-    padding-top: 56.25%; /* 16:9 aspect ratio */
+    /*padding-top: 56.25%; !* 16:9 aspect ratio *!*/
     overflow: hidden;
+}
+
+.imageWrapper {
+    position: relative;
+    width: 100%;
+    height: 400px;
+}
+
+.restaurantImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .listingImage {

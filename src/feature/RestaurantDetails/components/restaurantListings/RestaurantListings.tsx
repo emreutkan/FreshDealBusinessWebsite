@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { useDispatch } from 'react-redux';
 import { IconButton, Modal, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
@@ -43,6 +43,7 @@ const RestaurantListings: React.FC<RestaurantListingsProps> = ({ listings, loadi
         setSelectedListing(null);
     };
 
+
     return (
         <div className={styles.listingsCard}>
             <h2 className={styles.sectionTitle}>Active Listings</h2>
@@ -75,9 +76,9 @@ const RestaurantListings: React.FC<RestaurantListingsProps> = ({ listings, loadi
                             </div>
                             <div className={styles.imageContainer}>
                                 <img
-                                    src={listing.imageUrl}
+                                    src={listing.image_url}
                                     alt={listing.title}
-                                    className={styles.listingImage}
+                                    className={styles.restaurantImage}
                                 />
                             </div>
                             <div className={styles.listingInfo}>

@@ -6,7 +6,7 @@ export interface Listing {
     restaurantId: number;
     title: string;
     description?: string;
-    imageUrl: string;
+    image_url: string;
     original_price: number;
     pick_up_price?: number;
     delivery_price?: number;
