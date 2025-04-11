@@ -7,11 +7,36 @@ export const API_BASE_URL = 'http://192.168.1.4:8000/v1';
 
 export const TOKEN_KEY = 'userToken';
 
-// Helper functions for token management
-export const getStoredToken = () => localStorage.getItem(TOKEN_KEY);
-export const setStoredToken = (token: string) => localStorage.setItem(TOKEN_KEY, token);
-export const removeStoredToken = () => localStorage.removeItem(TOKEN_KEY);
+// Helper functions for token management with improved error handling
+export const getStoredToken = () => {
+    try {
+        const token = localStorage.getItem(TOKEN_KEY);
+        console.log('Getting token from localStorage:', token ? 'Token exists' : 'No token found');
+        return token;
+    } catch (error) {
+        console.error('Error retrieving token from localStorage:', error);
+        return null;
+    }
+};
 
+export const setStoredToken = (token: string) => {
+    try {
+        localStorage.setItem(TOKEN_KEY, token);
+        console.log('Token saved to localStorage successfully');
+        console.log(token)
+    } catch (error) {
+        console.error('Error saving token to localStorage:', error);
+    }
+};
+
+export const removeStoredToken = () => {
+    try {
+        localStorage.removeItem(TOKEN_KEY);
+        console.log('Token removed from localStorage');
+    } catch (error) {
+        console.error('Error removing token from localStorage:', error);
+    }
+};
 
 export const getAuthHeaders = (isFormData: boolean = false) => {
     const token = localStorage.getItem(TOKEN_KEY);
@@ -28,13 +53,7 @@ export const getAuthHeaders = (isFormData: boolean = false) => {
     };
 };
 
-export const handleAuthError = (error: any) => {
-    if (error.status === 401) {
-        localStorage.removeItem(TOKEN_KEY);
-        window.location.href = '/login';
-    }
-    throw error;
-};
+
 
 // apiService.ts
 export const authenticatedApiCall = async (

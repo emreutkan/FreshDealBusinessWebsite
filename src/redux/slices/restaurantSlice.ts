@@ -4,7 +4,6 @@ import {
     addRestaurant,
     getRestaurantsOfUserThunk,
     removeRestaurant,
-    getRestaurantsInProximityThunk,
 } from '../thunks/restaurantThunk';
 
 export interface Restaurant {
@@ -100,19 +99,7 @@ const restaurantSlice = createSlice({
             state.error = action.payload as string;
         });
 
-        // Fetch Restaurants by Proximity
-        builder.addCase(getRestaurantsInProximityThunk.pending, (state) => {
-            state.status = 'loading';
-            state.error = null;
-        });
-        builder.addCase(getRestaurantsInProximityThunk.fulfilled, (state, action: PayloadAction<{ restaurants: Restaurant[] }>) => {
-            state.status = 'succeeded';
-            state.nearbyRestaurants = action.payload.restaurants;
-        });
-        builder.addCase(getRestaurantsInProximityThunk.rejected, (state, action) => {
-            state.status = 'failed';
-            state.error = action.payload as string;
-        });
+
     },
 });
 

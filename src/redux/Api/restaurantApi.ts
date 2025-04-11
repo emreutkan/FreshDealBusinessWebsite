@@ -31,15 +31,7 @@ export const deleteRestaurantAPI = async (restaurantId: string, token: string) =
     return response.data;
 };
 
-export const getRestaurantsInProximityAPI = async (payload: {
-    latitude: number;
-    longitude: number;
-    radius?: number;
-}) => {
-    const RESTAURANT_PROXIMITY_ENDPOINT = `${RESTAURANT_ENDPOINT}/proximity`;
-    const response = await axios.post(RESTAURANT_PROXIMITY_ENDPOINT, payload);
-    return response.data;
-};
+
 
 export const getUploadedFileURLAPI = (filename: string) => {
     const url = `${GET_UPLOADED_FILE_API_ENDPOINT}/${filename}`;

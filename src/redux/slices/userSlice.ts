@@ -7,7 +7,7 @@ import {
     updatePassword,
     updateUsername
 } from "../thunks/userThunks.ts";
-import {getStoredToken, setStoredToken} from "../Api/apiService.ts";
+import {getStoredToken, setStoredToken, removeStoredToken} from "../Api/apiService.ts";
 
 
 interface UserState {
@@ -25,7 +25,10 @@ interface UserState {
     error: string | null;
     role: "owner" | "customer" | "";
 }
-// userSlice.ts
+
+// Ensure token is retrieved from localStorage
+const storedToken = getStoredToken();
+console.log('Initializing Redux store with token:', storedToken ? 'Token exists' : 'No token found');
 
 const initialState: UserState = {
     email: '',
@@ -37,10 +40,7 @@ const initialState: UserState = {
     verificationCode: '',
     step: 'send_code',
     login_type: 'email',
-
-    // Pull token from localStorage (if any).
-    token: getStoredToken() || null, // Use the helper function
-
+    token: storedToken, // Use stored token directly
     loading: false,
     error: null,
     role: '',
@@ -53,9 +53,13 @@ const userSlice = createSlice({
     reducers: {
         setToken(state, action: PayloadAction<string>) {
             state.token = action.payload;
+            setStoredToken(action.payload); // Ensure token is saved to localStorage
+            console.log('Token set in Redux and localStorage');
         },
         logout() {
-
+            // Clear token from localStorage
+            removeStoredToken();
+            console.log('Token removed from localStorage during logout');
             return { ...initialState, token: null }; // Ensure token is null after logout
         },
         setSelectedCode(state, action: PayloadAction<string>) {
@@ -103,6 +107,7 @@ const userSlice = createSlice({
                 state.loading = false;
                 state.token = action.payload.token;
                 setStoredToken(action.payload.token);
+                console.log('Token saved after successful login:', action.payload.token ? 'Token exists' : 'No token');
             })
             .addCase(loginUser.rejected, (state) => {
                 state.loading = false;
