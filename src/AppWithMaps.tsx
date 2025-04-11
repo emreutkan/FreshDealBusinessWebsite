@@ -24,8 +24,12 @@ const AppWithMaps = () => {
         <LoadScript
             googleMapsApiKey={GOOGLE_MAPS_API_KEY || ''}
             libraries={GOOGLE_MAPS_LIBRARIES}
-            loadingElement={<div>Loading Google Maps...</div>}
-        >
+            loadingElement={
+                <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <p className="loading-text">Loading Fresh Deal Maps...</p>
+                </div>
+            }        >
             <Provider store={store}>
                 <Router>
                     <Routes>
