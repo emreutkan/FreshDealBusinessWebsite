@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './RestaurantCard.module.css';
 import { Restaurant } from "@/redux/slices/restaurantSlice";
 

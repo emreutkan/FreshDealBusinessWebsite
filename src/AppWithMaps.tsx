@@ -43,6 +43,7 @@ const AppWithMaps = () => {
                         <Route path="/login" element={<Login/>}/>
                         <Route path="/register" element={<Register/>}/>
                         <Route path="/dashboard" element={<Dashboard/>}/>
+                        {/*<Route path="/Restaurants/:restaurantId/addListing" element={<List/>}/>*/}
                     </Routes>
                 </Router>
             </Provider>

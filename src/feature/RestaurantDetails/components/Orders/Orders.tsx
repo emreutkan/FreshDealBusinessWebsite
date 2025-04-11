@@ -71,6 +71,13 @@ const Orders: React.FC<OrdersProps> = ({ restaurantId }) => {
         return `$${parseFloat(price).toFixed(2)}`;
     };
 
+    useEffect(() => {
+        if (restaurantId) {
+            dispatch(fetchRestaurantPurchases(Number(restaurantId)));
+        }
+    }, [dispatch, restaurantId]);
+
+
     const [rejectingOrder, setRejectingOrder] = useState<number | null>(null);
 
     const handleRejectOrder = async (purchaseId: number) => {

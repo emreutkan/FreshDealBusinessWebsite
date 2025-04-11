@@ -1,39 +1,52 @@
-// RestaurantInfo.tsx
-import React, {useEffect, useRef, useState} from 'react';
-import styles from "./RestaurantInfo.module.css";
-import { FaStar, FaClock, FaUtensils, FaEdit, FaTrash } from 'react-icons/fa';
-import { removeRestaurant } from "../../../../redux/thunks/restaurantThunk.ts";
-import { useDispatch } from "react-redux";
-import AddBusinessModel from "../../../Partnership/components/addBusinessModel/addBusinessModel.tsx";
-
-interface Restaurant {
-    id: string;
-    restaurantName: string;
-    image_url: string;
-    restaurantDescription: string;
-    category: string;
-    rating: number;
-    workingHoursStart: string;
-    workingHoursEnd: string;
-    workingDays: string[];
-    pickup: boolean;
-    delivery: boolean;
-    maxDeliveryDistance: number;
-    deliveryFee: number;
-    minOrderAmount: number;
-    longitude: number;
-    latitude: number;
-}
+import React, { useState } from 'react';
+import styles from './RestaurantInfo.module.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { removeRestaurant } from "../../../../redux/thunks/restaurantThunk";
+import { RootState } from "../../../../redux/store.ts";
+import { Modal } from '@mui/material';
+import ListingModel from "../addListingModel/ListingModel";
 
 interface RestaurantInfoProps {
-    restaurant: Restaurant;
-    onAddListing: () => void;
+    restaurantId: string | undefined;
 }
 
-const RestaurantInfo: React.FC<RestaurantInfoProps> = ({ restaurant, onAddListing }) => {
+const formatWorkingDays = (days: string[]) => {
+    const allDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    if (days.length === 7) {
+        return 'Open All Week';
+    }
+
+    const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+    if (weekdays.every(day => days.includes(day)) && days.length === 5) {
+        return 'Weekdays';
+    }
+
+    const weekends = ['Saturday', 'Sunday'];
+    if (weekends.every(day => days.includes(day)) && days.length === 2) {
+        return 'Weekends';
+    }
+
+    const dayIndices = days.map(day => allDays.indexOf(day)).sort((a, b) => a - b);
+    const isContinuous = dayIndices.every((val, i) => i === 0 || val === dayIndices[i - 1] + 1);
+
+    if (isContinuous) {
+        return `${allDays[dayIndices[0]].slice(0,3)} - ${allDays[dayIndices[dayIndices.length - 1]].slice(0,3)}`;
+    }
+
+    return days.map(day => day.slice(0, 3)).join(', ');
+};
+
+const RestaurantInfo: React.FC<RestaurantInfoProps> = ({ restaurantId }) => {
+    const dispatch = useDispatch();
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showEditForm, setShowEditForm] = useState(false);
-    const dispatch = useDispatch();
+    const [showListingModal, setShowListingModal] = useState(false);
+    const { ownedRestaurants } = useSelector((state: RootState) => state.restaurant);
+
+    const restaurant = ownedRestaurants.find(
+        (restaurant) => restaurant.id === Number(restaurantId)
+    );
 
     const handleDelete = async () => {
         try {
@@ -44,30 +57,19 @@ const RestaurantInfo: React.FC<RestaurantInfoProps> = ({ restaurant, onAddListin
         }
     };
 
-    const modalContentRef = useRef<HTMLDivElement>(null);
+    const handleAddNewListing = () => {
+        setShowListingModal(true);
+    };
 
-// Add this useEffect to handle clicks outside the modal
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (modalContentRef.current && !modalContentRef.current.contains(event.target as Node)) {
-                setShowEditForm(false);
-            }
-        };
+    const handleCloseListingModal = () => {
+        setShowListingModal(false);
+    };
 
-        if (showEditForm) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [showEditForm]);
-    // Main restaurant info view
     return (
         <>
-            <div className={styles.detailsCard}>
-                {/* Image Section */}
+            <div className={styles.card}>
                 <div className={styles.imageWrapper}>
+                    <div className={styles.imageOverlay} />
                     <img
                         src={restaurant.image_url}
                         alt={restaurant.restaurantName}
@@ -75,117 +77,121 @@ const RestaurantInfo: React.FC<RestaurantInfoProps> = ({ restaurant, onAddListin
                     />
                     {restaurant.rating > 0 && (
                         <div className={styles.ratingBadge}>
-                            <FaStar /> {restaurant.rating.toFixed(1)}
+                            <span>{restaurant.rating.toFixed(1)} ★</span>
                         </div>
                     )}
                 </div>
 
-                <div className={styles.content}>
-                    {/* Header with Title and Action Buttons */}
-                    <div className={styles.header}>
-                        <h1 className={styles.title}>{restaurant.restaurantName}</h1>
-                        <div className={styles.actions}>
+                <div className={styles.contentContainer}>
+                    <div className={styles.headerSection}>
+                        <h2 className={styles.title}>
+                            {restaurant.restaurantName}
+                            <span className={styles.highlight}></span>
+                        </h2>
+                        <div className={styles.actionButtons}>
                             <button
-                                className={styles.editButton}
                                 onClick={() => setShowEditForm(true)}
+                                className={`${styles.actionButton} ${styles.editButton}`}
                             >
-                                <FaEdit /> Edit
+                                Edit Restaurant
                             </button>
                             <button
-                                className={styles.deleteButton}
                                 onClick={() => setShowDeleteModal(true)}
+                                className={`${styles.actionButton} ${styles.deleteButton}`}
                             >
-                                <FaTrash /> Remove
+                                Remove
                             </button>
                         </div>
                     </div>
 
-                    {/* Category */}
-                    <div className={styles.category}>
-                        <FaUtensils />
-                        <span>{restaurant.category}</span>
-                    </div>
+                    <p className={styles.description}>{restaurant.restaurantDescription}</p>
 
-                    {/* Description */}
-                    <p className={styles.description}>
-                        {restaurant.restaurantDescription}
-                    </p>
-
-                    {/* Details Section */}
-                    <div className={styles.details}>
-                        {/* Working Hours */}
-                        <div className={styles.hours}>
-                            <FaClock />
-                            <span>{restaurant.workingHoursStart} - {restaurant.workingHoursEnd}</span>
+                    <div className={styles.statsGrid}>
+                        <div className={styles.statItem}>
+                            <span className={styles.statLabel}>Category</span>
+                            <span className={styles.statValue}>{restaurant.category}</span>
+                        </div>
+                        <div className={styles.statItem}>
+                            <span className={styles.statLabel}>Hours</span>
+                            <span className={styles.statValue}>
+                                {restaurant.workingHoursStart} - {restaurant.workingHoursEnd}
+                            </span>
+                        </div>
+                        <div className={styles.statItem}>
+                            <span className={styles.statLabel}>Open</span>
+                            <span className={styles.statValue}>
+                                {formatWorkingDays(restaurant.workingDays)}
+                            </span>
                         </div>
 
-                        {/* Working Days */}
-                        <div className={styles.workingDays}>
-                            <span>Working Days: {restaurant.workingDays.join(", ")}</span>
-                        </div>
-
-                        {/* Service Information */}
-                        {(restaurant.pickup || restaurant.delivery) && (
-                            <div className={styles.serviceInfo}>
-                                {restaurant.pickup && <span>Pickup Available</span>}
-                                {restaurant.delivery && (
-                                    <div className={styles.deliveryInfo}>
-                                        <span>Delivery Available</span>
-                                        <span>Max Distance: {restaurant.maxDeliveryDistance}km</span>
-                                        <span>Delivery Fee: ${restaurant.deliveryFee}</span>
-                                        <span>Min Order: ${restaurant.minOrderAmount}</span>
-                                    </div>
-                                )}
-                            </div>
+                        {restaurant.delivery && (
+                            <>
+                                <div className={styles.statItem}>
+                                    <span className={styles.statLabel}>Delivery Range</span>
+                                    <span className={styles.statValue}>{restaurant.maxDeliveryDistance}km</span>
+                                </div>
+                                <div className={styles.statItem}>
+                                    <span className={styles.statLabel}>Delivery Fee</span>
+                                    <span className={styles.statValue}>${restaurant.deliveryFee}</span>
+                                </div>
+                                <div className={styles.statItem}>
+                                    <span className={styles.statLabel}>Min. Order</span>
+                                    <span className={styles.statValue}>${restaurant.minOrderAmount}</span>
+                                </div>
+                            </>
                         )}
                     </div>
 
-                    {/* Add Listing Button */}
-                    <button
-                        className={styles.addButton}
-                        onClick={onAddListing}
-                    >
-                        Add New Listing
-                    </button>
-                </div>
-            </div>
-
-            {/* Delete Confirmation Modal */}
-            {showDeleteModal && (
-                <div className={styles.modalOverlay}>
-                    <div className={styles.modal}>
-                        <h2>Confirm Deletion</h2>
-                        <p>Are you sure you want to remove {restaurant.restaurantName}?</p>
-                        <p className={styles.warning}>This action cannot be undone.</p>
-                        <div className={styles.modalActions}>
-                            <button
-                                className={styles.cancelButton}
-                                onClick={() => setShowDeleteModal(false)}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                className={styles.confirmButton}
-                                onClick={handleDelete}
-                            >
-                                Yes, Remove Restaurant
-                            </button>
-                        </div>
+                    <div className={styles.ctaContainer}>
+                        <button
+                            className={styles.addButton}
+                            onClick={handleAddNewListing}
+                        >
+                            Add New Listing
+                        </button>
                     </div>
                 </div>
-            )}
-            {showEditForm && (
-                <div className={styles.modalOverlay}>
-                    <div ref={modalContentRef} className={styles.editModalContent}>
-                        <AddBusinessModel
-                            isEditing={true}
-                            restaurant={restaurant}
-                            onClose={() => setShowEditForm(false)}
+
+                {/* Add Listing Modal */}
+                <Modal
+                    open={showListingModal}
+                    onClose={handleCloseListingModal}
+                    className={styles.modalWrapper}
+                    disableAutoFocus
+                >
+                    <div className={styles.modalContainer}>
+                        <ListingModel
+                            restaurantId={Number(restaurantId)}
+                            onClose={handleCloseListingModal}
+                            isEditing={false}
                         />
                     </div>
-                </div>
-            )}
+                </Modal>
 
+                {/* Delete Confirmation Modal */}
+                {showDeleteModal && (
+                    <div className={styles.modalOverlay}>
+                        <div className={styles.modal}>
+                            <h3>Confirm Deletion</h3>
+                            <p>Are you sure you want to remove {restaurant.restaurantName}?</p>
+                            <div className={styles.modalButtons}>
+                                <button
+                                    onClick={() => setShowDeleteModal(false)}
+                                    className={styles.cancelButton}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleDelete}
+                                    className={styles.confirmButton}
+                                >
+                                    Remove Restaurant
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
         </>
     );
 };
