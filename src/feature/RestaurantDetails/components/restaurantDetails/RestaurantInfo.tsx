@@ -54,7 +54,7 @@ const RestaurantInfo: React.FC<RestaurantInfoProps> = ({ restaurantId }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const { ownedRestaurants, loading } = useSelector((state: RootState) => state.restaurant);
+    const { ownedRestaurants } = useSelector((state: RootState) => state.restaurant);
 
     console.log('RestaurantInfo.tsx', restaurantId);
 
@@ -62,14 +62,7 @@ const RestaurantInfo: React.FC<RestaurantInfoProps> = ({ restaurantId }) => {
         (restaurant) => restaurant.id === restaurantId
     );
 
-    if (loading) {
-        return (
-            <div className={styles.loadingContainer}>
-                <div className={styles.loader}></div>
-                <p>Loading restaurant information...</p>
-            </div>
-        );
-    }
+
 
     if (!restaurant) {
         return (

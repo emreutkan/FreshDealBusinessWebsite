@@ -208,7 +208,7 @@ const RestaurantListings: React.FC<RestaurantListingsProps> = ({ restaurantId })
                                     </div>
                                     <div className={styles.imageContainer}>
                                         <img
-                                            src={listing.image_url}
+                                            src={listing.imageUrl}
                                             alt={listing.title}
                                             className={styles.restaurantImage}
                                         />
@@ -231,12 +231,12 @@ const RestaurantListings: React.FC<RestaurantListingsProps> = ({ restaurantId })
                                                 <span>€{listing.original_price.toFixed(2)}</span>
                                             </div>
                                             <div className={styles.alternativePrices}>
-                                                {listing.pick_up_price !== null && (
+                                                {listing.pick_up_price  && (
                                                     <div className={styles.priceTag}>
                                                         Pickup: €{listing.pick_up_price.toFixed(2)}
                                                     </div>
                                                 )}
-                                                {listing.delivery_price !== null && (
+                                                {listing.delivery_price && (
                                                     <div className={styles.priceTag}>
                                                         Delivery: €{listing.delivery_price.toFixed(2)}
                                                     </div>

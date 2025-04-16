@@ -17,7 +17,7 @@ interface PaginationParams {
 // Restaurant-related purchase thunks
 export const fetchRestaurantPurchases = createAsyncThunk(
     'purchases/fetchByRestaurant',
-    async (restaurantId: string, { dispatch, rejectWithValue }) => {
+    async (restaurantId: string, { dispatch }) => {
         try {
             const url = `${API_BASE_URL}/restaurant/${restaurantId}/purchases`;
             console.log('GET', url);
@@ -26,7 +26,6 @@ export const fetchRestaurantPurchases = createAsyncThunk(
             return res;
         } catch (error) {
             console.error('fetchRestaurantPurchases error:', error);
-            return rejectWithValue(error.message);
         }
     }
 );
@@ -34,7 +33,7 @@ export const fetchRestaurantPurchases = createAsyncThunk(
 // User-related purchase thunks
 export const createPurchaseOrder = createAsyncThunk(
     'purchases/create',
-    async (deliveryInfo: DeliveryInfo, { dispatch, rejectWithValue }) => {
+    async (deliveryInfo: DeliveryInfo, { dispatch,  }) => {
         try {
             const url = `${API_BASE_URL}/purchase`;
             console.log('POST', url, deliveryInfo);
@@ -53,14 +52,13 @@ export const createPurchaseOrder = createAsyncThunk(
             return res;
         } catch (error) {
             console.error('createPurchaseOrder error:', error);
-            return rejectWithValue(error.message);
         }
     }
 );
 
 export const fetchUserActiveOrders = createAsyncThunk(
     'purchases/fetchActiveOrders',
-    async (_, { dispatch, rejectWithValue }) => {
+    async (_, { dispatch,  }) => {
         try {
             const url = `${API_BASE_URL}/user/orders/active`;
             console.log('GET', url);
@@ -69,14 +67,13 @@ export const fetchUserActiveOrders = createAsyncThunk(
             return res;
         } catch (error) {
             console.error('fetchUserActiveOrders error:', error);
-            return rejectWithValue(error.message);
         }
     }
 );
 
 export const fetchUserPreviousOrders = createAsyncThunk(
     'purchases/fetchPreviousOrders',
-    async (params: PaginationParams, { dispatch, rejectWithValue }) => {
+    async (params: PaginationParams, { dispatch,  }) => {
         try {
             const queryParams = new URLSearchParams({
                 page: (params.page || 1).toString(),
@@ -89,14 +86,13 @@ export const fetchUserPreviousOrders = createAsyncThunk(
             return res;
         } catch (error) {
             console.error('fetchUserPreviousOrders error:', error);
-            return rejectWithValue(error.message);
         }
     }
 );
 
 export const fetchOrderDetails = createAsyncThunk(
     'purchases/fetchOrderDetails',
-    async (purchaseId: number, { dispatch, rejectWithValue }) => {
+    async (purchaseId: number, { dispatch,  }) => {
         try {
             const url = `${API_BASE_URL}/user/orders/${purchaseId}`;
             console.log('GET', url);
@@ -105,7 +101,6 @@ export const fetchOrderDetails = createAsyncThunk(
             return res;
         } catch (error) {
             console.error('fetchOrderDetails error:', error);
-            return rejectWithValue(error.message);
         }
     }
 );
@@ -115,7 +110,7 @@ export const handlePurchaseResponse = createAsyncThunk(
     'purchases/respond',
     async (
         { purchaseId, action }: { purchaseId: number; action: 'accept' | 'reject' },
-        { dispatch, rejectWithValue }
+        { dispatch,  }
     ) => {
         try {
             const url = `${API_BASE_URL}/purchase/${purchaseId}/response`;
@@ -136,14 +131,13 @@ export const handlePurchaseResponse = createAsyncThunk(
             return res;
         } catch (error) {
             console.error('handlePurchaseResponse error:', error);
-            return rejectWithValue(error.message);
         }
     }
 );
 
 export const acceptPurchaseOrder = createAsyncThunk(
     'purchases/accept',
-    async (purchaseId: number, { dispatch, rejectWithValue }) => {
+    async (purchaseId: number, { dispatch,  }) => {
         try {
             const url = `${API_BASE_URL}/purchases/${purchaseId}/accept`;
             console.log('POST', url);
@@ -152,14 +146,13 @@ export const acceptPurchaseOrder = createAsyncThunk(
             return res;
         } catch (error) {
             console.error('acceptPurchaseOrder error:', error);
-            return rejectWithValue(error.message);
         }
     }
 );
 
 export const rejectPurchaseOrder = createAsyncThunk(
     'purchases/reject',
-    async (purchaseId: number, { dispatch, rejectWithValue }) => {
+    async (purchaseId: number, { dispatch,  }) => {
         try {
             const url = `${API_BASE_URL}/purchases/${purchaseId}/reject`;
             console.log('POST', url);
@@ -168,7 +161,6 @@ export const rejectPurchaseOrder = createAsyncThunk(
             return res;
         } catch (error) {
             console.error('rejectPurchaseOrder error:', error);
-            return rejectWithValue(error.message);
         }
     }
 );
@@ -177,7 +169,7 @@ export const addCompletionImage = createAsyncThunk(
     'purchases/addImage',
     async (
         { purchaseId, file }: { purchaseId: number; file: File },
-        { dispatch, rejectWithValue }
+        { dispatch,  }
     ) => {
         try {
             const formData = new FormData();
@@ -205,11 +197,7 @@ export const addCompletionImage = createAsyncThunk(
             return res;
         } catch (error) {
             console.error('addCompletionImage error:', error);
-            return rejectWithValue(
-                error.message && typeof error.message === 'string'
-                    ? JSON.parse(error.message)
-                    : 'Failed to upload image'
-            );
+
         }
     }
 );

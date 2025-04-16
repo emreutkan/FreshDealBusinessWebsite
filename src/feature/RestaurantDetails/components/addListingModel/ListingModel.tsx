@@ -286,10 +286,10 @@ const ListingModel: React.FC<ListingModelProps> = ({
                                         ? "Change Listing Image (optional)"
                                         : "Upload Listing Image"}
                             </label>
-                            {isEditing && listing?.imageUrl && !uploadedFile && (
+                            {isEditing && listing?.image_url && !uploadedFile && (
                                 <div className={styles.currentImage}>
                                     <img
-                                        src={listing.imageUrl}
+                                        src={listing.image_url}
                                         alt="Current listing"
                                         className={styles.previewImage}
                                     />

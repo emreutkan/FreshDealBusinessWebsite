@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
-import AddBusinessModel from "../components/addBusinessModel/AddBusinessModel";
 import styles from "./PartnershipPage.module.css";
 import { IoArrowBack } from "react-icons/io5";
+import AddBusinessModel from "../components/addBusinessModel/addBusinessModel.tsx";
+import {Restaurant} from "../../../redux/slices/restaurantSlice.ts";
 
 interface LocationState {
     isEditing?: boolean;
-    restaurant?: any; // Replace 'any' with your Restaurant type
+    restaurant?: Restaurant; // Replace 'any' with your Restaurant type
 }
 
 const PartnershipPage: React.FC = () => {

@@ -10,12 +10,8 @@ import {
     fetchUserPreviousOrders,
     fetchOrderDetails
 } from '../thunks/purchaseThunks.ts';
+import {Restaurant} from "./restaurantSlice.ts";
 
-export interface Restaurant {
-    id: number;
-    restaurantName: string;
-    image_url?: string;
-}
 
 export interface Purchase {
     purchase_id: number;
@@ -150,7 +146,7 @@ const purchaseSlice = createSlice({
             // Handle purchase response (accept/reject)
             .addCase(handlePurchaseResponse.fulfilled, (state, action) => {
                 const updatePurchaseStatus = (purchases: Purchase[]) => {
-                    const index = purchases.findIndex(p => p.id === action.payload.purchase.id);
+                    const index = purchases.findIndex(p => p.purchase_id === action.payload.purchase.id);
                     if (index !== -1) {
                         purchases[index] = action.payload.purchase;
                     }
@@ -163,7 +159,7 @@ const purchaseSlice = createSlice({
             // Accept purchase
             .addCase(acceptPurchaseOrder.fulfilled, (state, action) => {
                 const updatePurchaseStatus = (purchases: Purchase[]) => {
-                    const index = purchases.findIndex(p => p.id === action.payload.purchase.id);
+                    const index = purchases.findIndex(p => p.purchase_id === action.payload.purchase.id);
                     if (index !== -1) {
                         purchases[index] = action.payload.purchase;
                     }
@@ -176,14 +172,14 @@ const purchaseSlice = createSlice({
             // Reject purchase
             .addCase(rejectPurchaseOrder.fulfilled, (state, action) => {
                 const updatePurchaseStatus = (purchases: Purchase[]) => {
-                    const index = purchases.findIndex(p => p.id === action.payload.purchase.id);
+                    const index = purchases.findIndex(p => p.purchase_id === action.payload.purchase.id);
                     if (index !== -1) {
                         purchases[index] = action.payload.purchase;
                     }
                 };
 
                 updatePurchaseStatus(state.items);
-                const activeOrderIndex = state.activeOrders.findIndex(p => p.id === action.payload.purchase.id);
+                const activeOrderIndex = state.activeOrders.findIndex(p => p.purchase_id === action.payload.purchase.id);
                 if (activeOrderIndex !== -1) {
                     state.activeOrders.splice(activeOrderIndex, 1);
                     state.previousOrders.unshift(action.payload.purchase);
@@ -193,7 +189,7 @@ const purchaseSlice = createSlice({
             // Add completion image
             .addCase(addCompletionImage.fulfilled, (state, action) => {
                 const updatePurchaseWithImage = (purchases: Purchase[]) => {
-                    const index = purchases.findIndex(p => p.id === action.payload.purchase.id);
+                    const index = purchases.findIndex(p => p.purchase_id === action.payload.purchase.id);
                     if (index !== -1) {
                         purchases[index] = {
                             ...purchases[index],
@@ -205,12 +201,11 @@ const purchaseSlice = createSlice({
 
                 updatePurchaseWithImage(state.items);
                 updatePurchaseWithImage(state.activeOrders);
-                if (state.selectedOrder?.id === action.payload.purchase.id) {
+                if (state.selectedOrder?.purchase_id === action.payload.purchase.id) {
                     state.selectedOrder = action.payload.purchase;
                 }
             });
     }
 });
 
-export const { clearSelectedOrder, clearError } = purchaseSlice.actions;
 export default purchaseSlice.reducer;
