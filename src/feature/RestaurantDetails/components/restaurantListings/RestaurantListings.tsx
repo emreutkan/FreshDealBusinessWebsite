@@ -14,15 +14,20 @@ import {deleteListing, getListings} from "../../../../redux/thunks/listingThunks
 import {fetchRestaurantPurchases} from "../../../../redux/thunks/purchaseThunks.ts";
 
 interface RestaurantListingsProps {
-    restaurantId: number;
+    restaurantId: string;
 }
 
 const RestaurantListings: React.FC<RestaurantListingsProps> = ({ restaurantId }) => {
     const dispatch = useDispatch<AppDispatch>();
     const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const { listings, listingsLoading } = useSelector((state: RootState) => state.listing);
+    const { listings, loading } = useSelector((state: RootState) => state.listing);
 
+    useEffect(() => {
+        if (restaurantId) {
+            dispatch(fetchRestaurantPurchases( restaurantId ));
+        }
+    }, []);
     const handleEdit = (listing: Listing) => {
         setSelectedListing(listing);
         setIsModalOpen(true);
@@ -51,7 +56,7 @@ const RestaurantListings: React.FC<RestaurantListingsProps> = ({ restaurantId })
     return (
         <div className={styles.listingsCard}>
             <h2 className={styles.sectionTitle}>Active Listings</h2>
-            {listingsLoading ? (
+            {loading ? (
                 <div className={styles.loadingContainer}>
                     <div className={styles.loader}></div>
                     <p>Loading listings...</p>

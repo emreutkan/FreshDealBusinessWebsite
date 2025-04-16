@@ -11,21 +11,6 @@ import {
     fetchOrderDetails
 } from '../thunks/purchaseThunks.ts';
 
-// Updated interfaces to match API response format
-export interface PurchaseItem {
-    id: number;
-    title: string;
-    count: number;
-    price: number;
-}
-
-export interface DeliveryInfo {
-    is_delivery: boolean;
-    pickup_notes?: string;
-    delivery_address?: string;
-    delivery_notes?: string;
-}
-
 export interface Restaurant {
     id: number;
     restaurantName: string;
@@ -91,7 +76,6 @@ const purchaseSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // Create purchase order
             .addCase(createPurchaseOrder.pending, (state) => {
                 state.loading = true;
                 state.error = null;

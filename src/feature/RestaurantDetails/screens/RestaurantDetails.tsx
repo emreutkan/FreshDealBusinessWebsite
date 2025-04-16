@@ -23,10 +23,12 @@ const RestaurantDetails: React.FC = () => {
 
                         />
 
-                        <RestaurantListings
+                        {restaurantId && (
+                            <RestaurantListings
+                                restaurantId={restaurantId}
+                            />
+                        )}
 
-                            restaurantId={Number(restaurantId)}
-                        />
                     </div>
 
                     <div className={styles.purchasesColumn}>

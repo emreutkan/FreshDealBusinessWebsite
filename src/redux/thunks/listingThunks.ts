@@ -8,7 +8,7 @@ import {
     getListingsAPI,
     searchListingsAPI
 } from "../Api/listingsApi.ts";
-import {AddListingPayload, EditListingPayload, SearchListingParams} from "../../types/listingRelated.ts";
+import { AddListingPayload, EditListingPayload, SearchListingParams } from "../../types/listingRelated.ts";
 
 // Thunks
 export const addListing = createAsyncThunk(
@@ -35,8 +35,12 @@ export const addListing = createAsyncThunk(
             formData.append('consume_within', payload.consumeWithin.toString());
             formData.append('image', payload.image);
 
-            return await addListingAPI(payload.restaurantId, formData, token);
+            console.log('Sending request to add listing:', payload);
+            const res = await addListingAPI(Number(payload.restaurantId), formData, token);
+            console.log('Add listing response:', res);
+            return res;
         } catch (error) {
+            console.error('Add listing error:', error);
             return rejectWithValue(`Failed to add listing: ${error}`);
         }
     }
@@ -56,8 +60,12 @@ export const getListings = createAsyncThunk(
             queryParams.append('page', page.toString());
             queryParams.append('per_page', perPage.toString());
 
-            return await getListingsAPI(queryParams);
+            console.log('Fetching listings with params:', queryParams.toString());
+            const res = await getListingsAPI(queryParams);
+            console.log('Get listings response:', res);
+            return res;
         } catch (error) {
+            console.error('Get listings error:', error);
             return rejectWithValue(`Failed to fetch listings: ${error}`);
         }
     }
@@ -73,14 +81,16 @@ export const searchListings = createAsyncThunk(
                 restaurant_id: params.restaurantId.toString()
             });
 
+            console.log('Searching listings with params:', queryParams.toString());
             const response = await searchListingsAPI(queryParams);
+            console.log('Search listings response:', response);
             return response;
         } catch (error) {
+            console.error('Search listings error:', error);
             return rejectWithValue(`Failed to search listings: ${error}`);
         }
     }
 );
-
 
 export const editListing = createAsyncThunk(
     'listing/editListing',
@@ -102,15 +112,17 @@ export const editListing = createAsyncThunk(
             if (payload.consumeWithin) formData.append('consume_within', payload.consumeWithin.toString());
             if (payload.image) formData.append('image', payload.image);
 
-            const response = await editListingAPI(payload.listingId, formData, token);
-            return response;
+            console.log('Editing listing with ID:', payload.listingId);
+            const res = await editListingAPI(payload.listingId, formData, token);
+            console.log('Edit listing response:', res);
+            return res;
         } catch (error) {
+            console.error('Edit listing error:', error);
             return rejectWithValue(`Failed to edit listing: ${error}`);
         }
     }
 );
 
-// Updated deleteListing thunk to match new API structure
 export const deleteListing = createAsyncThunk(
     'listing/deleteListing',
     async (listingId: number, { rejectWithValue, getState }) => {
@@ -121,11 +133,13 @@ export const deleteListing = createAsyncThunk(
                 return rejectWithValue('No authentication token');
             }
 
+            console.log('Deleting listing with ID:', listingId);
             await deleteListingAPI(listingId, token);
+            console.log('Delete listing success:', listingId);
             return { listingId, success: true };
         } catch (error) {
+            console.error('Delete listing error:', error);
             return rejectWithValue(`Failed to delete listing: ${error}`);
         }
     }
 );
-
