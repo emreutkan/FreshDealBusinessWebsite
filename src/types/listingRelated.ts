@@ -46,34 +46,3 @@ export interface EditListingPayload {
     consumeWithin?: number;
     image?: File;
 }
-
-// Optional: Add TypeScript interfaces for better type safety
-export interface ListingFormData {
-    title?: string;
-    description?: string;
-    original_price?: number;
-    pick_up_price?: number;
-    delivery_price?: number;
-    count?: number;
-    consume_within?: number;
-    image?: File;
-}
-
-export interface ListingResponse {
-    success: boolean;
-    message: string;
-    listing?: {
-        id: number;
-        restaurant_id: number;
-        title: string;
-        description: string;
-        image_url: string;
-        original_price: number;
-        pick_up_price?: number;
-        delivery_price?: number;
-        count: number;
-        consume_within: number;
-        available_for_pickup: boolean;
-        available_for_delivery: boolean;
-    };
-}

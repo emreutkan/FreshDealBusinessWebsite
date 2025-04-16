@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { useDispatch } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import { IconButton, Modal, Tooltip } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -9,19 +9,19 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import styles from './RestaurantListings.module.css';
 import { Listing } from "../../../../types/listingRelated.ts";
 import ListingModel from "../addListingModel/ListingModel.tsx";
-import { AppDispatch } from "../../../../redux/store";
-import { deleteListing } from "../../../../redux/thunks/listingThunks";
+import {AppDispatch, RootState} from "../../../../redux/store";
+import {deleteListing, getListings} from "../../../../redux/thunks/listingThunks";
+import {fetchRestaurantPurchases} from "../../../../redux/thunks/purchaseThunks.ts";
 
 interface RestaurantListingsProps {
-    listings: Listing[];
-    loading: boolean;
     restaurantId: number;
 }
 
-const RestaurantListings: React.FC<RestaurantListingsProps> = ({ listings, loading, restaurantId }) => {
+const RestaurantListings: React.FC<RestaurantListingsProps> = ({ restaurantId }) => {
     const dispatch = useDispatch<AppDispatch>();
     const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const { listings, listingsLoading } = useSelector((state: RootState) => state.listing);
 
     const handleEdit = (listing: Listing) => {
         setSelectedListing(listing);
@@ -43,11 +43,15 @@ const RestaurantListings: React.FC<RestaurantListingsProps> = ({ listings, loadi
         setSelectedListing(null);
     };
 
-
+    useEffect(() => {
+        if (restaurantId) {
+            dispatch(getListings({ restaurantId: Number(restaurantId) }));
+        }
+    }, [dispatch, restaurantId]);
     return (
         <div className={styles.listingsCard}>
             <h2 className={styles.sectionTitle}>Active Listings</h2>
-            {loading ? (
+            {listingsLoading ? (
                 <div className={styles.loadingContainer}>
                     <div className={styles.loader}></div>
                     <p>Loading listings...</p>

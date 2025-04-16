@@ -1,18 +1,29 @@
 import './Landing.css';
 import Header from "../../Header/Header.tsx";
-import React, {useState} from "react";
-import AboutUs from "../components/AboutUs/AboutUs.tsx";
+import React, {useState, useEffect} from "react";
+import HeroSection from "../components/Hero/HeroSection.tsx";
+import Features from "../components/Features/Features.tsx";
 
 const Landing: React.FC = () => {
-    const [activePage, setActivePage] = useState("AboutUs");
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        setTimeout(() => setIsLoading(false), 800);
+    }, []);
 
     return (
         <div className="landing-container">
-            <Header
-                activePage={activePage}
-                setActivePage={setActivePage}
-            />
-            {activePage === 'AboutUs' && <AboutUs/>}
+            {isLoading ? (
+                <div className="loading-screen">
+                    <div className="loading-spinner"></div>
+                </div>
+            ) : (
+                <>
+                    <Header />
+                    <HeroSection />
+                    <Features />
+                </>
+            )}
         </div>
     );
 }

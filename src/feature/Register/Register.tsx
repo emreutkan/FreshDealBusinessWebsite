@@ -1,0 +1,132 @@
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate, Link } from 'react-router-dom';
+import styles from './Register.module.css';
+import { AppDispatch } from '../../redux/store';
+import { registerUser } from '../../redux/thunks/userThunks';
+
+const Register: React.FC = () => {
+    const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
+    const [formData, setFormData] = useState({
+        email: '',
+        password: '',
+        name_surname: '',
+        phone_number: '',
+        role: 'owner', // Default role as 'owner'
+    });
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+        setError('');
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setError('');
+
+        try {
+            await dispatch(registerUser(formData)).unwrap();
+            // Redirect to login page after successful registration
+            navigate('/login', {
+                state: {
+                    message: 'Registration successful! Please login to continue.'
+                }
+            });
+        } catch (err: any) {
+            setError(err.message || 'Registration failed. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <div className={styles.registerPage}>
+            <div className={styles.registerContainer}>
+                <h1>Register</h1>
+                <p className={styles.subtitle}>Create your account</p>
+
+                <form onSubmit={handleSubmit} className={styles.form}>
+                    {error && <div className={styles.error}>{error}</div>}
+
+                    <div className={styles.formSection}>
+                        <h3>Account Information</h3>
+                        <div className={styles.inputGroup}>
+                            <label htmlFor="name_surname">Full Name</label>
+                            <input
+                                type="text"
+                                id="name_surname"
+                                name="name_surname"
+                                value={formData.name_surname}
+                                onChange={handleChange}
+                                required
+                                placeholder="John Doe"
+                            />
+                        </div>
+
+                        <div className={styles.inputGroup}>
+                            <label htmlFor="email">Email</label>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                required
+                                placeholder="your@email.com"
+                            />
+                        </div>
+
+                        <div className={styles.inputGroup}>
+                            <label htmlFor="phone_number">Phone Number</label>
+                            <input
+                                type="tel"
+                                id="phone_number"
+                                name="phone_number"
+                                value={formData.phone_number}
+                                onChange={handleChange}
+                                required
+                                placeholder="+1234567890"
+                            />
+                        </div>
+
+                        <div className={styles.inputGroup}>
+                            <label htmlFor="password">Password</label>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleChange}
+                                required
+                                placeholder="••••••••"
+                                minLength={8}
+                            />
+                        </div>
+                    </div>
+
+                    <button
+                        type="submit"
+                        className={styles.submitButton}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Creating Account...' : 'Register Now'}
+                    </button>
+
+                    <div className={styles.loginPrompt}>
+                        Already have an account?{' '}
+                        <Link to="/login">Login here</Link>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
+
+export default Register;

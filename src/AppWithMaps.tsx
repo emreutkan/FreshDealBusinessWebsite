@@ -7,7 +7,10 @@ import Landing from "./feature/Landing/screens/Landing.tsx";
 import RestaurantDetails from "./feature/RestaurantDetails/screens/RestaurantDetails.tsx";
 import PartnershipPage from "./feature/Partnership/screens/partnershipPage.tsx";
 import RestaurantsPage from "./feature/Restaurant/screens/RestaurantsPage.tsx";
+import Login from "./feature/Login/Login.tsx";
+import Register from "./feature/Register/Register.tsx";
 import type { Libraries } from '@react-google-maps/api';
+import Dashboard from "./feature/Dashboard/Dashboard.tsx";
 
 const GOOGLE_MAPS_LIBRARIES: Libraries = ['places'];
 
@@ -24,8 +27,12 @@ const AppWithMaps = () => {
         <LoadScript
             googleMapsApiKey={GOOGLE_MAPS_API_KEY || ''}
             libraries={GOOGLE_MAPS_LIBRARIES}
-            loadingElement={<div>Loading Google Maps...</div>}
-        >
+            loadingElement={
+                <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <p className="loading-text">Loading Fresh Deal Maps...</p>
+                </div>
+            }        >
             <Provider store={store}>
                 <Router>
                     <Routes>
@@ -33,6 +40,10 @@ const AppWithMaps = () => {
                         <Route path="/Partnership" element={<PartnershipPage/>}/>
                         <Route path="/Restaurants" element={<RestaurantsPage/>}/>
                         <Route path="/Restaurant/:restaurantId" element={<RestaurantDetails/>}/>
+                        <Route path="/login" element={<Login/>}/>
+                        <Route path="/register" element={<Register/>}/>
+                        <Route path="/dashboard" element={<Dashboard/>}/>
+                        {/*<Route path="/Restaurants/:restaurantId/addListing" element={<List/>}/>*/}
                     </Routes>
                 </Router>
             </Provider>

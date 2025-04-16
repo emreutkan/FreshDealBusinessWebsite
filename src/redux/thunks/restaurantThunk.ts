@@ -3,7 +3,6 @@ import { RootState } from '../store';
 import {
     addRestaurantAPI,
     deleteRestaurantAPI,
-    getRestaurantsInProximityAPI,
     getRestaurantsOfUserAPI,
 } from '../Api/restaurantApi.ts';
 
@@ -73,7 +72,9 @@ export const getRestaurantsOfUserThunk = createAsyncThunk(
             if (!token) {
                 return rejectWithValue('No authentication token');
             }
-            return await getRestaurantsOfUserAPI(token);
+            const response = await getRestaurantsOfUserAPI(token);
+            console.log(response);
+            return response;
         } catch (error) {
             return rejectWithValue(`Failed to fetch restaurants: ${error}`);
         }
@@ -97,16 +98,3 @@ export const removeRestaurant = createAsyncThunk(
     }
 );
 
-export const getRestaurantsInProximityThunk = createAsyncThunk(
-    'restaurant/fetchRestaurantsProximity',
-    async (
-        payload: { latitude: number; longitude: number; radius?: number },
-        { rejectWithValue }
-    ) => {
-        try {
-            return await getRestaurantsInProximityAPI(payload);
-        } catch (error) {
-            return rejectWithValue(`Failed to fetch nearby restaurants: ${error}`);
-        }
-    }
-);

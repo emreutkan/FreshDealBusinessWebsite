@@ -1,284 +1,285 @@
-/* RestaurantInfo.module.css */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-
-/* Main container styles */
-.detailsCard {
-    background: white;
-    border-radius: 24px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+.card {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border-radius: var(--border-radius);
     overflow: hidden;
-    margin: 2rem auto;
-    max-width: 900px;
-    font-family: 'Poppins', sans-serif;
+    position: relative;
+    box-shadow: var(--box-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Image section styles */
 .imageWrapper {
     position: relative;
     width: 100%;
-    height: 400px;
+    height: 300px;
+    overflow: hidden;
+}
+
+.imageOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom,
+    rgba(0, 0, 0, 0.2),
+    rgba(0, 0, 0, 0.4)
+    );
+    z-index: 1;
 }
 
 .restaurantImage {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.card:hover .restaurantImage {
+    transform: scale(1.05);
 }
 
 .ratingBadge {
     position: absolute;
     top: 20px;
     right: 20px;
-    background: rgba(0, 0, 0, 0.8);
-    color: #FFD700;
+    background: rgba(255, 255, 255, 0.9);
     padding: 8px 16px;
     border-radius: 20px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    z-index: 2;
     font-weight: 600;
+    color: var(--primary-color);
     backdrop-filter: blur(4px);
+    animation: fadeInUp 0.8s ease-out;
 }
 
-/* Content section styles */
-.content {
-    padding: 2.5rem;
+.contentContainer {
+    background: white;
+    padding: 2rem;
+    position: relative;
+    z-index: 2;
 }
 
-.header {
+.headerSection {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 1.5rem;
+    animation: fadeInUp 0.8s ease-out;
 }
 
 .title {
-    font-size: 2.5rem;
-    font-weight: 600;
-    color: #2D3436;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    color: var(--primary-color);
     margin: 0;
+    position: relative;
+    display: inline-block;
 }
 
-.actions {
-    display: flex;
-    gap: 12px;
-}
 
-.editButton, .deleteButton {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    border-radius: 12px;
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 500;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
 
-.editButton {
-    background: #6c5ce7;
-    color: white;
-}
-
-.editButton:hover {
-    background: #5f4ed6;
-    transform: translateY(-2px);
-}
-
-.deleteButton {
-    background: #ff7675;
-    color: white;
-}
-
-.deleteButton:hover {
-    background: #e66767;
-    transform: translateY(-2px);
-}
-
-.category {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: #F0F2F5;
-    padding: 8px 16px;
-    border-radius: 12px;
-    color: #636E72;
-    font-size: 0.95rem;
-    margin-bottom: 1.5rem;
+.title:hover .highlight::after {
+    transform: scaleX(1);
+    transform-origin: left;
 }
 
 .description {
-    color: #636E72;
+    color: rgba(0, 0, 0, 0.7);
+    font-size: clamp(1rem, 1.5vw, 1.1rem);
     line-height: 1.6;
-    font-size: 1.1rem;
     margin-bottom: 2rem;
+    animation: fadeInUp 0.8s ease-out 0.2s backwards;
 }
 
-.details {
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
     margin-bottom: 2rem;
+    animation: fadeInUp 0.8s ease-out 0.4s backwards;
 }
 
-.hours {
+.statItem {
+    background: rgba(var(--primary-color-rgb), 0.1);
+    padding: 1rem;
+    border-radius: var(--border-radius);
     display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #2D3436;
-    font-size: 1rem;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: transform 0.2s ease;
+}
+
+
+.statLabel {
+    /*color: var(--primary-color);*/
+    font-size: 1.2rem;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.statValue {
+    /*color: var(--primary-color);*/
+    font-size: 0.9rem;
+    font-weight: 300;
+}
+
+.actionButtons {
+    display: flex;
+    gap: 1rem;
+    animation: fadeInUp 0.8s ease-out 0.2s backwards;
+}
+
+.actionButton {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: none;
+}
+
+.editButton {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.deleteButton {
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+
+.actionButton:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow-hover);
+}
+
+.ctaContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+    animation: fadeInUp 0.8s ease-out 0.6s backwards;
 }
 
 .addButton {
-    background: linear-gradient(135deg, #00B894, #00CEC9);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     color: white;
-    border: none;
-    padding: 16px 32px;
-    border-radius: 12px;
+    padding: 1rem 2rem;
+    border-radius: var(--border-radius);
     font-size: 1rem;
     font-weight: 500;
+    border: none;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     width: 100%;
-    font-family: 'Poppins', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    max-width: 300px;
 }
 
 .addButton:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 184, 148, 0.2);
+    box-shadow: var(--box-shadow-hover);
 }
 
-/* Modal styles */
-.modalOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    backdrop-filter: blur(4px);
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.modal {
-    background: white;
-    padding: 2.5rem;
-    border-radius: 20px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-.modal h2 {
-    color: #2D3436;
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
-}
-
-.modal p {
-    color: #636E72;
-    margin-bottom: 1rem;
-}
-
-.warning {
-    color: #ff7675 !important;
-    font-weight: 500;
-}
-
-.modalActions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 2rem;
-}
-
-.cancelButton, .confirmButton {
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-family: 'Poppins', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border: none;
-}
-
-.cancelButton {
-    background: #F0F2F5;
-    color: #636E72;
-}
-
-.cancelButton:hover {
-    background: #E4E7EB;
-}
-
-.confirmButton {
-    background: #ff7675;
-    color: white;
-}
-
-.confirmButton:hover {
-    background: #e66767;
-}
-
-/* Responsive styles */
+/* Responsive design */
 @media (max-width: 768px) {
-    .detailsCard {
-        margin: 1rem;
-        border-radius: 16px;
-    }
-
-    .imageWrapper {
-        height: 300px;
-    }
-
-    .content {
-        padding: 1.5rem;
-    }
-
-    .header {
+    .headerSection {
         flex-direction: column;
         gap: 1rem;
     }
 
-    .title {
-        font-size: 2rem;
-    }
-
-    .actions {
+    .actionButtons {
         width: 100%;
     }
 
-    .editButton, .deleteButton {
+    .actionButton {
         flex: 1;
-        justify-content: center;
     }
 
-    .modal {
-        margin: 1rem;
-        padding: 1.5rem;
-    }
-
-    .modalActions {
-        flex-direction: column;
-    }
-
-    .cancelButton, .confirmButton {
-        width: 100%;
+    .statsGrid {
+        grid-template-columns: 1fr;
     }
 }
-.editModalContent {
-    background: white;
-    /*width: 95%;*/
-    /*max-width: 1200px;*/
-    /*max-height: 90vh;*/
-    overflow-y: auto;
-    border-radius: 16px;
-    /*position: relative;*/
+.modalButtons {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
 }
 
+.cancelButton, .confirmButton {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cancelButton {
+    background-color: transparent;
+    border: 0 solid ;
+}
+
+.confirmButton {
+    background-color: #dc2626;
+    color: white;
+    border: none;
+}
+
+/* Adjusting some spacing */
+.contentContainer {
+    padding: 3rem;  /* Increased from 2rem for better spacing */
+}
+
+.headerSection {
+    margin-bottom: 2rem;  /* Increased from 1.5rem */
+}
+
+.statsGrid {
+    gap: 2rem;  /* Increased from 1.5rem */
+}
+
+.statItem {
+    padding: 1.5rem;  /* Increased from 1rem */
+}
+
+/* Additional hover effects */
+
+
+.cancelButton:hover, .confirmButton:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--box-shadow-hover);
+}
+.modalWrapper {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+.modalContainer {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    outline: none !important;
+}

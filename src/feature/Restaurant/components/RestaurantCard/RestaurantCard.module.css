@@ -3,62 +3,126 @@
     flex-direction: column;
     background-color: #fff;
     border-radius: 16px;
-    box-shadow: 0 2px 8px 2px rgba(0, 0, 0, 0.2);
-    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.05);
     cursor: pointer;
-    transition: transform 0.3s ease;
 }
 
 .card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
 .imageContainer {
     width: 100%;
-    height: 200px;
+    height: 220px;
     overflow: hidden;
-    border-top-left-radius: 16px;
-    border-top-right-radius: 16px;
+    position: relative;
+    background-color: #f3f4f6;
 }
 
 .imageContainer img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.card:hover .imageContainer img {
+    transform: scale(1.05);
 }
 
 .infoContainer {
     display: flex;
     flex-direction: column;
-    padding: 20px;
-    gap: 5px;
+    padding: 1.5rem;
+    gap: 1rem;
+    flex: 1;
 }
 
-.infoContainer h2 {
-    margin: 0 0 10px 0;
-    font-size: 1.25rem;
-    font-weight: 500;
+.headerSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
 }
 
-.infoContainer p {
-    margin: 4px 0;
-    font-weight: 300;
+.restaurantName {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1a202c;
+    line-height: 1.2;
+    flex: 1;
+}
+
+.description {
+    color: #4a5568;
     font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.infoGrid {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.infoRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #4a5568;
+    font-size: 0.9rem;
+    padding: 0.5rem;
+    background-color: #f8fafc;
+    border-radius: 8px;
+}
+
+.label {
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.ratingContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.rating {
+    padding: 0.25rem 0.5rem;
+    background: #f0fdf4;
+    color: #166534;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.ratingCount {
+    color: #64748b;
+    font-size: 0.85rem;
 }
 
 .detailsLink {
     display: flex;
     align-items: center;
-    margin-top: 15px;
-    color: #28a745;
-    font-weight: 500;
+    margin-top: auto;
+    padding-top: 1rem;
+    color: #10b981;
+    font-weight: 600;
     font-size: 0.95rem;
-    gap: 6px;
-    transition: color 0.3s;
+    gap: 0.5rem;
+    transition: all 0.3s;
+    border-top: 1px solid #e2e8f0;
 }
 
 .detailsLink:hover {
-    color: #218838;
+    color: #059669;
 }
 
 .arrowIcon {
@@ -66,5 +130,19 @@
 }
 
 .detailsLink:hover .arrowIcon {
-    transform: translateX(4px);
+    transform: translateX(6px);
+}
+
+@media (max-width: 640px) {
+    .infoContainer {
+        padding: 1rem;
+    }
+
+    .headerSection {
+        flex-direction: column;
+    }
+
+    .ratingContainer {
+        align-self: flex-start;
+    }
 }

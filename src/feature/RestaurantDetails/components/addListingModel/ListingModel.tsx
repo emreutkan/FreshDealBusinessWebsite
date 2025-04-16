@@ -10,14 +10,12 @@ import styles from "./ListingModel.module.css";
 import {AddListingPayload, Listing} from "../../../../types/listingRelated.ts";
 import {RootState} from "../../../../redux/store";
 
-
 interface ListingModelProps {
     restaurantId: number,
     onClose?: () => void,
     listing?: Listing,
     isEditing?: boolean,
 }
-
 
 interface FormData {
     title: string;
@@ -49,14 +47,13 @@ const ListingModel: React.FC<ListingModelProps> = ({
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
     const [invalidFields, setInvalidFields] = useState<string[]>([]);
     const [formData, setFormData] = useState<FormData>(initialFormData);
+    const [isExiting, setIsExiting] = useState(false);
     const restaurant = useSelector((state: RootState) => state.restaurant.ownedRestaurants.find(
         (restaurant: { id: string; }) => restaurant.id === Number(restaurantId)
     ));
 
-
     useEffect(() => {
         if (isEditing && listing) {
-            // Set form data for editing
             setFormData({
                 title: listing.title || "",
                 description: listing.description || "",
@@ -66,8 +63,16 @@ const ListingModel: React.FC<ListingModelProps> = ({
                 count: listing.count ? listing.count.toString() : "",
                 consume_within: listing.consume_within ? listing.consume_within.toString() : "",
             });
-        } 
+        }
     }, [isEditing, listing]);
+
+    const handleClose = () => {
+        setIsExiting(true);
+        setTimeout(() => {
+            onClose?.();
+        }, 300);
+    };
+
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
@@ -104,7 +109,6 @@ const ListingModel: React.FC<ListingModelProps> = ({
             }
         });
 
-        // Only require image upload for new listings
         if (!isEditing && !uploadedFile) {
             invalids.push("image");
         }
@@ -144,12 +148,11 @@ const ListingModel: React.FC<ListingModelProps> = ({
                 await dispatch(addListing(payload)).unwrap();
                 alert("Listing added successfully!");
             }
-            onClose?.();
+            handleClose();
         } catch (error) {
             alert(`Failed to ${isEditing ? 'update' : 'add'} listing: ${error}`);
         }
     };
-
 
     const isInvalid = (fieldName: string): boolean =>
         invalidFields.includes(fieldName);
@@ -157,133 +160,172 @@ const ListingModel: React.FC<ListingModelProps> = ({
     if (!restaurant) {
         return <div>Restaurant not found</div>;
     }
+
     return (
-        <div className={styles.container}>
-            <h2>{isEditing ? 'Edit Listing' : 'Add New Listing'}</h2>
-            <form onSubmit={handleSubmit} className={styles.form}>
-                <div className={styles.inputGroup}>
-                    <input
-                        name="title"
-                        className={`${styles.input} ${isInvalid("title") ? styles.invalid : ""}`}
-                        placeholder="Listing Title"
-                        value={formData.title}
-                        onChange={handleChange}
+        <div className={`${styles.pageContainer} ${isExiting ? styles.exitAnimation : ''}`}>
+            <div className={styles.restaurantHeader}>
+                <div className={styles.restaurantInfo}>
+                    <img
+                        src={restaurant.image_url}
+                        alt={restaurant.restaurantName}
+                        className={styles.restaurantImage}
                     />
+                    <div className={styles.restaurantDetails}>
+                        <h1>{restaurant.restaurantName}</h1>
+                        <p>{restaurant.category}</p>
+                        <p className={styles.timestamp}>
+                            {new Date().toLocaleString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })}
+                        </p>
+                    </div>
+                </div>
+                {onClose && (
+                    <Button
+                        onClick={handleClose}
+                        className={styles.cancelButton}
+                        style={{
+                            backgroundColor: "rgba(255, 255, 255, 0.9)",
+                            color: "#1a202c",
+                            textTransform: "none",
+                        }}
+                    >
+                        Back to Restaurant
+                    </Button>
+                )}
+            </div>
 
-                    <textarea
-                        name="description"
-                        className={styles.textarea}
-                        placeholder="Description (optional)"
-                        value={formData.description}
-                        onChange={handleChange}
-                    />
-
-                    <div className={styles.priceGroup}>
+            <div className={styles.container}>
+                <h2>{isEditing ? 'Edit Listing' : 'Add New Listing'}</h2>
+                <form onSubmit={handleSubmit} className={styles.form}>
+                    <div className={styles.inputGroup}>
                         <input
-                            name="original_price"  // Changed from originalPrice to match your formData structure
-                            type="number"
-                            className={`${styles.input} ${isInvalid("originalPrice") ? styles.invalid : ""}`}
-                            placeholder="Original Price"
-                            value={formData.original_price}
+                            name="title"
+                            className={`${styles.input} ${isInvalid("title") ? styles.invalid : ""}`}
+                            placeholder="Listing Title"
+                            value={formData.title}
                             onChange={handleChange}
                         />
-                        {restaurant.pickup && (
+
+                        <textarea
+                            name="description"
+                            className={styles.textarea}
+                            placeholder="Description (optional)"
+                            value={formData.description}
+                            onChange={handleChange}
+                        />
+
+                        <div className={styles.priceGroup}>
                             <input
-                                name="pick_up_price"
+                                name="original_price"
                                 type="number"
-                                step="0.01"
-                                className={styles.input}
-                                placeholder="Pickup Price (optional)"
-                                value={formData.pick_up_price}
+                                className={`${styles.input} ${isInvalid("originalPrice") ? styles.invalid : ""}`}
+                                placeholder="Original Price"
+                                value={formData.original_price}
                                 onChange={handleChange}
                             />
-                        )}
-                        {restaurant.delivery && (
-                            <input
-                                name="delivery_price"
-                                type="number"
-                                step="0.01"
-                                className={styles.input}
-                                placeholder="Delivery Price (optional)"
-                                value={formData.delivery_price}
-                                onChange={handleChange}
-                            />
-                        )}
-                    </div>
-
-                    <div className={styles.countGroup}>
-                        <input
-                            name="count"
-                            type="number"
-                            className={`${styles.input} ${isInvalid("count") ? styles.invalid : ""}`}
-                            placeholder="Available Count"
-                            value={formData.count}
-                            onChange={handleChange}
-                        />
-                        <input
-                            name="consume_within"
-                            type="number"
-                            className={`${styles.input} ${isInvalid("consumeWithin") ? styles.invalid : ""}`}
-                            placeholder="Consume Within (days)"
-                            value={formData.consume_within}
-                            onChange={handleChange}
-                        />
-                    </div>
-
-                    <div className={`${styles.fileUpload} ${isInvalid("image") ? styles.invalid : ""}`}>
-                        <input
-                            type="file"
-                            id="listingImage"
-                            className={styles.fileInput}
-                            accept="image/*"
-                            onChange={handleFileChange}
-                        />
-                        <label htmlFor="listingImage" className={styles.fileLabel}>
-                            {uploadedFile
-                                ? uploadedFile.name
-                                : isEditing
-                                    ? "Change Listing Image (optional)"
-                                    : "Upload Listing Image"}
-                        </label>
-                        {isEditing && listing?.imageUrl && !uploadedFile && (
-                            <div className={styles.currentImage}>
-                                <img
-                                    src={listing.imageUrl}
-                                    alt="Current listing"
-                                    className={styles.previewImage}
+                            {restaurant.pickup && (
+                                <input
+                                    name="pick_up_price"
+                                    type="number"
+                                    step="0.01"
+                                    className={styles.input}
+                                    placeholder="Pickup Price (optional)"
+                                    value={formData.pick_up_price}
+                                    onChange={handleChange}
                                 />
-                            </div>
-                        )}
-                    </div>
+                            )}
+                            {restaurant.delivery && (
+                                <input
+                                    name="delivery_price"
+                                    type="number"
+                                    step="0.01"
+                                    className={styles.input}
+                                    placeholder="Delivery Price (optional)"
+                                    value={formData.delivery_price}
+                                    onChange={handleChange}
+                                />
+                            )}
+                        </div>
 
-                    <div className={styles.buttonGroup}>
-                        <Button
-                            type="submit"
-                            className={styles.submitButton}
-                            style={{
-                                backgroundColor: "#b0f484",
-                                color: "white",
-                                textTransform: "none",
-                            }}
-                        >
-                            {isEditing ? 'Save Changes' : 'Add Listing'}
-                        </Button>
-                        {onClose && (
+                        <div className={styles.countGroup}>
+                            <input
+                                name="count"
+                                type="number"
+                                className={`${styles.input} ${isInvalid("count") ? styles.invalid : ""}`}
+                                placeholder="Available Count"
+                                value={formData.count}
+                                onChange={handleChange}
+                            />
+                            <input
+                                name="consume_within"
+                                type="number"
+                                className={`${styles.input} ${isInvalid("consumeWithin") ? styles.invalid : ""}`}
+                                placeholder="Consume Within (days)"
+                                value={formData.consume_within}
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        <div className={`${styles.fileUpload} ${isInvalid("image") ? styles.invalid : ""}`}>
+                            <input
+                                type="file"
+                                id="listingImage"
+                                className={styles.fileInput}
+                                accept="image/*"
+                                onChange={handleFileChange}
+                            />
+                            <label htmlFor="listingImage" className={styles.fileLabel}>
+                                {uploadedFile
+                                    ? uploadedFile.name
+                                    : isEditing
+                                        ? "Change Listing Image (optional)"
+                                        : "Upload Listing Image"}
+                            </label>
+                            {isEditing && listing?.imageUrl && !uploadedFile && (
+                                <div className={styles.currentImage}>
+                                    <img
+                                        src={listing.imageUrl}
+                                        alt="Current listing"
+                                        className={styles.previewImage}
+                                    />
+                                </div>
+                            )}
+                        </div>
+
+                        <div className={styles.buttonGroup}>
                             <Button
-                                onClick={onClose}
-                                className={styles.cancelButton}
+                                type="submit"
+                                className={styles.submitButton}
                                 style={{
-                                    backgroundColor: "#f0f0f0",
-                                    color: "#333",
+                                    backgroundColor: "#b0f484",
+                                    color: "#1a202c",
                                     textTransform: "none",
                                 }}
                             >
-                                Cancel
+                                {isEditing ? 'Save Changes' : 'Add Listing'}
                             </Button>
-                        )}
+                            {onClose && (
+                                <Button
+                                    onClick={handleClose}
+                                    className={styles.cancelButton}
+                                    style={{
+                                        backgroundColor: "#f0f0f0",
+                                        color: "#333",
+                                        textTransform: "none",
+                                    }}
+                                >
+                                    Cancel
+                                </Button>
+                            )}
+                        </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     );
 };
