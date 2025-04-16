@@ -1,34 +1,30 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import compression from 'vite-plugin-compression' // Need to install this package
+import compression from 'vite-plugin-compression'
 
 export default defineConfig({
+  base: './',
+
   plugins: [
     react(),
-    compression(), // Adds gzip compression
-
+    compression(),
   ],
 
   build: {
     rollupOptions: {
       output: {
         manualChunks: {
-          // Split your code into smaller chunks
           'vendor-react': ['react', 'react-dom', 'react-router-dom'],
           'vendor-maps': ['@react-google-maps/api'],
           'vendor-redux': ['react-redux', '@reduxjs/toolkit'],
         },
       },
     },
-    // Optimize build settings
     minify: 'terser',
     terserOptions: {
-      compress: {
-      }
+      compress: {}
     },
-    // Don't generate source maps in production
     sourcemap: false,
-    // Warn if individual chunks are too large
     chunkSizeWarningLimit: 1000,
   }
 })
