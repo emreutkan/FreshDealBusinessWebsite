@@ -1,19 +1,18 @@
 .header {
-
     height: 80px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(8px);
+    background: #FFFFFF;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    position: relative;
     z-index: 1000;
 }
 
 .container {
-    margin: 0 auto;
     padding: 0 24px;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    width: 100%;
 }
 
 .logo {
@@ -21,76 +20,83 @@
     align-items: center;
 }
 
-.logo img {
+.logoImage {
     height: 40px;
     width: auto;
 }
 
-.nav {
-    display: flex;
-    gap: 32px;
-}
-
-.link {
-    color: #333;
-    text-decoration: none;
-    font-size: 16px;
-    font-weight: 500;
-    transition: color 0.2s;
-}
-
-.link:hover {
-    color: var(--primary-color);
-}
-
 .auth {
     display: flex;
-    gap: 16px;
     align-items: center;
+    gap: 16px;
 }
 
-.loginButton {
+.userMenu {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.username {
     color: #333;
-    text-decoration: none;
     font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.logoutButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
     padding: 8px 16px;
+    color: #333;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
     border-radius: 8px;
     transition: background-color 0.2s;
 }
 
-.loginButton:hover {
+.logoutButton:hover {
     background-color: rgba(0, 0, 0, 0.05);
 }
 
-.registerButton {
-    background-color: var(--primary-color);
-    color: white;
+.loginButton {
+    background-color: #b0f484;
+    color: #333;
     text-decoration: none;
     font-weight: 500;
     padding: 8px 24px;
     border-radius: 8px;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: all 0.2s ease;
 }
 
-.registerButton:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.loginButton:hover {
+    background-color: #86efac;
 }
 
 @media (max-width: 768px) {
-    .nav {
-        display: none;
+    .container {
+        padding: 0 16px;
     }
 
     .auth {
         gap: 8px;
     }
 
-    .loginButton {
-        padding: 8px 12px;
+    .userMenu {
+        gap: 8px;
     }
 
-    .registerButton {
+    .loginButton {
         padding: 8px 16px;
+    }
+
+    .username {
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 }

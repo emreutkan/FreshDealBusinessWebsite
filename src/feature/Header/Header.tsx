@@ -5,6 +5,7 @@ import styles from './Header.module.css';
 import logo from '../../assets/fresh-deal-logo.svg';
 import { RootState, AppDispatch } from '../../redux/store';
 import { logout } from '../../redux/slices/userSlice';
+import { IoLogOutOutline } from 'react-icons/io5';
 
 const Header: React.FC = () => {
     const navigate = useNavigate();
@@ -35,26 +36,25 @@ const Header: React.FC = () => {
         <header className={styles.header}>
             <div className={styles.container}>
                 <Link to="/" className={styles.logo}>
-                    <img src={logo} alt="Fresh Deal" />
+                    <img src={logo} alt="Fresh Deal" className={styles.logoImage} />
                 </Link>
-
-                {/* Navigation removed as per requirement */}
 
                 <div className={styles.auth}>
                     {token ? (
                         <div className={styles.userMenu}>
                             <span className={styles.username}>{name_surname}</span>
-                            <button onClick={handleLogout} className={styles.logoutButton}>
+                            <button
+                                onClick={handleLogout}
+                                className={styles.logoutButton}
+                            >
+                                <IoLogOutOutline />
                                 Logout
                             </button>
                         </div>
                     ) : (
-                        <>
-                            <Link to="/login" className={styles.loginButton}>
-                                Login
-                            </Link>
-                            {/* Register link removed as requested */}
-                        </>
+                        <Link to="/login" className={styles.loginButton}>
+                            Login
+                        </Link>
                     )}
                 </div>
             </div>

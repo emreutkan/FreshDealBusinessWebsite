@@ -4,7 +4,6 @@ import { LoadScript } from '@react-google-maps/api';
 import store from "./redux/store";
 import Landing from "./feature/Landing/screens/Landing";
 import PartnershipPage from "./feature/Partnership/screens/partnershipPage";
-import RestaurantsPage from "./feature/Restaurant/screens/RestaurantsPage";
 import Login from "./feature/Login/Login";
 import Register from "./feature/Register/Register";
 import Dashboard from "./feature/Dashboard/Dashboard";
@@ -34,7 +33,6 @@ const AppWithMaps = () => {
                     <Routes>
                         <Route path="/" element={<Landing/>} />
                         <Route path="/partnership" element={<PartnershipPage/>} />
-                        <Route path="/restaurants" element={<RestaurantsPage/>} />
                         <Route path="/login" element={<Login/>} />
                         <Route path="/register" element={<Register/>} />
                         <Route path="/dashboard" element={<Dashboard/>} />
