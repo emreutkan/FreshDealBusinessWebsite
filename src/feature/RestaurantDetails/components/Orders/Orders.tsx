@@ -48,7 +48,7 @@ const formatDate = (dateString: string) => {
 };
 
 interface OrdersProps {
-    restaurantId: number;
+    restaurantId: string;
 }
 
 const Orders: React.FC<OrdersProps> = ({ restaurantId }) => {

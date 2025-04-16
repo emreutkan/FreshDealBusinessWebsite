@@ -1,140 +1,85 @@
-.card {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    position: relative;
-    box-shadow: var(--box-shadow);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.imageWrapper {
-    position: relative;
-    width: 100%;
-    height: 300px;
-    overflow: hidden;
-}
-
-.imageOverlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(to bottom,
-    rgba(0, 0, 0, 0.2),
-    rgba(0, 0, 0, 0.4)
-    );
-    z-index: 1;
-}
-
-.restaurantImage {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-}
-
-.card:hover .restaurantImage {
-    transform: scale(1.05);
-}
-
-.ratingBadge {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 8px 16px;
-    border-radius: 20px;
-    z-index: 2;
-    font-weight: 600;
-    color: var(--primary-color);
-    backdrop-filter: blur(4px);
-    animation: fadeInUp 0.8s ease-out;
-}
-
-.contentContainer {
-    background: white;
+.overviewContainer {
     padding: 2rem;
-    position: relative;
-    z-index: 2;
 }
 
-.headerSection {
+.notFound {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--gray-color);
+}
+
+.restaurantHeader {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.headerContent {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 1.5rem;
-    animation: fadeInUp 0.8s ease-out;
 }
 
-.title {
-    font-size: clamp(1.5rem, 3vw, 2rem);
-    color: var(--primary-color);
-    margin: 0;
-    position: relative;
-    display: inline-block;
-}
-
-
-
-.title:hover .highlight::after {
-    transform: scaleX(1);
-    transform-origin: left;
-}
-
-.description {
-    color: rgba(0, 0, 0, 0.7);
-    font-size: clamp(1rem, 1.5vw, 1.1rem);
-    line-height: 1.6;
-    margin-bottom: 2rem;
-    animation: fadeInUp 0.8s ease-out 0.2s backwards;
-}
-
-.statsGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+.headerLeft {
+    display: flex;
     gap: 1.5rem;
-    margin-bottom: 2rem;
-    animation: fadeInUp 0.8s ease-out 0.4s backwards;
+    align-items: flex-start;
 }
 
-.statItem {
-    background: rgba(var(--primary-color-rgb), 0.1);
-    padding: 1rem;
+.restaurantImage {
+    width: 120px;
+    height: 120px;
     border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.restaurantImage img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.restaurantMainInfo {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    transition: transform 0.2s ease;
 }
 
-
-.statLabel {
-    /*color: var(--primary-color);*/
-    font-size: 1.2rem;
-    font-weight: 500;
-    opacity: 0.8;
+.restaurantMainInfo h1 {
+    color: var(--primary-color);
+    margin: 0;
+    font-size: 2rem;
 }
 
-.statValue {
-    /*color: var(--primary-color);*/
+.category {
+    color: var(--gray-color);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #fbbf24;
+}
+
+.ratingCount {
+    color: var(--gray-color);
     font-size: 0.9rem;
-    font-weight: 300;
 }
 
 .actionButtons {
     display: flex;
     gap: 1rem;
-    animation: fadeInUp 0.8s ease-out 0.2s backwards;
 }
 
 .actionButton {
     padding: 0.75rem 1.5rem;
     border-radius: var(--border-radius);
-    font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.3s ease;
     border: none;
 }
 
@@ -145,8 +90,8 @@
 
 .deleteButton {
     background-color: transparent;
-    color: var(--primary-color);
-    border: 2px solid var(--primary-color);
+    color: #dc2626;
+    border: 1px solid #dc2626;
 }
 
 .actionButton:hover {
@@ -154,54 +99,131 @@
     box-shadow: var(--box-shadow-hover);
 }
 
-.ctaContainer {
-    display: flex;
-    justify-content: center;
-    margin-top: 2rem;
-    animation: fadeInUp 0.8s ease-out 0.6s backwards;
+.infoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
 }
 
-.addButton {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-    color: white;
-    padding: 1rem 2rem;
+.infoCard {
+    background: #f8f9fa;
+    padding: 1.5rem;
     border-radius: var(--border-radius);
-    font-size: 1rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.infoIcon {
+    width: 40px;
+    height: 40px;
+    background: var(--primary-color);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.infoContent h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+}
+
+.infoContent p {
+    margin: 0;
+    color: var(--gray-color);
+}
+
+.subInfo {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-top: 0.25rem;
+}
+
+.descriptionSection {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    margin-top: 2rem;
+}
+
+.descriptionSection h2 {
+    color: var(--primary-color);
+    margin: 0 0 1rem 0;
+    font-size: 1.5rem;
+}
+
+.descriptionSection p {
+    color: var(--gray-color);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modalContent {
+    background: white;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    max-width: 400px;
+    width: 90%;
+}
+
+.modalContent h3 {
+    color: var(--primary-color);
+    margin: 0 0 1rem 0;
+}
+
+.modalWarning {
+    color: #dc2626;
+    font-size: 0.9rem;
+    margin: 1rem 0;
+}
+
+.modalButtons {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+}
+
+.cancelButton,
+.confirmButton {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
     font-weight: 500;
-    border: none;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    width: 100%;
-    max-width: 300px;
+    transition: all 0.3s ease;
 }
 
-.addButton:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--box-shadow-hover);
+.cancelButton {
+    background: transparent;
+    border: none;
+    color: var(--gray-color);
 }
 
-/* Animations */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.confirmButton {
+    background: #dc2626;
+    color: white;
+    border: none;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-/* Responsive design */
 @media (max-width: 768px) {
-    .headerSection {
+    .headerContent {
         flex-direction: column;
-        gap: 1rem;
+        gap: 1.5rem;
+    }
+
+    .headerLeft {
+        width: 100%;
     }
 
     .actionButtons {
@@ -212,74 +234,7 @@
         flex: 1;
     }
 
-    .statsGrid {
+    .infoGrid {
         grid-template-columns: 1fr;
     }
-}
-.modalButtons {
-    display: flex;
-    gap: 1rem;
-    justify-content: flex-end;
-    margin-top: 2rem;
-}
-
-.cancelButton, .confirmButton {
-    padding: 0.75rem 1.5rem;
-    border-radius: var(--border-radius);
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.cancelButton {
-    background-color: transparent;
-    border: 0 solid ;
-}
-
-.confirmButton {
-    background-color: #dc2626;
-    color: white;
-    border: none;
-}
-
-/* Adjusting some spacing */
-.contentContainer {
-    padding: 3rem;  /* Increased from 2rem for better spacing */
-}
-
-.headerSection {
-    margin-bottom: 2rem;  /* Increased from 1.5rem */
-}
-
-.statsGrid {
-    gap: 2rem;  /* Increased from 1.5rem */
-}
-
-.statItem {
-    padding: 1.5rem;  /* Increased from 1rem */
-}
-
-/* Additional hover effects */
-
-
-.cancelButton:hover, .confirmButton:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--box-shadow-hover);
-}
-.modalWrapper {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-}
-
-.modalContainer {
-    width: 100vw !important;
-    height: 100vh !important;
-    max-width: none !important;
-    max-height: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border-radius: 0 !important;
-    outline: none !important;
 }

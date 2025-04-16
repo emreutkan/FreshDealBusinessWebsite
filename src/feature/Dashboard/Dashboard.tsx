@@ -20,9 +20,8 @@ const Dashboard: React.FC = () => {
     }, [dispatch]);
 
     useEffect(() => {
-        // If there are restaurants but no restaurant is selected, redirect to the first one
-        if (ownedRestaurants.length > 0 && !restaurantId) {
-            navigate(`/dashboard/${ownedRestaurants[0].id}`);
+        if (ownedRestaurants.length > 0 && !restaurantId && window.location.pathname === '/dashboard') {
+            navigate(`/dashboard/${ownedRestaurants[0].id}/orders`);
         }
     }, [ownedRestaurants, restaurantId, navigate]);
 

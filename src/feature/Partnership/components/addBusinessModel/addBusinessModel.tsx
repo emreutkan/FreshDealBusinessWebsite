@@ -8,17 +8,9 @@ import {
     addRestaurant,
     AddRestaurantPayload,
 } from "../../../../redux/thunks/restaurantThunk.ts";
-import MapWrapper from "../mapwrapper/MapWrapper.tsx";
 
-const DEFAULT_CENTER = {
-    lat: 37.7749,
-    lng: -122.4194,
-};
 
-const MAP_CONTAINER_STYLE = {
-    width: "100%",
-    height: "100%",
-};
+
 
 interface RestaurantData {
     id: string;
@@ -84,22 +76,12 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
         isEditing ? restaurant?.category || "" : ""
     );
 
-    const [searchingForAddress, setSearchingForAddress] = useState(false);
     const [daysModalOpen, setDaysModalOpen] = useState(false);
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
     // For the address (StandaloneSearchBox)
     const searchBoxRef = useRef<google.maps.places.SearchBox | null>(null);
 
-    // For the map
-    const [markerPosition, setMarkerPosition] = useState<google.maps.LatLngLiteral>(
-        isEditing && restaurant
-            ? { lat: restaurant.latitude, lng: restaurant.longitude }
-            : DEFAULT_CENTER
-    );
-    const [userLocation, setUserLocation] = useState<google.maps.LatLngLiteral | null>(
-        null
-    );
 
     const [invalidFields, setInvalidFields] = useState<string[]>([]);
 
@@ -149,77 +131,9 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
     /** ─────────────────────────────────────────
      *   Attempt to get user location
      *  ───────────────────────────────────────── */
-    const getIpLocation = async (): Promise<google.maps.LatLngLiteral | null> => {
-        try {
-            const response = await fetch("https://ipapi.co/json/");
-            if (!response.ok) {
-                return null;
-            }
-            const data = await response.json();
-            if (data && typeof data.latitude === "number" && typeof data.longitude === "number") {
-                return { lat: data.latitude, lng: data.longitude };
-            }
-            return null;
-        } catch (error) {
-            console.error("Error getting IP-based location:", error);
-            return null;
-        }
-    };
 
-    useEffect(() => {
-        let isMounted = true;
 
-        const fetchLocation = async () => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        if (isMounted) {
-                            setUserLocation({
-                                lat: position.coords.latitude,
-                                lng: position.coords.longitude,
-                            });
-                        }
-                    },
-                    async () => {
-                        if (isMounted) {
-                            const ipLocation = await getIpLocation();
-                            if (ipLocation) setUserLocation(ipLocation);
-                        }
-                    }
-                );
-            } else {
-                if (isMounted) {
-                    const ipLocation = await getIpLocation();
-                    if (ipLocation) setUserLocation(ipLocation);
-                }
-            }
-        };
 
-        fetchLocation();
-
-        return () => {
-            isMounted = false;
-        };
-    }, []);
-
-    /** When user types an address in the search box */
-    const onPlacesChanged = () => {
-        const places = searchBoxRef.current?.getPlaces();
-        if (places && places.length > 0) {
-            const place = places[0];
-            if (!place.geometry || !place.geometry.location) return;
-
-            const lat = place.geometry.location.lat();
-            const lng = place.geometry.location.lng();
-
-            setMarkerPosition({ lat, lng });
-            setFormData((prev) => ({
-                ...prev,
-                latitude: lat.toString(),
-                longitude: lng.toString(),
-            }));
-        }
-    };
 
     /** Handle normal form changes (excluding time) */
     const handleChange = (
@@ -390,15 +304,12 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
     const isInvalid = (fieldName: string): boolean => invalidFields.includes(fieldName);
 
     /** Map center priority: user location -> chosen marker -> fallback default */
-    const mapCenter = userLocation || markerPosition || DEFAULT_CENTER;
 
     return (
         <div className={styles.fullHeightContainer}>
             {/* ------- LEFT SIDE FORM ------- */}
             <div
-                className={`${styles.outerDiv} ${
-                    searchingForAddress ? styles.outerDivShowMap : ""
-                }`}
+                className={styles.outerDiv}
             >
                 {currentStep === 1 && (
                     <>
@@ -462,20 +373,14 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                     {/* The actual StandaloneSearchBox is here in the parent */}
                                     <StandaloneSearchBox
                                         onLoad={(ref) => (searchBoxRef.current = ref)}
-                                        onPlacesChanged={onPlacesChanged}
                                     >
                                         <input
                                             type="text"
                                             placeholder={
-                                                isEditing && restaurant
-                                                    ? `Coordinates: ${restaurant.latitude}, ${restaurant.longitude}`
-                                                    : "Search for an address"
+                                             "Search for an address"
                                             }
-                                            className={`${styles.defaultInput} ${
-                                                searchingForAddress ? styles.defaultInputShowMap : ""
-                                            } ${isInvalid("longitude") ? styles.invalidInput : ""}`}
-                                            onFocus={() => setSearchingForAddress(true)}
-                                            onBlur={() => setSearchingForAddress(false)}
+                                            className={`${styles.defaultInput}${isInvalid("longitude") ? styles.invalidInput : ""}`}
+
                                         />
                                     </StandaloneSearchBox>
                                 </div>
@@ -637,11 +542,9 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                         </label>
                                     </div>
 
-                                    {!searchingForAddress && (
                                         <Button type="submit" className={styles.continueButton}>
                                             <span>Continue</span>
                                         </Button>
-                                    )}
                                 </div>
                             </div>
                         </form>
@@ -731,19 +634,7 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                 )}
             </div>
 
-            <div
-                className={
-                    !searchingForAddress ? styles.mapContainer : styles.mapContainerShowMap
-                }
-            >
-                <MapWrapper
-                    mapContainerStyle={MAP_CONTAINER_STYLE}
-                    center={mapCenter}
-                    zoom={12}
-                    markerPosition={markerPosition}
-                    userLocation={userLocation}
-                />
-            </div>
+
         </div>
     );
 };

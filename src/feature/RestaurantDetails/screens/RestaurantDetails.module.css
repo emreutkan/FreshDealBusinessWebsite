@@ -1,97 +1,53 @@
+.pageWrapper {
+    height: 100%;
+    background-color: #f8f9fa;
+    overflow-y: auto;
+}
+
 .container {
-    padding: 2rem;
-    max-width: 1800px;
+    max-width: 1200px;
     margin: 0 auto;
+    padding: 2rem;
+}
+
+.tabNavigation {
     display: flex;
-    gap: 2rem;
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 0.5rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--box-shadow-default);
+}
+
+.tabItem {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    color: var(--gray-color);
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    transition: all 0.3s ease;
+    flex: 1;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.tabItem svg {
+    font-size: 1.25rem;
+}
+
+.tabItem:hover {
+    background-color: #f8f9fa;
+}
+
+.tabItem.active {
+    background-color: var(--primary-color);
+    color: white;
 }
 
 .content {
-    display: flex;
-    gap: 2rem;
-    width: 100%;
-}
-
-.detailsColumn {
-    flex: 3;
-    min-width: 0;
-}
-
-.purchasesColumn {
-    flex: 3;
-    min-width: 0;
-}
-
-
-
-.pageWrapper {
-    background-color: rgb(231,231,231);
-    min-height: 100vh;
-}
-
-
-.modalWrapper {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1300;
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
-}
-
-.modalContainer {
-    max-height: 90vh;
-    overflow-y: auto;
-    margin: 20px;
-    outline: none;
-    width: 100%;
-    max-width: 600px;
-}
-
-/* Scrollbar styles */
-.modalContainer::-webkit-scrollbar {
-    width: 8px;
-}
-
-.modalContainer::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-}
-
-.modalContainer::-webkit-scrollbar-thumb {
-    background: #ddd;
-    border-radius: 4px;
-}
-
-.modalContainer::-webkit-scrollbar-thumb:hover {
-    background: #ccc;
-}
-
-/* Responsive styles */
-@media (max-width: 1024px) {
-    .content {
-        grid-template-columns: 1fr;
-    }
-
-    .purchasesColumn {
-        position: relative;
-        top: 0;
-        height: auto;
-        max-height: 600px;
-    }
-}
-
-@media (max-width: 768px) {
-    .container {
-        padding: 1rem;
-    }
-
-    .modalContainer {
-        margin: 16px;
-    }
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow-default);
+    min-height: calc(100vh - 200px);
 }

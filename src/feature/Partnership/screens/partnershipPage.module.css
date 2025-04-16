@@ -1,0 +1,275 @@
+/* Animations */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+/* Page Wrapper & Background */
+.pageWrapper {
+    min-height: 100vh;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    overflow-y: auto;
+    z-index: 1300;
+    animation: slideInRight 0.3s ease-out;
+}
+
+.exitAnimation {
+    animation: slideOutRight 0.3s ease-out forwards;
+}
+
+.backgroundPattern {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.circle1, .circle2, .circle3 {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.1;
+    background: linear-gradient(135deg, #86efac 0%, #b0f484 100%);
+}
+
+.circle1 {
+    width: 400px;
+    height: 400px;
+    top: -100px;
+    right: -100px;
+    animation: float 8s ease-in-out infinite;
+}
+
+.circle2 {
+    width: 300px;
+    height: 300px;
+    bottom: 10%;
+    left: -50px;
+    animation: float 12s ease-in-out infinite;
+}
+
+.circle3 {
+    width: 200px;
+    height: 200px;
+    top: 40%;
+    right: 15%;
+    animation: float 10s ease-in-out infinite;
+}
+
+/* Main Container */
+.pageContainer {
+    position: relative;
+    z-index: 2;
+    margin: 0 auto;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Header Section */
+.headerSection {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.backButton {
+    align-self: flex-start;
+    color: #166534 !important;
+    text-transform: none !important;
+    font-size: 1rem !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 8px !important;
+    background-color: rgba(255, 255, 255, 0.5) !important;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease !important;
+}
+
+.backButton:hover {
+    background-color: rgba(255, 255, 255, 0.8) !important;
+    transform: translateX(-4px);
+}
+
+.welcomeMessage {
+    text-align: center;
+    color: #166534;
+    animation: fadeIn 0.4s ease-out 0.2s both;
+}
+
+.welcomeMessage h1 {
+    font-size: 2.5rem;
+    margin: 0;
+    font-weight: 600;
+}
+
+.welcomeMessage p {
+    font-size: 1.2rem;
+    margin: 0.5rem 0 0;
+    opacity: 0.8;
+}
+
+/* Restaurant Info */
+.restaurantInfo {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 1.5rem;
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.4s ease-out 0.2s both;
+}
+
+.restaurantImage {
+    width: 80px;
+    height: 80px;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+.restaurantDetails h1 {
+    font-size: 1.5rem;
+    margin: 0;
+    color: #166534;
+}
+
+.category {
+    margin: 0.25rem 0 0 0;
+    color: #166534;
+    opacity: 0.8;
+    font-size: 1rem;
+}
+
+.timestamp {
+    font-size: 0.875rem;
+    color: #166534;
+    opacity: 0.7;
+    margin: 0.25rem 0 0 0;
+}
+
+/* Content Container */
+.contentContainer {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.formWrapper {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 24px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.4s ease-out 0.3s both;
+    overflow: hidden;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .pageContainer {
+        padding: 1rem;
+    }
+
+    .welcomeMessage h1 {
+        font-size: 2rem;
+    }
+
+    .restaurantInfo {
+        flex-direction: column;
+        text-align: center;
+        padding: 1rem;
+    }
+
+    .restaurantImage {
+        width: 60px;
+        height: 60px;
+    }
+
+    .circle1 {
+        width: 200px;
+        height: 200px;
+    }
+
+    .circle2 {
+        width: 150px;
+        height: 150px;
+    }
+
+    .circle3 {
+        display: none;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .pageWrapper {
+        background: linear-gradient(135deg, #022c22 0%, #064e3b 100%);
+    }
+
+    .welcomeMessage,
+    .restaurantDetails h1,
+    .category,
+    .timestamp {
+        color: #f0fdf4;
+    }
+
+    .backButton {
+        color: #f0fdf4 !important;
+        background-color: rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .backButton:hover {
+        background-color: rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .restaurantInfo,
+    .formWrapper {
+        background: rgba(0, 0, 0, 0.2);
+    }
+}

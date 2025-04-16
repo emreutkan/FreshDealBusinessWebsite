@@ -1,32 +1,81 @@
-import AddBusinessModel from "../components/addBusinessModel/addBusinessModel.tsx";
-import Header from "../../Header/Header.tsx";
-import {useState} from "react";
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Button } from "@mui/material";
+import AddBusinessModel from "../components/addBusinessModel/AddBusinessModel";
+import styles from "./PartnershipPage.module.css";
+import { IoArrowBack } from "react-icons/io5";
 
-const PartnershipPage = () => {
+interface LocationState {
+    isEditing?: boolean;
+    restaurant?: any; // Replace 'any' with your Restaurant type
+}
 
-    const [activePage, setActivePage] = useState('Partnership');
+const PartnershipPage: React.FC = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { isEditing, restaurant } = location.state as LocationState || {};
+    const [isExiting, setIsExiting] = useState(false);
+
+    const handleGoBack = () => {
+        setIsExiting(true);
+        setTimeout(() => {
+            navigate(-1);
+        }, 300);
+    };
 
     return (
-
-
-        <>
-            <Header
-                activePage={activePage}
-                setActivePage={setActivePage}
-            />
-            <div style={{
-                backgroundColor: "#b2f7a5",
-                height: "48vh",
-                display: "flex",
-                justifyContent: "center",
-            }}>
-
-                <AddBusinessModel/>
-
+        <div className={`${styles.pageWrapper} ${isExiting ? styles.exitAnimation : ''}`}>
+            <div className={styles.backgroundPattern}>
+                <div className={styles.circle1}></div>
+                <div className={styles.circle2}></div>
+                <div className={styles.circle3}></div>
             </div>
 
-        </>
+            <div className={styles.pageContainer}>
+                <div className={styles.headerSection}>
+                    <Button
+                        onClick={handleGoBack}
+                        className={styles.backButton}
+                        startIcon={<IoArrowBack />}
+                    >
+                        Back
+                    </Button>
+                    {restaurant ? (
+                        <div className={styles.restaurantInfo}>
+                            <img
+                                src={restaurant.image_url}
+                                alt={restaurant.restaurantName}
+                                className={styles.restaurantImage}
+                            />
+                            <div className={styles.restaurantDetails}>
+                                <h1>{restaurant.restaurantName}</h1>
+                                <p className={styles.category}>{restaurant.category}</p>
+                                <p className={styles.timestamp}>
+                                    {new Date().toLocaleString('en-US', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    })}
+                                </p>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className={styles.welcomeMessage}>
+                            <h1>Join FreshDeal</h1>
+                            <p>Partner with us and reach more customers</p>
+                        </div>
+                    )}
+                </div>
 
+                <div className={styles.contentContainer}>
+                    <div className={styles.formWrapper}>
+                        <AddBusinessModel isEditing={isEditing} restaurant={restaurant} />
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 };
 
