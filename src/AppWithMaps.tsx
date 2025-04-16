@@ -1,6 +1,6 @@
 // AppWithMaps.tsx
 import { Provider } from 'react-redux';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { LoadScript } from '@react-google-maps/api';
 import store from "./redux/store.ts";
 import Landing from "./feature/Landing/screens/Landing.tsx";
@@ -22,6 +22,7 @@ if (!GOOGLE_MAPS_API_KEY) {
     console.error('Google Maps API key is missing. Please check your environment variables.');
 }
 
+
 const AppWithMaps = () => {
     return (
         <LoadScript
@@ -32,18 +33,20 @@ const AppWithMaps = () => {
                     <div className="loading-spinner"></div>
                     <p className="loading-text">Loading Fresh Deal Maps...</p>
                 </div>
-            }        >
+            }
+        >
             <Provider store={store}>
                 <Router>
                     <Routes>
                         <Route path="/" element={<Landing/>}/>
                         <Route path="/Partnership" element={<PartnershipPage/>}/>
-                        <Route path="/Restaurants" element={<RestaurantsPage/>}/>
-                        <Route path="/Restaurant/:restaurantId" element={<RestaurantDetails/>}/>
+                        <Route path="/restaurants" element={<RestaurantsPage/>}/>
+                        <Route path="/restaurant/:restaurantId" element={<RestaurantDetails/>}/>
                         <Route path="/login" element={<Login/>}/>
                         <Route path="/register" element={<Register/>}/>
                         <Route path="/dashboard" element={<Dashboard/>}/>
-                        {/*<Route path="/Restaurants/:restaurantId/addListing" element={<List/>}/>*/}
+                        <Route path="/dashboard/:restaurantId" element={<Dashboard/>}/>
+                        <Route path="*" element={<Navigate to="/dashboard" />} />
                     </Routes>
                 </Router>
             </Provider>

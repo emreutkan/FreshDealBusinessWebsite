@@ -1,0 +1,31 @@
+.dashboardContainer {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.dashboardContent {
+    display: flex;
+    height: calc(100vh - 64px); /* Adjust based on your header height */
+}
+
+.mainContent {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.welcomeMessage {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.welcomeMessage h1 {
+    color: var(--primary-color);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.welcomeMessage p {
+    color: var(--gray-color);
+    font-size: 1.1rem;
+}

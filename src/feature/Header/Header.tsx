@@ -20,6 +20,7 @@ const Header: React.FC = () => {
             console.error('Could not find token');
         }
     }, []);
+
     const handleLogout = async () => {
         try {
             localStorage.removeItem('userToken');
@@ -37,25 +38,7 @@ const Header: React.FC = () => {
                     <img src={logo} alt="Fresh Deal" />
                 </Link>
 
-                <nav className={styles.nav}>
-                    {token ? (
-                        <>
-                            <Link to="/dashboard" className={styles.link}>
-                                Dashboard
-                            </Link>
-                            <Link to="/restaurants" className={styles.link}>
-                                My Restaurants
-                            </Link>
-                            <Link to="/partnership" className={styles.link}>
-                                Partnership
-                            </Link>
-                        </>
-                    ) : (
-                        <>
-
-                        </>
-                    )}
-                </nav>
+                {/* Navigation removed as per requirement */}
 
                 <div className={styles.auth}>
                     {token ? (
@@ -70,9 +53,7 @@ const Header: React.FC = () => {
                             <Link to="/login" className={styles.loginButton}>
                                 Login
                             </Link>
-                            <Link to="/register" className={styles.registerButton}>
-                                Register Your Restaurant
-                            </Link>
+                            {/* Register link removed as requested */}
                         </>
                     )}
                 </div>
