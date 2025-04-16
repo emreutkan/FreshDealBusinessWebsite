@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
-import styles from "./PartnershipPage.module.css";
+import styles from "./partnershipPage.module.css";
 import { IoArrowBack } from "react-icons/io5";
 import AddBusinessModel from "../components/addBusinessModel/addBusinessModel.tsx";
 import {Restaurant} from "../../../redux/slices/restaurantSlice.ts";
