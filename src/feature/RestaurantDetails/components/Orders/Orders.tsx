@@ -10,7 +10,6 @@ import {
 import { AppDispatch, RootState } from "../../../../redux/store.ts";
 import { Purchase } from "../../../../redux/slices/purchaseSlice.ts";
 
-// Modal Component
 interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -34,7 +33,6 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
     );
 };
 
-// Utility function for date formatting
 const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString('en-US', {
@@ -58,15 +56,10 @@ const Orders: React.FC<OrdersProps> = ({ restaurantId }) => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [expandedSection, setExpandedSection] = useState<string | null>(null);
+    const [rejectingOrder, setRejectingOrder] = useState<number | null>(null);
 
-    // Get orders from Redux store
-    const { items: purchases, loading, error } = useSelector((state: RootState) => {
-        const purchasesState = state.purchases;
-        console.log('Redux purchases state:', purchasesState);
-        return purchasesState;
-    });
+    const { items: purchases, loading, error } = useSelector((state: RootState) => state.purchases);
 
-    // Utility function for formatting price
     const formatPrice = (price: string) => {
         return `$${parseFloat(price).toFixed(2)}`;
     };
@@ -77,8 +70,14 @@ const Orders: React.FC<OrdersProps> = ({ restaurantId }) => {
         }
     }, [dispatch, restaurantId]);
 
-
-    const [rejectingOrder, setRejectingOrder] = useState<number | null>(null);
+    useEffect(() => {
+        if (restaurantId) {
+            const intervalId = setInterval(() => {
+                dispatch(fetchRestaurantPurchases(Number(restaurantId)));
+            }, 30000);
+            return () => clearInterval(intervalId);
+        }
+    }, [dispatch, restaurantId]);
 
     const handleRejectOrder = async (purchaseId: number) => {
         if (!purchaseId) {
@@ -92,48 +91,14 @@ const Orders: React.FC<OrdersProps> = ({ restaurantId }) => {
 
         setRejectingOrder(purchaseId);
         try {
-            console.log('Rejecting order:', purchaseId);
-            const result = await dispatch(rejectPurchaseOrder(purchaseId)).unwrap();
-            console.log('Reject order result:', result);
-            await dispatch(fetchRestaurantPurchases(restaurantId));
+            await dispatch(rejectPurchaseOrder(purchaseId)).unwrap();
+            await dispatch(fetchRestaurantPurchases(Number(restaurantId)));
         } catch (error) {
             console.error('Failed to reject order:', error);
         } finally {
             setRejectingOrder(null);
         }
     };
-
-    const getStatusClassName = (status: Purchase['status']) => {
-        switch (status) {
-            case 'PENDING':
-                return styles.pending;
-            case 'ACCEPTED':
-                return styles.accepted;
-            case 'COMPLETED':
-                return styles.completed;
-            case 'REJECTED':
-                return styles.rejected;
-            default:
-                return '';
-        }
-    };
-
-    useEffect(() => {
-        if (restaurantId) {
-            console.log('Fetching orders for restaurant:', restaurantId);
-            dispatch(fetchRestaurantPurchases(restaurantId));
-        }
-    }, [dispatch, restaurantId]);
-
-    useEffect(() => {
-        if (restaurantId) {
-            const intervalId = setInterval(() => {
-                dispatch(fetchRestaurantPurchases(restaurantId));
-            }, 30000);
-
-            return () => clearInterval(intervalId);
-        }
-    }, [dispatch, restaurantId]);
 
     const handleAcceptOrder = async (purchaseId: number) => {
         if (!purchaseId) {
@@ -143,10 +108,8 @@ const Orders: React.FC<OrdersProps> = ({ restaurantId }) => {
 
         setAcceptingOrder(purchaseId);
         try {
-            console.log('Accepting order:', purchaseId);
-            const result = await dispatch(acceptPurchaseOrder(purchaseId)).unwrap();
-            console.log('Accept order result:', result);
-            await dispatch(fetchRestaurantPurchases(restaurantId));
+            await dispatch(acceptPurchaseOrder(purchaseId)).unwrap();
+            await dispatch(fetchRestaurantPurchases(Number(restaurantId)));
         } catch (error) {
             console.error('Failed to accept order:', error);
         } finally {
@@ -176,18 +139,16 @@ const Orders: React.FC<OrdersProps> = ({ restaurantId }) => {
         }
 
         try {
-            const result = await dispatch(addCompletionImage({
+            await dispatch(addCompletionImage({
                 purchaseId,
                 file: selectedFile
             })).unwrap();
-
-            console.log('Upload result:', result);
             setSelectedFile(null);
             setActiveImageUpload(null);
             if (fileInputRef.current) {
                 fileInputRef.current.value = '';
             }
-            await dispatch(fetchRestaurantPurchases(restaurantId));
+            await dispatch(fetchRestaurantPurchases(Number(restaurantId)));
         } catch (error) {
             console.error('Failed to upload image:', error);
         }
@@ -200,6 +161,69 @@ const Orders: React.FC<OrdersProps> = ({ restaurantId }) => {
             completed: purchases.filter(p => p.status === 'COMPLETED'),
             rejected: purchases.filter(p => p.status === 'REJECTED')
         };
+    };
+
+    const getStatusClassName = (status: Purchase['status']) => {
+        switch (status) {
+            case 'PENDING':
+                return styles.pending;
+            case 'ACCEPTED':
+                return styles.accepted;
+            case 'COMPLETED':
+                return styles.completed;
+            case 'REJECTED':
+                return styles.rejected;
+            default:
+                return '';
+        }
+    };
+
+    const renderStatusSection = (status: string, orders: Purchase[]) => {
+        const statusLabels = {
+            'PENDING': { title: 'Pending Orders', color: '#f59e0b' },
+            'ACCEPTED': { title: 'Accepted Orders', color: '#3b82f6' },
+            'COMPLETED': { title: 'Completed Orders', color: '#10b981' },
+            'REJECTED': { title: 'Rejected Orders', color: '#ef4444' }
+        };
+
+        const currentLabel = statusLabels[status as keyof typeof statusLabels];
+
+        return (
+            <div className={styles.statusSection}>
+                <div
+                    className={styles.statusHeader}
+                    style={{
+                        borderLeft: `4px solid ${currentLabel.color}`,
+                        background: `linear-gradient(to right, ${currentLabel.color}10, transparent)`
+                    }}
+                >
+                    <div className={styles.statusHeaderContent}>
+                        <h3 className={styles.statusTitle}>
+                            {currentLabel.title}
+                            <span className={styles.orderCount}>
+                                {orders.length} {orders.length === 1 ? 'order' : 'orders'}
+                            </span>
+                        </h3>
+                        <button
+                            className={styles.expandButton}
+                            onClick={() => setExpandedSection(status.toLowerCase())}
+                            title="Expand section"
+                        >
+                            <span className={styles.expandIcon}>⤢</span>
+                        </button>
+                    </div>
+                </div>
+                <div className={styles.statusList}>
+                    {orders.length > 0 ? (
+                        orders.map(purchase => renderPurchaseItem(purchase))
+                    ) : (
+                        <div className={styles.emptyState}>
+                            No {status.toLowerCase()} orders
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
     };
 
     const renderPurchaseItem = (purchase: Purchase) => (
@@ -332,119 +356,74 @@ const Orders: React.FC<OrdersProps> = ({ restaurantId }) => {
     );
 
     return (
-        <div className={styles.purchasesCard}>
-            <h2>Restaurant Orders</h2>
-            {loading && <p className={styles.loading}>Loading orders...</p>}
-            {error && <p className={styles.error}>{error}</p>}
+        <div className={styles.purchasesContainer}>
+            <div className={styles.purchasesHeader}>
+                <h2>Restaurant Orders</h2>
+                {loading && <div className={styles.loadingIndicator}>Loading...</div>}
+            </div>
 
-            {!loading && Array.isArray(purchases) && (
-                <div className={styles.statusLists}>
-                    {/* Pending Orders Section */}
-                    <div className={styles.statusSection}>
-                        <div className={styles.statusHeader}>
-                            <h3 className={styles.statusTitle}>Pending Orders</h3>
-                            <button
-                                className={styles.expandButton}
-                                onClick={() => setExpandedSection('pending')}
-                            >
-                                ⤢
-                            </button>
-                        </div>
-                        <div className={styles.statusList}>
-                            {groupPurchasesByStatus(purchases).pending.map(purchase => renderPurchaseItem(purchase))}
-                        </div>
-                    </div>
-
-                    {/* Accepted Orders Section */}
-                    <div className={styles.statusSection}>
-                        <div className={styles.statusHeader}>
-                            <h3 className={styles.statusTitle}>Accepted Orders</h3>
-                            <button
-                                className={styles.expandButton}
-                                onClick={() => setExpandedSection('accepted')}
-                            >
-                                ⤢
-                            </button>
-                        </div>
-                        <div className={styles.statusList}>
-                            {groupPurchasesByStatus(purchases).accepted.map(purchase => renderPurchaseItem(purchase))}
-                        </div>
-                    </div>
-
-                    {/* Completed Orders Section */}
-                    <div className={styles.statusSection}>
-                        <div className={styles.statusHeader}>
-                            <h3 className={styles.statusTitle}>Completed Orders</h3>
-                            <button
-                                className={styles.expandButton}
-                                onClick={() => setExpandedSection('completed')}
-                            >
-                                ⤢
-                            </button>
-                        </div>
-                        <div className={styles.statusList}>
-                            {groupPurchasesByStatus(purchases).completed.map(purchase => renderPurchaseItem(purchase))}
-                        </div>
-                    </div>
-
-                    {/* Rejected Orders Section */}
-                    <div className={styles.statusSection}>
-                        <div className={styles.statusHeader}>
-                            <h3 className={styles.statusTitle}>Rejected Orders</h3>
-                            <button
-                                className={styles.expandButton}
-                                onClick={() => setExpandedSection('rejected')}
-                            >
-                                ⤢
-                            </button>
-                        </div>
-                        <div className={styles.statusList}>
-                            {groupPurchasesByStatus(purchases).rejected.map(purchase => renderPurchaseItem(purchase))}
-                        </div>
-                    </div>
-
-                    {/* Modals */}
-                    <Modal
-                        isOpen={expandedSection === 'pending'}
-                        onClose={() => setExpandedSection(null)}
-                        title="Pending Orders"
-                    >
-                        <div className={styles.modalList}>
-                            {groupPurchasesByStatus(purchases).pending.map(purchase => renderPurchaseItem(purchase))}
-                        </div>
-                    </Modal>
-
-                    <Modal
-                        isOpen={expandedSection === 'accepted'}
-                        onClose={() => setExpandedSection(null)}
-                        title="Accepted Orders"
-                    >
-                        <div className={styles.modalList}>
-                            {groupPurchasesByStatus(purchases).accepted.map(purchase => renderPurchaseItem(purchase))}
-                        </div>
-                    </Modal>
-
-                    <Modal
-                        isOpen={expandedSection === 'completed'}
-                        onClose={() => setExpandedSection(null)}
-                        title="Completed Orders"
-                    >
-                        <div className={styles.modalList}>
-                            {groupPurchasesByStatus(purchases).completed.map(purchase => renderPurchaseItem(purchase))}
-                        </div>
-                    </Modal>
-
-                    <Modal
-                        isOpen={expandedSection === 'rejected'}
-                        onClose={() => setExpandedSection(null)}
-                        title="Rejected Orders"
-                    >
-                        <div className={styles.modalList}>
-                            {groupPurchasesByStatus(purchases).rejected.map(purchase => renderPurchaseItem(purchase))}
-                        </div>
-                    </Modal>
+            {error && (
+                <div className={styles.errorContainer}>
+                    <p className={styles.errorMessage}>{error}</p>
                 </div>
             )}
+
+            {!loading && Array.isArray(purchases) && (
+                <div className={styles.statusGrid}>
+                    {renderStatusSection('PENDING', groupPurchasesByStatus(purchases).pending)}
+                    {renderStatusSection('ACCEPTED', groupPurchasesByStatus(purchases).accepted)}
+                    {renderStatusSection('COMPLETED', groupPurchasesByStatus(purchases).completed)}
+                    {renderStatusSection('REJECTED', groupPurchasesByStatus(purchases).rejected)}
+                </div>
+            )}
+
+            <Modal
+                isOpen={expandedSection === 'pending'}
+                onClose={() => setExpandedSection(null)}
+                title="Pending Orders"
+            >
+                <div className={styles.modalList}>
+                    {groupPurchasesByStatus(purchases).pending.map(purchase =>
+                        renderPurchaseItem(purchase)
+                    )}
+                </div>
+            </Modal>
+
+            <Modal
+                isOpen={expandedSection === 'accepted'}
+                onClose={() => setExpandedSection(null)}
+                title="Accepted Orders"
+            >
+                <div className={styles.modalList}>
+                    {groupPurchasesByStatus(purchases).accepted.map(purchase =>
+                        renderPurchaseItem(purchase)
+                    )}
+                </div>
+            </Modal>
+
+            <Modal
+                isOpen={expandedSection === 'completed'}
+                onClose={() => setExpandedSection(null)}
+                title="Completed Orders"
+            >
+                <div className={styles.modalList}>
+                    {groupPurchasesByStatus(purchases).completed.map(purchase =>
+                        renderPurchaseItem(purchase)
+                    )}
+                </div>
+            </Modal>
+
+            <Modal
+                isOpen={expandedSection === 'rejected'}
+                onClose={() => setExpandedSection(null)}
+                title="Rejected Orders"
+            >
+                <div className={styles.modalList}>
+                    {groupPurchasesByStatus(purchases).rejected.map(purchase =>
+                        renderPurchaseItem(purchase)
+                    )}
+                </div>
+            </Modal>
 
             {!loading && (!purchases || purchases.length === 0) && (
                 <div className={styles.noOrders}>
