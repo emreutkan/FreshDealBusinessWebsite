@@ -5,6 +5,7 @@ import styles from './Login.module.css';
 import { AppDispatch, RootState } from '../../redux/store';
 import { setEmail, setPassword, setToken } from '../../redux/slices/userSlice';
 import { loginUser } from '../../redux/thunks/userThunks';
+import { IoArrowBack } from 'react-icons/io5';
 
 const Login: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -14,7 +15,6 @@ const Login: React.FC = () => {
     const [passwordValid, setPasswordValid] = useState(true);
 
     useEffect(() => {
-        // If already logged in, redirect to dashboard
         console.log('Login component token check:', token ? 'Token exists' : 'No token');
         if (token) {
             navigate('/dashboard');
@@ -50,24 +50,34 @@ const Login: React.FC = () => {
                 })
             ).unwrap();
 
-            // The following line is missing in your current implementation
-            // You need to ensure the token is stored after successful login
-            // If the token is in the result, you should dispatch setToken
             if (result && result.token) {
                 dispatch(setToken(result.token));
             }
 
-            navigate('/restaurants');
+            navigate('/dashboard');
         } catch (err) {
             console.error("Failed to login:", err);
         }
     };
+
+    const handleGoBack = () => {
+        navigate('/');
+    };
+
     return (
         <div className={styles.loginPage}>
+            <div className={styles.backgroundPattern}>
+                <div className={styles.circle1}></div>
+                <div className={styles.circle2}></div>
+                <div className={styles.circle3}></div>
+            </div>
+            <button onClick={handleGoBack} className={styles.backButton}>
+                <IoArrowBack /> Back
+            </button>
             <div className={styles.loginContainer}>
                 <h1>Welcome Back</h1>
                 <p className={styles.subtitle}>Sign in to your account</p>
-                
+
                 <div className={styles.form}>
                     <div className={styles.inputGroup}>
                         <label htmlFor="email">Email</label>
@@ -82,7 +92,7 @@ const Login: React.FC = () => {
                             <p className={styles.errorMessage}>Please enter a valid email address</p>
                         )}
                     </div>
-                    
+
                     <div className={styles.inputGroup}>
                         <label htmlFor="password">Password</label>
                         <input
@@ -98,17 +108,17 @@ const Login: React.FC = () => {
                             </p>
                         )}
                     </div>
-                    
+
                     {error && <div className={styles.error}>{error}</div>}
-                    
-                    <button 
+
+                    <button
                         className={styles.submitButton}
                         onClick={handleLogin}
                         disabled={loading}
                     >
                         {loading ? 'Signing in...' : 'Sign In'}
                     </button>
-                    
+
                     <div className={styles.links}>
                         <Link to="/forgot-password" className={styles.forgotPassword}>
                             Forgot your password?

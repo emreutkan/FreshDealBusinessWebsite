@@ -1,32 +1,160 @@
-.listingsCard {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+.listingsContainer {
     padding: 2rem;
-    margin-bottom: 2rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    background-color: #f8f9fa;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.headerMain {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .sectionTitle {
     font-size: 1.75rem;
     font-weight: 600;
-    color: #2d3436;
-    margin-bottom: 1.5rem;
+    color: #2f4a28;
+    margin: 0;
+}
+
+.addNewButton {
+    background-color: #b0f484 !important;
+    color: #2f4a28 !important;
+    padding: 0.75rem 1.5rem !important;
+    font-weight: 500 !important;
+    text-transform: none !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+    box-shadow: none !important;
+}
+
+.addNewButton:hover {
+    background-color: #9ee373 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(176, 244, 132, 0.2) !important;
+}
+
+.filterSection {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    flex-wrap: wrap;
+}
+
+.searchBar {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #f8f9fa;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    min-width: 300px;
+    position: relative;
+}
+
+.searchBar svg {
+    color: #2f4a28;
+    font-size: 1.25rem;
+}
+
+.searchBar input {
+    border: none;
+    background: none;
+    width: 100%;
+    font-size: 0.9375rem;
+    color: #2f4a28;
+}
+
+.searchBar input:focus {
+    outline: none;
+}
+
+.clearSearch {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    color: #2f4a28;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.clearSearch:hover {
+    background-color: rgba(47, 74, 40, 0.1);
+}
+
+.filterControls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.filterGroup {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+}
+
+.filterSelect,
+.sortSelect {
+    padding: 0.5rem;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    font-size: 0.9375rem;
+    color: #2f4a28;
+    cursor: pointer;
+    background: white;
+    min-width: 150px;
+}
+
+.filterSelect:focus,
+.sortSelect:focus {
+    outline: none;
+    border-color: #b0f484;
+    box-shadow: 0 0 0 2px rgba(176, 244, 132, 0.2);
 }
 
 .listingsGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-top: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    padding: 0.5rem;
 }
 
 .listingItem {
-    background: #ffffff;
+    background: white;
     border-radius: 16px;
     overflow: hidden;
-    border: 1px solid #f0f2f5;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .listingItem:hover {
@@ -36,34 +164,46 @@
 
 .imageContainer {
     position: relative;
-    /*padding-top: 56.25%; !* 16:9 aspect ratio *!*/
+    height: 200px;
     overflow: hidden;
-}
-
-.imageWrapper {
-    position: relative;
-    width: 100%;
-    height: 400px;
 }
 
 .restaurantImage {
     width: 100%;
     height: 100%;
     object-fit: cover;
-}
-
-.listingImage {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
     transition: transform 0.3s ease;
 }
 
-.listingItem:hover .listingImage {
+.listingItem:hover .restaurantImage {
     transform: scale(1.05);
+}
+
+.deliveryOptions {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    display: flex;
+    gap: 8px;
+}
+
+.deliveryBadge,
+.pickupBadge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    backdrop-filter: blur(4px);
+}
+
+.deliveryBadge {
+    background-color: rgba(176, 244, 132, 0.9);
+    color: #2f4a28;
+}
+
+.pickupBadge {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #2f4a28;
 }
 
 .listingActions {
@@ -91,13 +231,16 @@
 
 .listingInfo {
     padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .listingTitle {
     margin: 0 0 0.75rem 0;
     font-size: 1.25rem;
     font-weight: 600;
-    color: #2d3436;
+    color: #2f4a28;
 }
 
 .listingDescription {
@@ -121,13 +264,12 @@
     gap: 0.5rem;
     font-size: 1.5rem;
     font-weight: 600;
-    color: #2d3436;
+    color: #2f4a28;
     margin-bottom: 0.75rem;
 }
 
 .priceIcon {
-    color: #00b894;
-    font-size: 1.25rem;
+    color: #2f4a28;
 }
 
 .alternativePrices {
@@ -152,7 +294,7 @@
 .listingMetrics {
     display: flex;
     justify-content: space-between;
-    margin-top: 1rem;
+    margin-top: auto;
     padding-top: 1rem;
     border-top: 1px solid #f0f2f5;
 }
@@ -166,8 +308,8 @@
 }
 
 .metricIcon {
+    color: #2f4a28;
     font-size: 1.125rem;
-    color: #00b894;
 }
 
 .loadingContainer {
@@ -181,7 +323,7 @@
 .loader {
     border: 3px solid #f3f3f3;
     border-radius: 50%;
-    border-top: 3px solid #00b894;
+    border-top: 3px solid #b0f484;
     width: 40px;
     height: 40px;
     animation: spin 1s linear infinite;
@@ -193,34 +335,114 @@
     100% { transform: rotate(360deg); }
 }
 
-.modal {
+.emptyState {
+    text-align: center;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+.emptyStateIcon {
+    font-size: 80px !important;
+    color: #2f4a28;
+    opacity: 0.5;
+    margin-bottom: 2rem;
+}
+
+.emptyState h3 {
+    color: #2f4a28;
+    font-size: 1.5rem;
+    margin: 0 0 1rem;
+}
+
+.emptyState p {
+    color: #636e72;
+    margin-bottom: 2rem;
+    max-width: 400px;
+}
+
+.emptyStateButton {
+    background-color: #b0f484 !important;
+    color: #2f4a28 !important;
+    padding: 0.75rem 2rem !important;
+}
+
+.modalWrapper {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 1rem;
+    padding: 2rem;
 }
 
-.modalContent {
-    background-color: white;
-    padding: 2rem;
+.modalContainer {
+    background: white;
     border-radius: 16px;
     max-width: 600px;
     width: 90%;
     max-height: 90vh;
     overflow-y: auto;
-    position: relative;
 }
 
 @media (max-width: 768px) {
+    .listingsContainer {
+        padding: 1rem;
+    }
+
+    .filterSection {
+        flex-direction: column;
+    }
+
+    .searchBar {
+        width: 100%;
+    }
+
+    .filterControls {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .filterGroup {
+        flex: 1;
+    }
+
     .listingsGrid {
         grid-template-columns: 1fr;
     }
 
-    .listingInfo {
-        padding: 1rem;
+    .modalContainer {
+        width: 95%;
+        margin: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .headerMain {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
     }
 
-    .mainPrice {
-        font-size: 1.25rem;
+    .addNewButton {
+        width: 100%;
+    }
+
+    .filterControls {
+        flex-direction: column;
+    }
+
+    .filterGroup {
+        width: 100%;
+    }
+
+    .filterSelect,
+    .sortSelect {
+        width: 100%;
+    }
+
+    .emptyStateIcon {
+        font-size: 60px !important;
     }
 }

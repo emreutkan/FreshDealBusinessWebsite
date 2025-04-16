@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import styles from './Register.module.css';
 import { AppDispatch } from '../../redux/store';
 import { registerUser } from '../../redux/thunks/userThunks';
+import { IoArrowBack } from 'react-icons/io5';
 
 const Register: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -13,7 +14,7 @@ const Register: React.FC = () => {
         password: '',
         name_surname: '',
         phone_number: '',
-        role: 'owner', // Default role as 'owner'
+        role: 'owner',
     });
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -33,11 +34,8 @@ const Register: React.FC = () => {
 
         try {
             await dispatch(registerUser(formData)).unwrap();
-            // Redirect to login page after successful registration
-            navigate('/login', {
-                state: {
-                    message: 'Registration successful! Please login to continue.'
-                }
+            navigate('/', {
+
             });
         } catch (err: any) {
             setError(err.message || 'Registration failed. Please try again.');
@@ -46,8 +44,20 @@ const Register: React.FC = () => {
         }
     };
 
+    const handleGoBack = () => {
+        navigate("/");
+    };
+
     return (
         <div className={styles.registerPage}>
+            <div className={styles.backgroundPattern}>
+                <div className={styles.circle1}></div>
+                <div className={styles.circle2}></div>
+                <div className={styles.circle3}></div>
+            </div>
+            <button onClick={handleGoBack} className={styles.backButton}>
+                <IoArrowBack /> Back
+            </button>
             <div className={styles.registerContainer}>
                 <h1>Register</h1>
                 <p className={styles.subtitle}>Create your account</p>

@@ -5,6 +5,7 @@ import styles from './Header.module.css';
 import logo from '../../assets/fresh-deal-logo.svg';
 import { RootState, AppDispatch } from '../../redux/store';
 import { logout } from '../../redux/slices/userSlice';
+import { IoLogOutOutline } from 'react-icons/io5';
 
 const Header: React.FC = () => {
     const navigate = useNavigate();
@@ -20,6 +21,7 @@ const Header: React.FC = () => {
             console.error('Could not find token');
         }
     }, []);
+
     const handleLogout = async () => {
         try {
             localStorage.removeItem('userToken');
@@ -34,46 +36,25 @@ const Header: React.FC = () => {
         <header className={styles.header}>
             <div className={styles.container}>
                 <Link to="/" className={styles.logo}>
-                    <img src={logo} alt="Fresh Deal" />
+                    <img src={logo} alt="Fresh Deal" className={styles.logoImage} />
                 </Link>
-
-                <nav className={styles.nav}>
-                    {token ? (
-                        <>
-                            <Link to="/dashboard" className={styles.link}>
-                                Dashboard
-                            </Link>
-                            <Link to="/restaurants" className={styles.link}>
-                                My Restaurants
-                            </Link>
-                            <Link to="/partnership" className={styles.link}>
-                                Partnership
-                            </Link>
-                        </>
-                    ) : (
-                        <>
-
-                        </>
-                    )}
-                </nav>
 
                 <div className={styles.auth}>
                     {token ? (
                         <div className={styles.userMenu}>
                             <span className={styles.username}>{name_surname}</span>
-                            <button onClick={handleLogout} className={styles.logoutButton}>
+                            <button
+                                onClick={handleLogout}
+                                className={styles.logoutButton}
+                            >
+                                <IoLogOutOutline />
                                 Logout
                             </button>
                         </div>
                     ) : (
-                        <>
-                            <Link to="/login" className={styles.loginButton}>
-                                Login
-                            </Link>
-                            <Link to="/register" className={styles.registerButton}>
-                                Register Your Restaurant
-                            </Link>
-                        </>
+                        <Link to="/login" className={styles.loginButton}>
+                            Login
+                        </Link>
                     )}
                 </div>
             </div>

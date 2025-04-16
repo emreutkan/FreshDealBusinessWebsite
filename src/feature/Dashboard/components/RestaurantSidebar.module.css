@@ -1,0 +1,263 @@
+.sidebar {
+    width: 320px;
+    background: white;
+    border-right: 1px solid #eaeaea;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.sidebar.collapsed {
+    width: 72px;
+}
+
+.sidebarHeader {
+    padding: 1.5rem;
+    border-bottom: 1px solid #eaeaea;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 72px;
+}
+
+.sidebar.collapsed .sidebarHeader {
+    padding: 1.5rem 0.75rem;
+    justify-content: center;
+}
+
+.sidebarHeader h2 {
+    color: var(--primary-color);
+    font-size: 1.25rem;
+    margin: 0;
+    font-weight: 600;
+}
+
+.collapseButton {
+    width: 36px;
+    height: 36px;
+    border: 1px solid #eaeaea;
+    background: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--gray-color);
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.sidebar.collapsed .collapseButton {
+    margin: 0 auto;
+}
+
+.collapseButton:hover {
+    background: #f8f9fa;
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.collapseButton svg {
+    width: 20px;
+    height: 20px;
+}
+
+.restaurantList {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.restaurantItem {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    text-decoration: none;
+    color: var(--gray-color);
+    transition: all 0.3s ease;
+    position: relative;
+    margin: 0.25rem 0;
+    border-radius: 8px;
+}
+
+.restaurantItem:hover {
+    background-color: #f8f9fa;
+}
+
+.restaurantItem.active {
+    background-color: #b0f484;
+    color: #2f4a28;
+}
+
+.restaurantItem.collapsed {
+    justify-content: center;
+    padding: 0.75rem 0;
+    height: 56px;
+}
+
+.restaurantItem.collapsed.active {
+    background-color: #b0f484;
+}
+
+.restaurantIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    flex-shrink: 0;
+}
+
+.restaurantIcon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.restaurantIcon svg {
+    font-size: 20px;
+    color: var(--primary-color);
+}
+
+.active .restaurantIcon svg {
+    color: #2f4a28;
+}
+
+.restaurantInfo {
+    flex: 1;
+    min-width: 0;
+    margin-left: 0.75rem;
+}
+
+.restaurantInfo h3 {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.restaurantInfo span {
+    font-size: 0.8125rem;
+    opacity: 0.8;
+    display: block;
+    margin-top: 0.25rem;
+}
+
+.selectedIndicator {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 24px;
+    background-color: #2f4a28;
+    border-radius: 0 4px 4px 0;
+}
+
+.collapsedIndicator {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 24px;
+    background-color: #2f4a28;
+    border-radius: 0 4px 4px 0;
+}
+
+.addRestaurantContainer {
+    padding: 1rem;
+    border-top: 1px solid #eaeaea;
+}
+
+.addRestaurantContainer.collapsed {
+    display: flex;
+    justify-content: center;
+    padding: 1rem 0.5rem;
+}
+
+.addRestaurantButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    gap: 0.5rem;
+}
+
+.collapsed .addRestaurantButton {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+}
+
+.addRestaurantButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.addRestaurantButton svg {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 2rem;
+    color: var(--gray-color);
+}
+
+.loadingSpinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid #eaeaea;
+    }
+
+    .sidebar.collapsed {
+        width: 100%;
+    }
+
+    .restaurantList {
+        max-height: 300px;
+    }
+
+    .collapseButton {
+        display: none;
+    }
+}
