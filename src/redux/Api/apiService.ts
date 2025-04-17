@@ -1,13 +1,9 @@
-// api/apiService.ts
-// export const API_BASE_URL = 'https://freshdealapi-fkfaajfaffh4c0ex.uksouth-01.azurewebsites.net/v1';
 import {logout} from "../slices/userSlice.ts";
 
-export const API_BASE_URL = 'http://192.168.1.4:8000/v1';
-//
+export const API_BASE_URL = 'https://freshdealbackend.azurewebsites.net/v1';
 
 export const TOKEN_KEY = 'userToken';
 
-// Helper functions for token management with improved error handling
 export const getStoredToken = () => {
     try {
         const token = localStorage.getItem(TOKEN_KEY);
@@ -44,7 +40,6 @@ export const getAuthHeaders = (isFormData: boolean = false) => {
         throw new Error('No authentication token found');
     }
 
-    // Don't include Content-Type for FormData
     return isFormData ? {
         'Authorization': `Bearer ${token}`
     } : {
@@ -53,20 +48,15 @@ export const getAuthHeaders = (isFormData: boolean = false) => {
     };
 };
 
-
-
-// apiService.ts
 export const authenticatedApiCall = async (
     url: string,
     options: RequestInit = {},
     dispatch: any
 ) => {
     try {
-        // Check if the request body is FormData
         const isFormData = options.body instanceof FormData;
         const headers = getAuthHeaders(isFormData);
 
-        // Debug log the request
         console.log('Request details:', {
             url,
             method: options.method,
@@ -78,11 +68,10 @@ export const authenticatedApiCall = async (
             ...options,
             headers: {
                 ...headers,
-                ...(isFormData ? {} : options.headers) // Only add additional headers if not FormData
+                ...(isFormData ? {} : options.headers)
             }
         });
 
-        // Debug log the response
         console.log('Response status:', response.status);
 
         if (!response.ok) {

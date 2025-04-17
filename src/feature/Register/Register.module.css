@@ -1,13 +1,7 @@
 @keyframes float {
-    0% {
-        transform: translateY(0px);
-    }
-    50% {
-        transform: translateY(-20px);
-    }
-    100% {
-        transform: translateY(0px);
-    }
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
 }
 
 @keyframes fadeIn {
@@ -168,6 +162,25 @@
     box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.2);
 }
 
+.phoneInputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.phonePrefix {
+    position: absolute;
+    left: 12px;
+    color: #1f2937;
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.phoneInputWrapper input {
+    padding-left: 45px;
+    width: 100%;
+}
+
 .submitButton {
     background: linear-gradient(135deg, #4ade80 0%, #86efac 100%);
     color: #14532d;
@@ -195,9 +208,33 @@
 .error {
     background: #fee2e2;
     color: #dc2626;
-    padding: 12px;
+    padding: 16px;
     border-radius: 12px;
     font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.error p {
+    margin: 0;
+    flex: 1;
+}
+
+.errorCloseButton {
+    background: none;
+    border: none;
+    color: #dc2626;
+    cursor: pointer;
+    padding: 4px 8px;
+    margin-left: 12px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.errorCloseButton:hover {
+    background: rgba(220, 38, 38, 0.1);
 }
 
 .loginPrompt {

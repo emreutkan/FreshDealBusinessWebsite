@@ -25,8 +25,10 @@ export const registerUserAPI = async (userData: {
     try {
         const response = await axios.post(REGISTER_API_ENDPOINT, userData);
         return response.data;
-    } catch (error) {
+    } catch (error: any) {
+        if (error.response && error.response.data) {
+            throw new Error(error.response.data.message);
+        }
         throw error;
     }
 };
-
