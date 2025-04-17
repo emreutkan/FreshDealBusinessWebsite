@@ -20,10 +20,19 @@ const Register: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
+        const { name, value } = e.target;
+        if (name === 'phone_number') {
+            const numericValue = value.replace(/[^0-9]/g, '');
+            setFormData({
+                ...formData,
+                [name]: numericValue
+            });
+        } else {
+            setFormData({
+                ...formData,
+                [name]: value
+            });
+        }
         setError('');
     };
 
@@ -32,13 +41,16 @@ const Register: React.FC = () => {
         setIsLoading(true);
         setError('');
 
-        try {
-            await dispatch(registerUser(formData)).unwrap();
-            navigate('/', {
+        const submitData = {
+            ...formData,
+            phone_number: `+90${formData.phone_number}`
+        };
 
-            });
+        try {
+            await dispatch(registerUser(submitData)).unwrap();
+            navigate('/login');
         } catch (err: any) {
-            setError(err.message || 'Registration failed. Please try again.');
+            setError(err);
         } finally {
             setIsLoading(false);
         }
@@ -95,15 +107,19 @@ const Register: React.FC = () => {
 
                         <div className={styles.inputGroup}>
                             <label htmlFor="phone_number">Phone Number</label>
-                            <input
-                                type="tel"
-                                id="phone_number"
-                                name="phone_number"
-                                value={formData.phone_number}
-                                onChange={handleChange}
-                                required
-                                placeholder="+1234567890"
-                            />
+                            <div className={styles.phoneInputWrapper}>
+                                <span className={styles.phonePrefix}>+90</span>
+                                <input
+                                    type="tel"
+                                    id="phone_number"
+                                    name="phone_number"
+                                    value={formData.phone_number}
+                                    onChange={handleChange}
+                                    required
+                                    placeholder="5xxxxxxxxx"
+                                    maxLength={10}
+                                />
+                            </div>
                         </div>
 
                         <div className={styles.inputGroup}>

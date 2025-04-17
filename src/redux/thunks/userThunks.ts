@@ -1,12 +1,9 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
-
 import {RootState} from "../store";
 import {UserDataResponse} from "../slices/userSlice.ts";
 import {loginUserAPI, registerUserAPI} from "../Api/authApi.ts";
 import {getUserDataAPI, updateEmailAPI, updatePasswordAPI, updateUsernameAPI} from "../Api/userApi.ts";
 
-
-// Login user
 export const loginUser = createAsyncThunk(
     'user/loginUser',
     async (
@@ -26,14 +23,13 @@ export const loginUser = createAsyncThunk(
             if (response.token) {
                 await dispatch(getUserData({token: response.token}));
             }
-            return await loginUserAPI(payload);
-        } catch (error) {
-            return rejectWithValue('Login failed' + {error});
+            return response;
+        } catch (error: any) {
+            return rejectWithValue(error.message);
         }
     }
 );
 
-// Register user
 export const registerUser = createAsyncThunk(
     'user/registerUser',
     async (
@@ -48,13 +44,12 @@ export const registerUser = createAsyncThunk(
     ) => {
         try {
             return await registerUserAPI(userData);
-        } catch (error) {
-            return rejectWithValue('Registration failed' + {error});
+        } catch (error: any) {
+            return rejectWithValue(error.message);
         }
     }
 );
 
-// Update username
 export const updateUsername = createAsyncThunk<
     { username: string },
     { newUsername: string },
@@ -68,13 +63,12 @@ export const updateUsername = createAsyncThunk<
                 return rejectWithValue('No authentication token');
             }
             return await updateUsernameAPI(newUsername, token);
-        } catch (error) {
-            return rejectWithValue('Failed to update username' + {error});
+        } catch (error: any) {
+            return rejectWithValue(error.message);
         }
     }
 );
 
-// Update email
 export const updateEmail = createAsyncThunk<
     { email: string },
     { oldEmail: string; newEmail: string },
@@ -87,15 +81,13 @@ export const updateEmail = createAsyncThunk<
             if (!token) {
                 return rejectWithValue('No authentication token');
             }
-
             return await updateEmailAPI(oldEmail, newEmail, token);
-        } catch (error) {
-            return rejectWithValue('Failed to update email' + {error});
+        } catch (error: any) {
+            return rejectWithValue(error.message);
         }
     }
 );
 
-// Update password
 export const updatePassword = createAsyncThunk<
     { message: string },
     { oldPassword: string; newPassword: string },
@@ -109,12 +101,11 @@ export const updatePassword = createAsyncThunk<
                 return rejectWithValue('No authentication token');
             }
             return await updatePasswordAPI(oldPassword, newPassword, token);
-        } catch (error) {
-            return rejectWithValue('Failed to update password' + {error});
+        } catch (error: any) {
+            return rejectWithValue(error.message);
         }
     }
 );
-
 
 export const getUserData = createAsyncThunk<
     UserDataResponse,
@@ -125,9 +116,8 @@ export const getUserData = createAsyncThunk<
     async ({ token }, { rejectWithValue }) => {
         try {
             return await getUserDataAPI(token);
-        } catch (error) {
-            const errorMessage = 'An unknown error occurred '+ error  ;
-            return rejectWithValue(`Failed to fetch user data: ${errorMessage}`);
+        } catch (error: any) {
+            return rejectWithValue(error.message);
         }
     }
 );

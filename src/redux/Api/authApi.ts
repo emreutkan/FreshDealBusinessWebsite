@@ -12,8 +12,15 @@ export const loginUserAPI = async (payload: {
     login_type?: "email" | "phone_number";
     password_login?: boolean;
 }) => {
-    const response = await axios.post(LOGIN_API_ENDPOINT, payload);
-    return response.data;
+    try {
+        const response = await axios.post(LOGIN_API_ENDPOINT, payload);
+        return response.data;
+    } catch (error: any) {
+        if (error.response?.data?.message) {
+            throw new Error(error.response.data.message);
+        }
+        throw new Error('An error occurred during login');
+    }
 };
 
 export const registerUserAPI = async (userData: {
@@ -25,8 +32,10 @@ export const registerUserAPI = async (userData: {
     try {
         const response = await axios.post(REGISTER_API_ENDPOINT, userData);
         return response.data;
-    } catch (error) {
-        throw error;
+    } catch (error: any) {
+        if (error.response?.data?.message) {
+            throw new Error(error.response.data.message);
+        }
+        throw new Error('An error occurred during registration');
     }
 };
-
