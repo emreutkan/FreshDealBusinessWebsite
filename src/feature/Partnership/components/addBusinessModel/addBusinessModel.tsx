@@ -1,15 +1,13 @@
-// src/components/AddBusinessModel/AddBusinessModel.tsx
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./addBusinessModel.module.css";
 import { Button } from "@mui/material";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../../../redux/store";
 import {
     addRestaurant,
     AddRestaurantPayload,
 } from "../../../../redux/thunks/restaurantThunk";
-
-// make sure you load the Google Maps JS with &libraries=places in your index.html
 
 declare global {
     interface Window {
@@ -80,7 +78,9 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
     );
     const [daysModalOpen, setDaysModalOpen] = useState(false);
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
+    const navigate = useNavigate();
     const autocompleteRef = useRef<HTMLInputElement>(null);
     const [addressInput, setAddressInput] = useState("");
     const [placeAutocompleteLoaded, setPlaceAutocompleteLoaded] = useState(false);
@@ -146,6 +146,30 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
         }
     }, [placeAutocompleteLoaded]);
 
+    const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+    const weekends = ["Saturday", "Sunday"];
+
+    const formatWorkingDays = (days: string[]): string => {
+        const selectedWeekdays = weekdays.filter(day => days.includes(day));
+        const selectedWeekends = weekends.filter(day => days.includes(day));
+
+        if (days.length === 7) return "All week";
+
+        if (selectedWeekdays.length === 5 && selectedWeekends.length === 0) {
+            return "Weekdays";
+        }
+
+        if (selectedWeekdays.length === 0 && selectedWeekends.length === 2) {
+            return "Weekends";
+        }
+
+        if (selectedWeekdays.length === 5) {
+            return `Weekdays + ${selectedWeekends.join(", ")}`;
+        }
+
+        return days.join(", ");
+    };
+
     useEffect(() => {
         const onClick = (e: MouseEvent) => {
             if (
@@ -160,6 +184,11 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
         return () => document.removeEventListener("mousedown", onClick);
     }, [daysModalOpen]);
 
+    const validateTimeFormat = (time: string): boolean => {
+        const timeRegex = /^([0-1][0-9]|2[0-3]):[0-5][0-9]$/;
+        return timeRegex.test(time);
+    };
+
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
@@ -170,12 +199,27 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
             setFormData((f) => ({ ...f, [name]: value }));
         }
         setInvalidFields((f) => f.filter((x) => x !== name));
+        setError(null);
     };
 
     const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         let d = value.replace(/\D/g, "").slice(0, 4);
         let formatted = d.length <= 2 ? d : d.slice(0, 2) + ":" + d.slice(2);
+
+        if (d.length === 4) {
+            const hours = parseInt(d.slice(0, 2));
+            const minutes = parseInt(d.slice(2, 4));
+
+            if (hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59) {
+                formatted = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                setError(null);
+            } else {
+                setError("Invalid time format. Hours must be 00-23 and minutes must be 00-59");
+                return;
+            }
+        }
+
         setFormData((f) => ({ ...f, [name]: formatted }));
         setInvalidFields((f) => f.filter((x) => x !== name));
     };
@@ -185,11 +229,12 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
         if (file) {
             const ok = ["image/png", "image/jpeg"].includes(file.type);
             if (!ok) {
-                alert("Only PNG and JPEG allowed");
+                setError("Only PNG and JPEG files are allowed");
                 return;
             }
             setUploadedFile(file);
             setInvalidFields((f) => f.filter((x) => x !== "image"));
+            setError(null);
         }
     };
 
@@ -203,6 +248,7 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                     : [...f.workingDays, day],
             };
         });
+        setError(null);
     };
 
     const validateStep1 = () => {
@@ -221,16 +267,34 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
         req.forEach((k) => {
             if (!(formData as any)[k]) invalid.push(k);
         });
+
         if (!formData.workingDays.length) invalid.push("workingDays");
         if (!uploadedFile) invalid.push("image");
+
+        if (formData.workingHoursStart && !validateTimeFormat(formData.workingHoursStart)) {
+            invalid.push("workingHoursStart");
+            setError("Invalid opening time format. Use HH:MM (24-hour format)");
+            return false;
+        }
+
+        if (formData.workingHoursEnd && !validateTimeFormat(formData.workingHoursEnd)) {
+            invalid.push("workingHoursEnd");
+            setError("Invalid closing time format. Use HH:MM (24-hour format)");
+            return false;
+        }
+
         setInvalidFields(invalid);
         return !invalid.length;
     };
 
     const handleContinue = (e: React.FormEvent) => {
         e.preventDefault();
-        if (validateStep1()) setCurrentStep(2);
-        else alert("Fill all required fields");
+        if (validateStep1()) {
+            setCurrentStep(2);
+            setError(null);
+        } else if (!error) {
+            setError("Please fill in all required fields");
+        }
     };
 
     const validateStep2 = () => {
@@ -247,38 +311,57 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
 
     const handleComplete = async () => {
         if (!validateStep2()) {
-            alert("Fill all required fields");
+            setError("Please fill in all required fields");
             return;
         }
-        const payload: AddRestaurantPayload = {
-            restaurantEmail: formData.restaurantEmail,
-            restaurantPhone: selectedAreaCode + formData.restaurantPhone,
-            restaurantName: formData.restaurantName,
-            restaurantDescription: formData.restaurantDescription,
-            longitude: parseFloat(formData.longitude),
-            latitude: parseFloat(formData.latitude),
-            category: formData.category,
-            workingHoursStart: formData.workingHoursStart,
-            workingHoursEnd: formData.workingHoursEnd,
-            workingDays: formData.workingDays,
-            image: uploadedFile || undefined,
-            pickup: formData.pickup,
-            delivery: formData.delivery,
-            maxDeliveryDistance: formData.delivery
-                ? parseFloat(formData.maxDeliveryDistance)
-                : 0,
-            deliveryFee: formData.delivery ? parseFloat(formData.deliveryFee) : 0,
-            minOrderAmount: formData.delivery
-                ? parseFloat(formData.minOrderAmount)
-                : 0,
-        };
-        await dispatch(addRestaurant(payload));
-        alert("Form completed successfully!");
+
+        try {
+            const payload: AddRestaurantPayload = {
+                restaurantEmail: formData.restaurantEmail,
+                restaurantPhone: selectedAreaCode + formData.restaurantPhone,
+                restaurantName: formData.restaurantName,
+                restaurantDescription: formData.restaurantDescription,
+                longitude: parseFloat(formData.longitude),
+                latitude: parseFloat(formData.latitude),
+                category: formData.category,
+                workingHoursStart: formData.workingHoursStart,
+                workingHoursEnd: formData.workingHoursEnd,
+                workingDays: formData.workingDays,
+                image: uploadedFile || undefined,
+                pickup: formData.pickup,
+                delivery: formData.delivery,
+                maxDeliveryDistance: formData.delivery
+                    ? parseFloat(formData.maxDeliveryDistance)
+                    : 0,
+                deliveryFee: formData.delivery ? parseFloat(formData.deliveryFee) : 0,
+                minOrderAmount: formData.delivery
+                    ? parseFloat(formData.minOrderAmount)
+                    : 0,
+            };
+
+            const response = await dispatch(addRestaurant(payload)).unwrap();
+            if ('error' in response) {
+                throw new Error(response.error);
+            }
+            if ('message' in response && !response.success) {
+                throw new Error(response.message);
+            }
+            navigate("/");
+        } catch (err: any) {
+            if (err.response?.data?.error) {
+                setError(err.response.data.error);
+            } else if (err.message) {
+                setError(err.message);
+            } else {
+                setError("An unexpected error occurred while adding the restaurant");
+            }
+        }
     };
 
     return (
         <div className={styles.fullHeightContainer}>
             <div className={styles.outerDiv}>
+                {error && <div className={styles.errorMessage}>{error}</div>}
                 {currentStep === 1 && (
                     <>
                         <h2 className={styles.heading}>
@@ -286,7 +369,6 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                         </h2>
                         <form onSubmit={handleContinue} className={styles.form}>
                             <div className={styles.formColumns}>
-                                {/* Column 1 */}
                                 <div className={styles.inputContainer}>
                                     <span className={styles.sectionTitle}>Add your details</span>
                                     <input
@@ -370,11 +452,10 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                         </div>
                                     )}
                                 </div>
-                                {/* Column 2 */}
                                 <div className={styles.inputContainer}>
-                  <span className={styles.sectionTitle}>
-                    Restaurant Details
-                  </span>
+                                    <span className={styles.sectionTitle}>
+                                        Restaurant Details
+                                    </span>
                                     <input
                                         name="restaurantName"
                                         className={`${styles.defaultInput} ${
@@ -433,7 +514,6 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                         )}
                                     </div>
                                 </div>
-                                {/* Column 3 */}
                                 <div className={styles.inputContainer}>
                                     <span className={styles.sectionTitle}>Extra Details</span>
                                     <div className={styles.modalContainer}>
@@ -447,7 +527,7 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                             onClick={() => setDaysModalOpen((o) => !o)}
                                         >
                                             {formData.workingDays.length
-                                                ? formData.workingDays.join(", ")
+                                                ? formatWorkingDays(formData.workingDays)
                                                 : "Select Open Days"}
                                         </button>
                                         {daysModalOpen && (
@@ -496,7 +576,7 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                                     ? styles.invalidInput
                                                     : ""
                                             }`}
-                                            placeholder="Open HH:MM"
+                                            placeholder="Open 08:00"
                                             value={formData.workingHoursStart}
                                             onChange={handleTimeChange}
                                         />
@@ -509,7 +589,7 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                                     ? styles.invalidInput
                                                     : ""
                                             }`}
-                                            placeholder="Close HH:MM"
+                                            placeholder="Close 22:00"
                                             value={formData.workingHoursEnd}
                                             onChange={handleTimeChange}
                                         />
@@ -532,13 +612,13 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                         >
                                             {!uploadedFile ? (
                                                 <span className={styles.labelText}>
-                          Add your restaurant image
-                        </span>
+                                                    Add your restaurant image
+                                                </span>
                                             ) : (
                                                 <div className={styles.successMessage}>
-                          <span className={styles.fileName}>
-                            {uploadedFile.name}
-                          </span>
+                                                    <span className={styles.fileName}>
+                                                        {uploadedFile.name}
+                                                    </span>
                                                 </div>
                                             )}
                                         </label>
