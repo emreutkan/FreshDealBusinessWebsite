@@ -41,6 +41,16 @@ export const deleteRestaurantAPI = async (restaurantId: string, token: string) =
     return response.data;
 };
 
+export const getRestaurantCommentsAPI = async (restaurantId: string) => {
+    const response = await axios.get(`${RESTAURANT_ENDPOINT}/${restaurantId}/comments`);
+    return response.data;
+};
+
+export const getRestaurantBadgesAPI = async (restaurantId: string) => {
+    const response = await axios.get(`${RESTAURANT_ENDPOINT}/${restaurantId}/badges`);
+    return response.data;
+};
+
 export const getUploadedFileURLAPI = (filename: string) => {
     const url = `${GET_UPLOADED_FILE_API_ENDPOINT}/${filename}`;
     return url;
