@@ -1,4 +1,3 @@
-/* Animations */
 @keyframes slideInRight {
     from {
         transform: translateX(100%);
@@ -30,10 +29,9 @@
     }
 }
 
-/* Page container */
 .pageContainer {
     min-height: 100vh;
-    background: #f8fafc;
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
     padding: 0;
     display: flex;
     flex-direction: column;
@@ -50,9 +48,8 @@
     animation: slideOutRight 0.3s ease-out forwards;
 }
 
-/* Restaurant header */
 .restaurantHeader {
-    background: linear-gradient(135deg, #86efac 0%, #b0f484 100%);
+    background: rgba(255, 255, 255, 0.9);
     padding: 1.5rem 2rem;
     display: flex;
     justify-content: space-between;
@@ -60,6 +57,8 @@
     color: #1a202c;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
     animation: fadeIn 0.4s ease-out 0.2s both;
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(134, 239, 172, 0.2);
 }
 
 .restaurantInfo {
@@ -93,15 +92,13 @@
     opacity: 0.7;
 }
 
-/* Main container */
 .container {
     flex: 1;
-    padding: 2rem;
-    max-width: 800px;
+    padding-top: 1rem;
+    max-width: 1200px;
     margin: 0 auto;
     width: 100%;
     animation: fadeIn 0.4s ease-out 0.3s both;
-    overflow-y: auto;
 }
 
 .container h2 {
@@ -122,8 +119,13 @@
     background: linear-gradient(135deg, #86efac 0%, #b0f484 100%);
 }
 
-/* Form */
 .form {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(134, 239, 172, 0.2);
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -133,66 +135,66 @@
 .inputGroup {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
-/* Inputs */
+.inputSection {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid #eef0f7;
+}
+
 .input, .textarea {
     padding: 1rem;
     border: 2px solid #eef0f7;
     border-radius: 12px;
     font-size: 1rem;
     transition: all 0.3s ease;
-    background-color: white;
+    background-color: #f8fafc;
     width: 100%;
     box-sizing: border-box;
-    opacity: 0;
-    animation: fadeIn 0.3s ease-out forwards;
 }
 
-.input { animation-delay: 0.5s; }
 .textarea {
-    animation-delay: 0.55s;
     min-height: 120px;
     resize: vertical;
     font-family: inherit;
     line-height: 1.6;
+    margin-top: 1rem;
 }
 
 .input:focus, .textarea:focus {
     outline: none;
     border-color: #86efac;
     box-shadow: 0 0 0 3px rgba(134, 239, 172, 0.2);
+    background-color: white;
 }
 
-/* Groups */
 .priceGroup, .countGroup {
     display: grid;
     gap: 1rem;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    opacity: 0;
-    animation: fadeIn 0.3s ease-out forwards;
 }
 
-.priceGroup { animation-delay: 0.6s; }
-.countGroup { animation-delay: 0.65s; }
-
-/* File upload */
 .fileUpload {
-    border: 2px dashed #eef0f7;
+    background: linear-gradient(135deg, rgba(220, 252, 231, 0.5) 0%, rgba(187, 247, 208, 0.5) 100%);
+    border: 2px dashed rgba(134, 239, 172, 0.5);
     padding: 2rem;
     text-align: center;
     border-radius: 12px;
-    background-color: #f8fafc;
     transition: all 0.3s ease;
     cursor: pointer;
-    opacity: 0;
-    animation: fadeIn 0.3s ease-out 0.7s forwards;
 }
 
 .fileUpload:hover {
     border-color: #86efac;
-    background-color: rgba(134, 239, 172, 0.1);
+    background: linear-gradient(135deg, rgba(220, 252, 231, 0.8) 0%, rgba(187, 247, 208, 0.8) 100%);
+}
+
+.fileInput {
+    display: none;
 }
 
 .fileLabel {
@@ -200,27 +202,21 @@
     display: block;
     padding: 1rem;
     font-size: 1rem;
-    color: #64748b;
+    color: #1a202c;
     transition: color 0.3s ease;
 }
 
 .fileLabel:hover {
-    color: #1a202c;
+    color: #15803d;
 }
 
-/* Buttons */
 .buttonGroup {
     display: flex;
     gap: 1rem;
     justify-content: flex-end;
-    position: sticky;
-    bottom: 0;
-    background: white;
+    background: transparent;
     padding: 1rem 0;
-    border-top: 1px solid #eef0f7;
-    margin-top: 2rem;
-    opacity: 0;
-    animation: fadeIn 0.3s ease-out 0.75s forwards;
+    margin-top: 1rem;
 }
 
 .submitButton, .cancelButton {
@@ -245,23 +241,32 @@
 }
 
 .cancelButton {
-    background-color: transparent !important;
+    background-color: white !important;
     color: #64748b !important;
     border: 2px solid #64748b !important;
 }
 
 .cancelButton:hover {
-    background-color: rgba(100, 116, 139, 0.1) !important;
+    background-color: #f1f5f9 !important;
     transform: translateY(-2px) !important;
 }
 
-/* Validation */
 .invalid {
     border-color: #dc2626 !important;
     background-color: rgba(220, 38, 38, 0.05) !important;
 }
 
-/* Image preview */
+.errorMessage {
+    background-color: rgba(220, 38, 38, 0.1);
+    color: #dc2626;
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+    text-align: center;
+    border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
 .currentImage {
     margin-top: 1.5rem;
     border-radius: 12px;
@@ -275,13 +280,19 @@
     object-fit: cover;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     .restaurantHeader {
         padding: 1rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
     }
 
     .container {
+        padding: 1rem;
+    }
+
+    .form {
         padding: 1rem;
     }
 
@@ -293,10 +304,36 @@
     .submitButton, .cancelButton {
         width: 100% !important;
     }
+
+    .restaurantInfo {
+        width: 100%;
+    }
 }
 
-/* Placeholders */
 ::placeholder {
     color: #64748b;
     opacity: 0.7;
+}
+
+.backButton {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    color: #15803d !important;
+    border: none !important;
+    padding: 0.75rem 1.5rem !important;
+    border-radius: 12px !important;
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.backButton:hover {
+    transform: translateX(-4px);
+    background: rgba(255, 255, 255, 1) !important;
+    box-shadow: 0 4px 12px rgba(74, 222, 128, 0.2);
 }

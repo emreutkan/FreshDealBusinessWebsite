@@ -31,11 +31,17 @@ const RestaurantListings: React.FC<RestaurantListingsProps> = ({ restaurantId })
     const [filterType, setFilterType] = useState<FilterType>('all');
     const { listings, loading } = useSelector((state: RootState) => state.listing);
 
-    useEffect(() => {
+    const fetchListingsData = () => {
         if (restaurantId) {
             dispatch(fetchRestaurantPurchases(restaurantId));
             dispatch(getListings({ restaurantId: Number(restaurantId) }));
         }
+    };
+
+    useEffect(() => {
+        fetchListingsData();
+        const imageUrls = listings.map((listing) => listing.image_url);
+        console.log('Image URLs:', imageUrls);
     }, [dispatch, restaurantId]);
 
     const handleEdit = (listing: Listing) => {
@@ -57,6 +63,7 @@ const RestaurantListings: React.FC<RestaurantListingsProps> = ({ restaurantId })
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setSelectedListing(null);
+        fetchListingsData();
     };
 
     const handleAddNew = () => {
@@ -208,7 +215,7 @@ const RestaurantListings: React.FC<RestaurantListingsProps> = ({ restaurantId })
                                     </div>
                                     <div className={styles.imageContainer}>
                                         <img
-                                            src={listing.imageUrl}
+                                            src={listing.image_url}
                                             alt={listing.title}
                                             className={styles.restaurantImage}
                                         />
@@ -231,7 +238,7 @@ const RestaurantListings: React.FC<RestaurantListingsProps> = ({ restaurantId })
                                                 <span>€{listing.original_price.toFixed(2)}</span>
                                             </div>
                                             <div className={styles.alternativePrices}>
-                                                {listing.pick_up_price  && (
+                                                {listing.pick_up_price && (
                                                     <div className={styles.priceTag}>
                                                         Pickup: €{listing.pick_up_price.toFixed(2)}
                                                     </div>
