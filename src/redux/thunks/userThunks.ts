@@ -23,7 +23,7 @@ export const loginUser = createAsyncThunk(
             if (response.token) {
                 await dispatch(getUserData({token: response.token}));
             }
-            return await loginUserAPI(payload);
+            return response;
         } catch (error: any) {
             return rejectWithValue(error.message);
         }
@@ -81,7 +81,6 @@ export const updateEmail = createAsyncThunk<
             if (!token) {
                 return rejectWithValue('No authentication token');
             }
-
             return await updateEmailAPI(oldEmail, newEmail, token);
         } catch (error: any) {
             return rejectWithValue(error.message);

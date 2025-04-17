@@ -9,7 +9,6 @@ import {
 } from "../thunks/userThunks.ts";
 import {getStoredToken, setStoredToken, removeStoredToken} from "../Api/apiService.ts";
 
-
 interface UserState {
     email: string;
     name_surname: string;
@@ -26,9 +25,7 @@ interface UserState {
     role: "owner" | "customer" | "";
 }
 
-// Ensure token is retrieved from localStorage
 const storedToken = getStoredToken();
-console.log('Initializing Redux store with token:', storedToken ? 'Token exists' : 'No token found');
 
 const initialState: UserState = {
     email: '',
@@ -40,12 +37,11 @@ const initialState: UserState = {
     verificationCode: '',
     step: 'send_code',
     login_type: 'email',
-    token: storedToken, // Use stored token directly
+    token: storedToken,
     loading: false,
     error: null,
     role: '',
 };
-
 
 const userSlice = createSlice({
     name: 'user',
@@ -53,14 +49,11 @@ const userSlice = createSlice({
     reducers: {
         setToken(state, action: PayloadAction<string>) {
             state.token = action.payload;
-            setStoredToken(action.payload); // Ensure token is saved to localStorage
-            console.log('Token set in Redux and localStorage');
+            setStoredToken(action.payload);
         },
         logout() {
-            // Clear token from localStorage
             removeStoredToken();
-            console.log('Token removed from localStorage during logout');
-            return { ...initialState, token: null }; // Ensure token is null after logout
+            return { ...initialState, token: null };
         },
         setSelectedCode(state, action: PayloadAction<string>) {
             state.selectedCode = action.payload;
@@ -68,7 +61,7 @@ const userSlice = createSlice({
         setEmail(state, action: PayloadAction<string>) {
             state.email = action.payload;
             if (!state.phoneNumber && !state.email) {
-                state.password = ''; // Clear password when both are empty
+                state.password = '';
             }
         },
         setName(state, action: PayloadAction<string>) {
@@ -77,7 +70,7 @@ const userSlice = createSlice({
         setPhoneNumber(state, action: PayloadAction<string>) {
             state.phoneNumber = action.payload.replace(/[^0-9]/g, '').slice(0, 15);
             if (!state.phoneNumber && !state.email) {
-                state.password = ''; // Clear password when both are empty
+                state.password = '';
             }
         },
         setPassword(state, action: PayloadAction<string>) {
@@ -95,7 +88,6 @@ const userSlice = createSlice({
         setLoginType(state, action: PayloadAction<"email" | "phone_number">) {
             state.login_type = action.payload;
         },
-
     },
     extraReducers: (builder) => {
         builder
@@ -107,11 +99,10 @@ const userSlice = createSlice({
                 state.loading = false;
                 state.token = action.payload.token;
                 setStoredToken(action.payload.token);
-                console.log('Token saved after successful login:', action.payload.token ? 'Token exists' : 'No token');
             })
-            .addCase(loginUser.rejected, (state) => {
+            .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;
-                state.error = 'Login failed';
+                state.error = action.payload as string;
             })
             .addCase(registerUser.pending, (state) => {
                 state.loading = true;
@@ -120,9 +111,9 @@ const userSlice = createSlice({
             .addCase(registerUser.fulfilled, (state) => {
                 state.loading = false;
             })
-            .addCase(registerUser.rejected, (state) => {
+            .addCase(registerUser.rejected, (state, action) => {
                 state.loading = false;
-                state.error = 'Registration failed';
+                state.error = action.payload as string;
             })
             .addCase(updateUsername.pending, (state) => {
                 state.loading = true;
@@ -169,8 +160,6 @@ const userSlice = createSlice({
                 state.email = action.payload.user_data.email;
                 state.phoneNumber = action.payload.user_data.phone_number;
                 state.role = action.payload.user_data.role;
-
-
             })
             .addCase(getUserData.rejected, (state, action) => {
                 state.loading = false;

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import styles from './Login.module.css';
@@ -11,40 +11,19 @@ const Login: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const { email, password, loading, error, token } = useSelector((state: RootState) => state.user);
-    const [emailValid, setEmailValid] = useState(true);
-    const [passwordValid, setPasswordValid] = useState(true);
 
     useEffect(() => {
-        console.log('Login component token check:', token ? 'Token exists' : 'No token');
         if (token) {
             navigate('/dashboard');
         }
     }, [token, navigate]);
 
-    useEffect(() => {
-        if (email.trim().length > 0) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            setEmailValid(emailRegex.test(email));
-        }
-        if (password.trim().length > 0) {
-            const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-            setPasswordValid(passwordRegex.test(password));
-        }
-    }, [email, password]);
-
     const handleLogin = async () => {
-        if (!email.trim()) setEmailValid(false);
-        if (!password.trim()) setPasswordValid(false);
-
-        if (!email.trim() || !password.trim()) {
-            return;
-        }
-
         try {
             const result = await dispatch(
                 loginUser({
-                    email: email,
-                    password: password,
+                    email: email.trim(),
+                    password: password.trim(),
                     login_type: "email",
                     password_login: true,
                 })
@@ -52,9 +31,8 @@ const Login: React.FC = () => {
 
             if (result && result.token) {
                 dispatch(setToken(result.token));
+                navigate('/dashboard');
             }
-
-            navigate('/dashboard');
         } catch (err) {
             console.error("Failed to login:", err);
         }
@@ -86,11 +64,8 @@ const Login: React.FC = () => {
                             type="email"
                             value={email}
                             onChange={(e) => dispatch(setEmail(e.target.value))}
-                            className={!emailValid ? styles.invalidInput : ''}
+                            placeholder="your@email.com"
                         />
-                        {!emailValid && (
-                            <p className={styles.errorMessage}>Please enter a valid email address</p>
-                        )}
                     </div>
 
                     <div className={styles.inputGroup}>
@@ -100,13 +75,8 @@ const Login: React.FC = () => {
                             type="password"
                             value={password}
                             onChange={(e) => dispatch(setPassword(e.target.value))}
-                            className={!passwordValid ? styles.invalidInput : ''}
+                            placeholder="••••••••"
                         />
-                        {!passwordValid && (
-                            <p className={styles.errorMessage}>
-                                Password must be at least 8 characters with letters and numbers
-                            </p>
-                        )}
                     </div>
 
                     {error && <div className={styles.error}>{error}</div>}
