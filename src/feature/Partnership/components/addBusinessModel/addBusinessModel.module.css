@@ -1,5 +1,10 @@
 /* addBusinessModel.module.css */
 
+:global(.pac-container) {
+    z-index: 3000 !important;
+    position: absolute !important;
+}
+
 /* Full Height Container to manage overall layout */
 .fullHeightContainer {
     display: flex;

@@ -1,16 +1,21 @@
+// src/components/AddBusinessModel/AddBusinessModel.tsx
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./addBusinessModel.module.css";
 import { Button } from "@mui/material";
-import { StandaloneSearchBox } from "@react-google-maps/api";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "../../../../redux/store.ts";
+import { AppDispatch } from "../../../../redux/store";
 import {
     addRestaurant,
     AddRestaurantPayload,
-} from "../../../../redux/thunks/restaurantThunk.ts";
+} from "../../../../redux/thunks/restaurantThunk";
 
+// make sure you load the Google Maps JS with &libraries=places in your index.html
 
-
+declare global {
+    interface Window {
+        google: typeof google;
+    }
+}
 
 interface RestaurantData {
     id: string;
@@ -41,7 +46,6 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                                             isEditing = false,
                                                             restaurant,
                                                         }) => {
-    // Initialize form data
     const [formData, setFormData] = useState({
         restaurantName: isEditing ? restaurant?.restaurantName || "" : "",
         restaurantDescription: isEditing ? restaurant?.restaurantDescription || "" : "",
@@ -68,42 +72,22 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
     });
 
     const [currentStep, setCurrentStep] = useState(1);
-
     const [phoneModalOpen, setPhoneModalOpen] = useState(false);
     const [categoryModalOpen, setCategoryModalOpen] = useState(false);
     const [selectedAreaCode, setSelectedAreaCode] = useState("+90");
     const [selectedCategory, setSelectedCategory] = useState(
         isEditing ? restaurant?.category || "" : ""
     );
-
     const [daysModalOpen, setDaysModalOpen] = useState(false);
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
-    // For the address (StandaloneSearchBox)
-    const searchBoxRef = useRef<google.maps.places.SearchBox | null>(null);
-
-
+    const autocompleteRef = useRef<HTMLInputElement>(null);
+    const [addressInput, setAddressInput] = useState("");
+    const [placeAutocompleteLoaded, setPlaceAutocompleteLoaded] = useState(false);
     const [invalidFields, setInvalidFields] = useState<string[]>([]);
-
-    const dispatch = useDispatch<AppDispatch>();
     const daysModalRef = useRef<HTMLDivElement>(null);
 
-    /** Close days modal if clicking outside it */
-    useEffect(() => {
-        const handleClickOutside = (e: MouseEvent) => {
-            if (
-                daysModalOpen &&
-                daysModalRef.current &&
-                !daysModalRef.current.contains(e.target as Node)
-            ) {
-                setDaysModalOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [daysModalOpen]);
+    const dispatch = useDispatch<AppDispatch>();
 
     const areaCodes = ["+90", "+1", "+44"];
     const restaurantCategories = [
@@ -128,85 +112,101 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
         "Sunday",
     ];
 
-    /** ─────────────────────────────────────────
-     *   Attempt to get user location
-     *  ───────────────────────────────────────── */
+    useEffect(() => {
+        if (
+            window.google?.maps?.places &&
+            autocompleteRef.current &&
+            !placeAutocompleteLoaded
+        ) {
+            const ac = new window.google.maps.places.Autocomplete(
+                autocompleteRef.current,
+                {
+                    types: ["address"],
+                    componentRestrictions: { country: ["us", "tr", "gb"] },
+                }
+            );
+            ac.setFields(["geometry", "formatted_address"]);
+            ac.addListener("place_changed", () => {
+                const place = ac.getPlace();
+                if (place.geometry?.location) {
+                    const lat = place.geometry.location.lat();
+                    const lng = place.geometry.location.lng();
+                    setFormData((f) => ({
+                        ...f,
+                        latitude: lat.toString(),
+                        longitude: lng.toString(),
+                    }));
+                    setAddressInput(place.formatted_address || "");
+                    setInvalidFields((f) =>
+                        f.filter((x) => x !== "latitude" && x !== "longitude")
+                    );
+                }
+            });
+            setPlaceAutocompleteLoaded(true);
+        }
+    }, [placeAutocompleteLoaded]);
 
+    useEffect(() => {
+        const onClick = (e: MouseEvent) => {
+            if (
+                daysModalOpen &&
+                daysModalRef.current &&
+                !daysModalRef.current.contains(e.target as Node)
+            ) {
+                setDaysModalOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", onClick);
+        return () => document.removeEventListener("mousedown", onClick);
+    }, [daysModalOpen]);
 
-
-
-    /** Handle normal form changes (excluding time) */
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
         const { name, value, type } = e.target;
-
-        // If it's a checkbox (pickup/delivery), handle differently
         if (type === "checkbox") {
-            setFormData((prev) => ({
-                ...prev,
-                [name]: (e.target as HTMLInputElement).checked,
-            }));
+            setFormData((f) => ({ ...f, [name]: (e.target as HTMLInputElement).checked }));
         } else {
-            setFormData((prev) => ({ ...prev, [name]: value }));
+            setFormData((f) => ({ ...f, [name]: value }));
         }
-        setInvalidFields((prev) => prev.filter((f) => f !== name));
+        setInvalidFields((f) => f.filter((x) => x !== name));
     };
 
-    /** Custom time-input logic */
     const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-
-        // Remove non-digits
-        let digits = value.replace(/\D/g, "");
-        // Enforce max length of 4 digits total
-        if (digits.length > 4) {
-            digits = digits.slice(0, 4);
-        }
-
-        let formatted = "";
-        // If 2 or fewer digits, no colon
-        if (digits.length <= 2) {
-            formatted = digits;
-        } else {
-            // Insert colon after the first 2 digits
-            formatted = digits.slice(0, 2) + ":" + digits.slice(2);
-        }
-
-        setFormData((prev) => ({ ...prev, [name]: formatted }));
-        setInvalidFields((prevInvalid) => prevInvalid.filter((f) => f !== name));
+        let d = value.replace(/\D/g, "").slice(0, 4);
+        let formatted = d.length <= 2 ? d : d.slice(0, 2) + ":" + d.slice(2);
+        setFormData((f) => ({ ...f, [name]: formatted }));
+        setInvalidFields((f) => f.filter((x) => x !== name));
     };
 
-    /** Image file changes */
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files?.length) {
-            const file = e.target.files[0];
-            const allowedTypes = ["image/png", "image/jpeg"];
-            if (!allowedTypes.includes(file.type)) {
-                alert("Only PNG and JPEG images are allowed.");
+        const file = e.target.files?.[0];
+        if (file) {
+            const ok = ["image/png", "image/jpeg"].includes(file.type);
+            if (!ok) {
+                alert("Only PNG and JPEG allowed");
                 return;
             }
             setUploadedFile(file);
-            setInvalidFields((prev) => prev.filter((f) => f !== "image"));
+            setInvalidFields((f) => f.filter((x) => x !== "image"));
         }
     };
 
-    /** Handle open days (multi-select) */
     const handleDaySelection = (day: string) => {
-        setFormData((prev) => {
-            const alreadySelected = prev.workingDays.includes(day);
+        setFormData((f) => {
+            const has = f.workingDays.includes(day);
             return {
-                ...prev,
-                workingDays: alreadySelected
-                    ? prev.workingDays.filter((d) => d !== day)
-                    : [...prev.workingDays, day],
+                ...f,
+                workingDays: has
+                    ? f.workingDays.filter((d) => d !== day)
+                    : [...f.workingDays, day],
             };
         });
     };
 
-    /** Validate step 1 */
     const validateStep1 = () => {
-        const requiredFields = [
+        const req = [
             "restaurantEmail",
             "restaurantPhone",
             "restaurantName",
@@ -217,57 +217,39 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
             "workingHoursStart",
             "workingHoursEnd",
         ];
-        const invalids: string[] = [];
-
-        requiredFields.forEach((field) => {
-            if (!formData[field as keyof typeof formData]) {
-                invalids.push(field);
-            }
+        const invalid: string[] = [];
+        req.forEach((k) => {
+            if (!(formData as any)[k]) invalid.push(k);
         });
-
-        if (formData.workingDays.length === 0) {
-            invalids.push("workingDays");
-        }
-        if (!uploadedFile) {
-            invalids.push("image");
-        }
-
-        setInvalidFields(invalids);
-        return invalids.length === 0;
+        if (!formData.workingDays.length) invalid.push("workingDays");
+        if (!uploadedFile) invalid.push("image");
+        setInvalidFields(invalid);
+        return !invalid.length;
     };
 
-    /** Step 1 -> Step 2 */
     const handleContinue = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!validateStep1()) {
-            alert("Please fill in all required fields correctly before continuing.");
-            return;
-        }
-        setCurrentStep(2);
+        if (validateStep1()) setCurrentStep(2);
+        else alert("Fill all required fields");
     };
 
-    /** Validate step 2 */
     const validateStep2 = () => {
-        const invalids: string[] = [];
-        if (!formData.pickup && !formData.delivery) {
-            invalids.push("pickupOrDelivery");
-        }
+        const invalid: string[] = [];
+        if (!formData.pickup && !formData.delivery) invalid.push("pickupOrDelivery");
         if (formData.delivery) {
-            if (!formData.maxDeliveryDistance) invalids.push("maxDeliveryDistance");
-            if (!formData.deliveryFee) invalids.push("deliveryFee");
-            if (!formData.minOrderAmount) invalids.push("minOrderAmount");
+            if (!formData.maxDeliveryDistance) invalid.push("maxDeliveryDistance");
+            if (!formData.deliveryFee) invalid.push("deliveryFee");
+            if (!formData.minOrderAmount) invalid.push("minOrderAmount");
         }
-        setInvalidFields(invalids);
-        return invalids.length === 0;
+        setInvalidFields(invalid);
+        return !invalid.length;
     };
 
-    /** Final submission */
     const handleComplete = async () => {
         if (!validateStep2()) {
-            alert("Please fill in all required fields correctly before completing.");
+            alert("Fill all required fields");
             return;
         }
-
         const payload: AddRestaurantPayload = {
             restaurantEmail: formData.restaurantEmail,
             restaurantPhone: selectedAreaCode + formData.restaurantPhone,
@@ -276,8 +258,8 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
             longitude: parseFloat(formData.longitude),
             latitude: parseFloat(formData.latitude),
             category: formData.category,
-            workingHoursStart: formData.workingHoursStart, // e.g. "10:12"
-            workingHoursEnd: formData.workingHoursEnd,     // e.g. "23:00"
+            workingHoursStart: formData.workingHoursStart,
+            workingHoursEnd: formData.workingHoursEnd,
             workingDays: formData.workingDays,
             image: uploadedFile || undefined,
             pickup: formData.pickup,
@@ -290,30 +272,18 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                 ? parseFloat(formData.minOrderAmount)
                 : 0,
         };
-
         await dispatch(addRestaurant(payload));
         alert("Form completed successfully!");
     };
 
-    /** For area code, category, days modals */
-    const togglePhoneModal = () => setPhoneModalOpen(!phoneModalOpen);
-    const toggleCategoryModal = () => setCategoryModalOpen(!categoryModalOpen);
-    const toggleDaysModal = () => setDaysModalOpen(!daysModalOpen);
-
-    /** Helper to mark invalid fields */
-    const isInvalid = (fieldName: string): boolean => invalidFields.includes(fieldName);
-
-    /** Map center priority: user location -> chosen marker -> fallback default */
-
     return (
         <div className={styles.fullHeightContainer}>
-            {/* ------- LEFT SIDE FORM ------- */}
-            <div
-                className={styles.outerDiv}
-            >
+            <div className={styles.outerDiv}>
                 {currentStep === 1 && (
                     <>
-                        <h2 className={styles.heading}>Are you ready to run businesses with us?</h2>
+                        <h2 className={styles.heading}>
+                            Are you ready to run businesses with us?
+                        </h2>
                         <form onSubmit={handleContinue} className={styles.form}>
                             <div className={styles.formColumns}>
                                 {/* Column 1 */}
@@ -322,27 +292,32 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                     <input
                                         name="restaurantEmail"
                                         className={`${styles.defaultInput} ${
-                                            isInvalid("restaurantEmail") ? styles.invalidInput : ""
+                                            invalidFields.includes("restaurantEmail")
+                                                ? styles.invalidInput
+                                                : ""
                                         }`}
                                         placeholder="Business E-mail"
                                         onChange={handleChange}
                                         value={formData.restaurantEmail}
                                     />
-
                                     <div className={styles.phoneContainer}>
                                         <button
                                             type="button"
                                             className={`${styles.defaultInput} ${styles.areaCodeButton} ${
-                                                isInvalid("restaurantPhone") ? styles.invalidInput : ""
+                                                invalidFields.includes("restaurantPhone")
+                                                    ? styles.invalidInput
+                                                    : ""
                                             }`}
-                                            onClick={togglePhoneModal}
+                                            onClick={() => setPhoneModalOpen((o) => !o)}
                                         >
-                                            <span>{selectedAreaCode}</span>
+                                            {selectedAreaCode}
                                         </button>
                                         <input
                                             name="restaurantPhone"
                                             className={`${styles.defaultInput} ${styles.phoneNumberInput} ${
-                                                isInvalid("restaurantPhone") ? styles.invalidInput : ""
+                                                invalidFields.includes("restaurantPhone")
+                                                    ? styles.invalidInput
+                                                    : ""
                                             }`}
                                             placeholder="Phone Number"
                                             inputMode="numeric"
@@ -356,11 +331,13 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                                         key={code}
                                                         type="button"
                                                         className={`${styles.modalButton} ${
-                                                            code === selectedAreaCode ? styles.selectedButton : ""
+                                                            code === selectedAreaCode
+                                                                ? styles.selectedButton
+                                                                : ""
                                                         }`}
                                                         onClick={() => {
                                                             setSelectedAreaCode(code);
-                                                            togglePhoneModal();
+                                                            setPhoneModalOpen(false);
                                                         }}
                                                     >
                                                         {code}
@@ -369,52 +346,66 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                             </div>
                                         )}
                                     </div>
-
-                                    {/* The actual StandaloneSearchBox is here in the parent */}
-                                    <StandaloneSearchBox
-                                        onLoad={(ref) => (searchBoxRef.current = ref)}
-                                    >
-                                        <input
-                                            type="text"
-                                            placeholder={
-                                             "Search for an address"
-                                            }
-                                            className={`${styles.defaultInput}${isInvalid("longitude") ? styles.invalidInput : ""}`}
-
-                                        />
-                                    </StandaloneSearchBox>
+                                    <input
+                                        ref={autocompleteRef}
+                                        name="addressInput"
+                                        value={addressInput}
+                                        onChange={(e) => setAddressInput(e.target.value)}
+                                        placeholder="Search address"
+                                        className={`${styles.defaultInput} ${
+                                            invalidFields.includes("longitude") ||
+                                            invalidFields.includes("latitude")
+                                                ? styles.invalidInput
+                                                : ""
+                                        }`}
+                                        style={{ minHeight: 40, padding: "0 8px" }}
+                                    />
+                                    {formData.latitude && formData.longitude && (
+                                        <div className={styles.coordinatesDisplay}>
+                                            <small>
+                                                Selected location: Lat:{" "}
+                                                {formData.latitude.substring(0, 8)}, Lng:{" "}
+                                                {formData.longitude.substring(0, 8)}
+                                            </small>
+                                        </div>
+                                    )}
                                 </div>
-
                                 {/* Column 2 */}
                                 <div className={styles.inputContainer}>
-                                    <span className={styles.sectionTitle}>Restaurant Details</span>
+                  <span className={styles.sectionTitle}>
+                    Restaurant Details
+                  </span>
                                     <input
                                         name="restaurantName"
                                         className={`${styles.defaultInput} ${
-                                            isInvalid("restaurantName") ? styles.invalidInput : ""
+                                            invalidFields.includes("restaurantName")
+                                                ? styles.invalidInput
+                                                : ""
                                         }`}
                                         placeholder="Restaurant Name"
                                         onChange={handleChange}
                                         value={formData.restaurantName}
                                     />
-
                                     <input
                                         name="restaurantDescription"
                                         className={`${styles.defaultInput} ${
-                                            isInvalid("restaurantDescription") ? styles.invalidInput : ""
+                                            invalidFields.includes("restaurantDescription")
+                                                ? styles.invalidInput
+                                                : ""
                                         }`}
                                         placeholder="Restaurant Description"
                                         onChange={handleChange}
                                         value={formData.restaurantDescription}
                                     />
-
                                     <div className={styles.modalContainer}>
                                         <button
                                             type="button"
                                             className={`${styles.defaultInput} ${styles.selectButton} ${
-                                                isInvalid("category") ? styles.invalidInput : ""
+                                                invalidFields.includes("category")
+                                                    ? styles.invalidInput
+                                                    : ""
                                             }`}
-                                            onClick={toggleCategoryModal}
+                                            onClick={() => setCategoryModalOpen((o) => !o)}
                                         >
                                             {selectedCategory || "Select Category"}
                                         </button>
@@ -425,12 +416,14 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                                         key={cat}
                                                         type="button"
                                                         className={`${styles.modalButton} ${
-                                                            cat === selectedCategory ? styles.selectedButton : ""
+                                                            cat === selectedCategory
+                                                                ? styles.selectedButton
+                                                                : ""
                                                         }`}
                                                         onClick={() => {
                                                             setSelectedCategory(cat);
-                                                            setFormData((prev) => ({ ...prev, category: cat }));
-                                                            toggleCategoryModal();
+                                                            setFormData((f) => ({ ...f, category: cat }));
+                                                            setCategoryModalOpen(false);
                                                         }}
                                                     >
                                                         {cat}
@@ -440,17 +433,18 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                         )}
                                     </div>
                                 </div>
-
+                                {/* Column 3 */}
                                 <div className={styles.inputContainer}>
                                     <span className={styles.sectionTitle}>Extra Details</span>
-
                                     <div className={styles.modalContainer}>
                                         <button
                                             type="button"
                                             className={`${styles.defaultInput} ${styles.selectButton} ${
-                                                isInvalid("workingDays") ? styles.invalidInput : ""
+                                                invalidFields.includes("workingDays")
+                                                    ? styles.invalidInput
+                                                    : ""
                                             }`}
-                                            onClick={toggleDaysModal}
+                                            onClick={() => setDaysModalOpen((o) => !o)}
                                         >
                                             {formData.workingDays.length
                                                 ? formData.workingDays.join(", ")
@@ -467,7 +461,9 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                                         key={day}
                                                         type="button"
                                                         className={`${styles.modalButton} ${
-                                                            formData.workingDays.includes(day) ? styles.selectedButton : ""
+                                                            formData.workingDays.includes(day)
+                                                                ? styles.selectedButton
+                                                                : ""
                                                         }`}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
@@ -482,7 +478,7 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                                     className={styles.closeModalButton}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        toggleDaysModal();
+                                                        setDaysModalOpen(false);
                                                     }}
                                                 >
                                                     Close
@@ -490,14 +486,15 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                             </div>
                                         )}
                                     </div>
-
                                     <div className={styles.timeContainer}>
                                         <input
                                             type="text"
                                             maxLength={5}
                                             name="workingHoursStart"
                                             className={`${styles.defaultInputTime} ${
-                                                isInvalid("workingHoursStart") ? styles.invalidInput : ""
+                                                invalidFields.includes("workingHoursStart")
+                                                    ? styles.invalidInput
+                                                    : ""
                                             }`}
                                             placeholder="Open HH:MM"
                                             value={formData.workingHoursStart}
@@ -508,14 +505,15 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                             maxLength={5}
                                             name="workingHoursEnd"
                                             className={`${styles.defaultInputTime} ${
-                                                isInvalid("workingHoursEnd") ? styles.invalidInput : ""
+                                                invalidFields.includes("workingHoursEnd")
+                                                    ? styles.invalidInput
+                                                    : ""
                                             }`}
                                             placeholder="Close HH:MM"
                                             value={formData.workingHoursEnd}
                                             onChange={handleTimeChange}
                                         />
                                     </div>
-
                                     <div className={styles.fileUploadContainer}>
                                         <input
                                             type="file"
@@ -527,7 +525,9 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                         <label
                                             htmlFor="fileUpload"
                                             className={`${styles.fileLabel} ${
-                                                isInvalid("image") ? styles.invalidInput : ""
+                                                invalidFields.includes("image")
+                                                    ? styles.invalidInput
+                                                    : ""
                                             }`}
                                         >
                                             {!uploadedFile ? (
@@ -536,25 +536,24 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                         </span>
                                             ) : (
                                                 <div className={styles.successMessage}>
-                                                    <span className={styles.fileName}>{uploadedFile.name}</span>
+                          <span className={styles.fileName}>
+                            {uploadedFile.name}
+                          </span>
                                                 </div>
                                             )}
                                         </label>
                                     </div>
-
-                                        <Button type="submit" className={styles.continueButton}>
-                                            <span>Continue</span>
-                                        </Button>
+                                    <Button type="submit" className={styles.continueButton}>
+                                        <span>Continue</span>
+                                    </Button>
                                 </div>
                             </div>
                         </form>
                     </>
                 )}
-
                 {currentStep === 2 && (
                     <div className={styles.stepTwoContainer}>
                         <h2 className={styles.heading}>Pickup/Delivery Info</h2>
-
                         <div className={styles.pickupDeliveryContainer}>
                             <label>
                                 <input
@@ -563,12 +562,13 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                     checked={formData.pickup}
                                     onChange={handleChange}
                                     className={`${styles.checkbox} ${
-                                        isInvalid("pickupOrDelivery") ? styles.invalidCheckbox : ""
+                                        invalidFields.includes("pickupOrDelivery")
+                                            ? styles.invalidCheckbox
+                                            : ""
                                     }`}
                                 />{" "}
                                 Pickup
                             </label>
-
                             <label>
                                 <input
                                     type="checkbox"
@@ -576,13 +576,14 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                     checked={formData.delivery}
                                     onChange={handleChange}
                                     className={`${styles.checkbox} ${
-                                        isInvalid("pickupOrDelivery") ? styles.invalidCheckbox : ""
+                                        invalidFields.includes("pickupOrDelivery")
+                                            ? styles.invalidCheckbox
+                                            : ""
                                     }`}
                                 />{" "}
                                 Delivery
                             </label>
                         </div>
-
                         {formData.delivery && (
                             <div className={styles.deliveryDetailsContainer}>
                                 <div className={styles.inputGroup}>
@@ -594,7 +595,9 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                         onChange={handleChange}
                                         value={formData.maxDeliveryDistance}
                                         className={`${styles.defaultInput} ${
-                                            isInvalid("maxDeliveryDistance") ? styles.invalidInput : ""
+                                            invalidFields.includes("maxDeliveryDistance")
+                                                ? styles.invalidInput
+                                                : ""
                                         }`}
                                     />
                                 </div>
@@ -607,7 +610,9 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                         onChange={handleChange}
                                         value={formData.deliveryFee}
                                         className={`${styles.defaultInput} ${
-                                            isInvalid("deliveryFee") ? styles.invalidInput : ""
+                                            invalidFields.includes("deliveryFee")
+                                                ? styles.invalidInput
+                                                : ""
                                         }`}
                                     />
                                 </div>
@@ -620,21 +625,20 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                         onChange={handleChange}
                                         value={formData.minOrderAmount}
                                         className={`${styles.defaultInput} ${
-                                            isInvalid("minOrderAmount") ? styles.invalidInput : ""
+                                            invalidFields.includes("minOrderAmount")
+                                                ? styles.invalidInput
+                                                : ""
                                         }`}
                                     />
                                 </div>
                             </div>
                         )}
-
                         <Button onClick={handleComplete} className={styles.completeButton}>
                             Complete
                         </Button>
                     </div>
                 )}
             </div>
-
-
         </div>
     );
 };
