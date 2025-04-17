@@ -1,0 +1,162 @@
+.commentsContainer {
+    padding: 2rem;
+}
+
+.badges {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.badgeCard {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: center;
+}
+
+.badgeIcon {
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f3f4f6;
+    color: #6b7280;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.badgeIcon.earned {
+    background-color: #b0f484;
+    color: #2f4a28;
+}
+
+.badgeLabel {
+    font-weight: 500;
+    color: #374151;
+    font-size: 1rem;
+}
+
+.badgeCounts {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.positiveCount {
+    color: #2f4a28;
+    background-color: #dcfce7;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+}
+
+.negativeCount {
+    color: #991b1b;
+    background-color: #fee2e2;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+}
+
+.badgeScore {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.commentsList {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.commentsList h2 {
+    margin: 0 0 1.5rem 0;
+    color: #374151;
+    font-size: 1.25rem;
+}
+
+.commentCard {
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.commentHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.rating {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.star {
+    color: #e5e7eb;
+    font-size: 1.25rem;
+}
+
+.star.filled {
+    color: #fbbf24;
+}
+
+.timestamp {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.commentText {
+    color: #374151;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.commentBadges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.commentBadge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.commentBadge.positive {
+    background-color: #dcfce7;
+    color: #2f4a28;
+}
+
+.commentBadge.negative {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    color: #6b7280;
+}
+
+.error {
+    color: #dc2626;
+    text-align: center;
+    padding: 2rem;
+}

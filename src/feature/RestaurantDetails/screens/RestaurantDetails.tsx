@@ -4,7 +4,9 @@ import styles from './RestaurantDetails.module.css';
 import RestaurantInfo from "../components/restaurantDetails/RestaurantInfo";
 import RestaurantListings from "../components/restaurantListings/RestaurantListings";
 import Orders from "../components/Orders/Orders";
-import { IoRestaurantOutline, IoListOutline, IoReceiptOutline } from 'react-icons/io5';
+import Comments from "../components/Comments/Comments";
+import Analytics from "../components/Analytics/Analytics";
+import { IoRestaurantOutline, IoListOutline, IoReceiptOutline, IoChatbubbleOutline, IoStatsChartOutline } from 'react-icons/io5';
 
 const RestaurantDetails: React.FC = () => {
     const { restaurantId } = useParams<{ restaurantId: string }>();
@@ -32,6 +34,20 @@ const RestaurantDetails: React.FC = () => {
                         <span>Listings</span>
                     </NavLink>
                     <NavLink
+                        to={`/dashboard/${restaurantId}/comments`}
+                        className={({ isActive }) => `${styles.tabItem} ${isActive ? styles.active : ''}`}
+                    >
+                        <IoChatbubbleOutline />
+                        <span>Comments</span>
+                    </NavLink>
+                    <NavLink
+                        to={`/dashboard/${restaurantId}/analytics`}
+                        className={({ isActive }) => `${styles.tabItem} ${isActive ? styles.active : ''}`}
+                    >
+                        <IoStatsChartOutline />
+                        <span>Analytics</span>
+                    </NavLink>
+                    <NavLink
                         to={`/dashboard/${restaurantId}/overview`}
                         className={({ isActive }) => `${styles.tabItem} ${isActive ? styles.active : ''}`}
                     >
@@ -44,6 +60,8 @@ const RestaurantDetails: React.FC = () => {
                     <Routes>
                         <Route path="orders" element={<Orders restaurantId={restaurantId} />} />
                         <Route path="listings" element={<RestaurantListings restaurantId={restaurantId} />} />
+                        <Route path="comments" element={<Comments restaurantId={restaurantId} />} />
+                        <Route path="analytics" element={<Analytics restaurantId={restaurantId} />} />
                         <Route path="overview" element={<RestaurantInfo restaurantId={Number(restaurantId)} />} />
                         <Route path="*" element={<Navigate to="orders" replace />} />
                     </Routes>

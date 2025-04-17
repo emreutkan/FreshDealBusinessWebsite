@@ -1,0 +1,165 @@
+.analyticsContainer {
+    padding: 2rem;
+    background-color: #f8f9fa;
+    min-height: 100%;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.statCard {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.statCard h3 {
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin: 0 0 0.5rem 0;
+}
+
+.statValue {
+    font-size: 1.875rem;
+    font-weight: 600;
+    color: #2f4a28;
+    margin-bottom: 0.5rem;
+}
+
+.statPeriod {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.sections {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.section h3 {
+    color: #374151;
+    font-size: 1.25rem;
+    margin: 0 0 1rem 0;
+}
+
+.regionGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.regionCard {
+    background: #f3f4f6;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.regionName {
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.25rem;
+}
+
+.regionCount {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.commentsList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.commentCard {
+    padding: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+}
+
+.commentHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.userName {
+    font-weight: 500;
+    color: #374151;
+}
+
+.rating {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.star {
+    color: #e5e7eb;
+}
+
+.star.filled {
+    color: #fbbf24;
+}
+
+.commentText {
+    color: #374151;
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.badgeList {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 1rem;
+}
+
+.badge.positive {
+    background-color: #dcfce7;
+    color: #2f4a28;
+}
+
+.badge.negative {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.timestamp {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    color: #6b7280;
+}
+
+.error {
+    color: #dc2626;
+    text-align: center;
+    padding: 2rem;
+}
