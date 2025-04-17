@@ -28,9 +28,7 @@ jobs:
       - name: Prepare deploy package
         run: |
           mkdir deploy
-          # copy package.json so 'serve' is available at runtime
           cp package.json package-lock.json deploy/
-          # copy built files
           cp -r dist/* deploy/
 
       - name: Deploy to Azure Web App
