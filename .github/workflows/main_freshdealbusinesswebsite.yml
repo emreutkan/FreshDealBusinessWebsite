@@ -32,4 +32,4 @@ jobs:
           app-name: FreshdealBusinessWebsite
           slot-name: Production
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_140706989B984EB1B4DA4F23CBF61FCB }}
-          package: dist
+          package: ./dist
