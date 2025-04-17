@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../../../../redux/store";
 import {
     addRestaurant,
-    AddRestaurantPayload,
+    AddRestaurantPayload, updateRestaurant,
 } from "../../../../redux/thunks/restaurantThunk";
 
 declare global {
@@ -308,7 +308,6 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
         setInvalidFields(invalid);
         return !invalid.length;
     };
-
     const handleComplete = async () => {
         if (!validateStep2()) {
             setError("Please fill in all required fields");
@@ -339,7 +338,16 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                     : 0,
             };
 
-            const response = await dispatch(addRestaurant(payload)).unwrap();
+            let response;
+            if (isEditing && restaurant?.id) {
+                response = await dispatch(updateRestaurant({
+                    ...payload,
+                    restaurantId: restaurant.id
+                })).unwrap();
+            } else {
+                response = await dispatch(addRestaurant(payload)).unwrap();
+            }
+
             if ('error' in response) {
                 throw new Error(response.error);
             }
@@ -353,11 +361,10 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
             } else if (err.message) {
                 setError(err.message);
             } else {
-                setError("An unexpected error occurred while adding the restaurant");
+                setError(`An unexpected error occurred while ${isEditing ? 'updating' : 'adding'} the restaurant`);
             }
         }
     };
-
     return (
         <div className={styles.fullHeightContainer}>
             <div className={styles.outerDiv}>
