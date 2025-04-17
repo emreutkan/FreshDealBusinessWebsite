@@ -22,16 +22,16 @@ jobs:
 
       - name: Install dependencies & build
         run: |
-          npm ci
-          npm run build
+          npm ci                       # installs deps & devDeps
+          npm run build                # generates dist/
+          npm prune --production       # removes devDeps, leaving only "serve" + runtime deps
 
       - name: Prepare deploy package
         run: |
           mkdir deploy
-          # copy package.json so 'serve' is available at runtime
+          cp -r node_modules deploy/   # include your production-only node_modules
           cp package.json package-lock.json deploy/
-          # copy built files
-          cp -r dist/* deploy/
+          cp -r dist deploy/           # include built output
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
