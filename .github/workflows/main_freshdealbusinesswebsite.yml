@@ -31,9 +31,9 @@ jobs:
       - name: Prepare deploy package
         run: |
           mkdir deploy
-          cp -r node_modules deploy/   # include your production-only node_modules
+          cp -r node_modules deploy/
           cp package.json package-lock.json deploy/
-          cp -r dist deploy/           # include built output
+          cp -r dist deploy/
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
@@ -42,4 +42,3 @@ jobs:
           slot-name: Production
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_140706989B984EB1B4DA4F23CBF61FCB }}
           package: deploy
-          removeAdditionalFiles: true
