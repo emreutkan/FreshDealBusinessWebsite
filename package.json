@@ -9,7 +9,7 @@
     "postbuild": "node scripts/set-env.js",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "http-server dist -p $PORT -a 0.0.0.0"
+    "start": "serve dist -l $PORT"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
