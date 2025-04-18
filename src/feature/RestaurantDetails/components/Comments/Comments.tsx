@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Card } from '@mui/material';
-import { getRestaurantCommentsAPI, getRestaurantBadgesAPI } from '../../../../redux/Api/restaurantApi';
+import { getRestaurantCommentsAPI } from '../../../../redux/Api/restaurantApi';
 import styles from './Comments.module.css';
 import { IoFastFoodOutline, IoSpeedometerOutline, IoPersonOutline } from 'react-icons/io5';
+import { API_BASE_URL } from '../../../../redux/Api/apiService';
+import axios from 'axios';
 
 interface CommentsProps {
     restaurantId: string;
@@ -22,36 +24,45 @@ interface Comment {
     badges: Badge[];
 }
 
-interface BadgePoints {
-    fresh: number;
-    not_fresh: number;
-    fast_delivery: number;
-    slow_delivery: number;
-    customer_friendly: number;
-    not_customer_friendly: number;
+interface BadgeAnalytics {
+    freshness: {
+        fresh: number;
+        not_fresh: number;
+    };
+    delivery: {
+        fast_delivery: number;
+        slow_delivery: number;
+    };
+    customer_service: {
+        customer_friendly: number;
+        not_customer_friendly: number;
+    };
 }
 
-const BADGE_CONFIG = {
-    fresh: {
+const BADGE_CATEGORIES = {
+    freshness: {
         icon: <IoFastFoodOutline />,
-        label: 'Fresh Food',
-        negativeName: 'not_fresh',
+        label: 'Food Freshness',
+        positive: 'fresh',
+        negative: 'not_fresh',
     },
-    fast_delivery: {
+    delivery: {
         icon: <IoSpeedometerOutline />,
-        label: 'Fast Delivery',
-        negativeName: 'slow_delivery',
+        label: 'Delivery Speed',
+        positive: 'fast_delivery',
+        negative: 'slow_delivery',
     },
-    customer_friendly: {
+    customer_service: {
         icon: <IoPersonOutline />,
-        label: 'Customer Friendly',
-        negativeName: 'not_customer_friendly',
+        label: 'Customer Service',
+        positive: 'customer_friendly',
+        negative: 'not_customer_friendly',
     }
 };
 
 const Comments: React.FC<CommentsProps> = ({ restaurantId }) => {
     const [comments, setComments] = useState<Comment[]>([]);
-    const [badgePoints, setBadgePoints] = useState<BadgePoints | null>(null);
+    const [badgeAnalytics, setBadgeAnalytics] = useState<BadgeAnalytics | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -59,13 +70,13 @@ const Comments: React.FC<CommentsProps> = ({ restaurantId }) => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const [commentsResponse, badgesResponse] = await Promise.all([
+                const [commentsResponse, badgeAnalyticsResponse] = await Promise.all([
                     getRestaurantCommentsAPI(restaurantId),
-                    getRestaurantBadgesAPI(restaurantId)
+                    axios.get(`${API_BASE_URL}/restaurants/${restaurantId}/badge-analytics`)
                 ]);
 
                 setComments(commentsResponse.comments);
-                setBadgePoints(badgesResponse.badge_points);
+                setBadgeAnalytics(badgeAnalyticsResponse.data.badge_analytics);
             } catch (err) {
                 setError('Failed to load comments and badges');
                 console.error(err);
@@ -77,41 +88,24 @@ const Comments: React.FC<CommentsProps> = ({ restaurantId }) => {
         fetchData();
     }, [restaurantId]);
 
-    const getBadgeScore = (badgeName: string): { score: number; total: number } => {
-        if (!badgePoints) return { score: 0, total: 0 };
+    const getBadgeScore = (category: keyof BadgeAnalytics): { score: number; total: number; percentage: number } => {
+        if (!badgeAnalytics) return { score: 0, total: 0, percentage: 0 };
 
-        switch (badgeName) {
-            case 'fresh': {
-                const positive = badgePoints.fresh || 0;
-                const negative = badgePoints.not_fresh || 0;
-                return {
-                    score: positive - negative,
-                    total: positive + negative
-                };
-            }
-            case 'fast_delivery': {
-                const positive = badgePoints.fast_delivery || 0;
-                const negative = badgePoints.slow_delivery || 0;
-                return {
-                    score: positive - negative,
-                    total: positive + negative
-                };
-            }
-            case 'customer_friendly': {
-                const positive = badgePoints.customer_friendly || 0;
-                const negative = badgePoints.not_customer_friendly || 0;
-                return {
-                    score: positive - negative,
-                    total: positive + negative
-                };
-            }
-            default:
-                return { score: 0, total: 0 };
-        }
+        const categoryData = badgeAnalytics[category];
+        const positiveKey = Object.keys(categoryData)[0] as keyof typeof categoryData;
+        const negativeKey = Object.keys(categoryData)[1] as keyof typeof categoryData;
+
+        const positive = categoryData[positiveKey];
+        const negative = categoryData[negativeKey];
+        const total = positive + negative;
+        const score = positive - negative;
+        const percentage = total > 0 ? (positive / total) * 100 : 0;
+
+        return { score, total, percentage };
     };
 
-    const isBadgeEarned = (badgeName: string): boolean => {
-        const { score } = getBadgeScore(badgeName);
+    const isBadgeEarned = (category: keyof BadgeAnalytics): boolean => {
+        const { score } = getBadgeScore(category);
         return score > 100;
     };
 
@@ -126,14 +120,15 @@ const Comments: React.FC<CommentsProps> = ({ restaurantId }) => {
     return (
         <div className={styles.commentsContainer}>
             <div className={styles.badges}>
-                {Object.entries(BADGE_CONFIG).map(([badgeName, config]) => {
-                    const positiveCount = badgePoints?.[badgeName] || 0;
-                    const negativeCount = badgePoints?.[config.negativeName] || 0;
-                    const { score, total } = getBadgeScore(badgeName);
+                {(Object.entries(BADGE_CATEGORIES) as Array<[keyof BadgeAnalytics, typeof BADGE_CATEGORIES[keyof BadgeAnalytics]]>).map(([category, config]) => {
+                    const { score, total, percentage } = getBadgeScore(category);
+                    const categoryData = badgeAnalytics?.[category] || { [config.positive]: 0, [config.negative]: 0 };
+                    const positiveCount = categoryData[config.positive as keyof typeof categoryData];
+                    const negativeCount = categoryData[config.negative as keyof typeof categoryData];
 
                     return (
-                        <div key={badgeName} className={styles.badgeCard}>
-                            <div className={`${styles.badgeIcon} ${isBadgeEarned(badgeName) ? styles.earned : ''}`}>
+                        <div key={category} className={styles.badgeCard}>
+                            <div className={`${styles.badgeIcon} ${isBadgeEarned(category) ? styles.earned : ''}`}>
                                 {config.icon}
                             </div>
                             <div className={styles.badgeLabel}>{config.label}</div>
@@ -142,7 +137,7 @@ const Comments: React.FC<CommentsProps> = ({ restaurantId }) => {
                                 <span className={styles.negativeCount}>{negativeCount}</span>
                             </div>
                             <div className={styles.badgeScore}>
-                                Score: {score} ({total} total)
+                                Score: {score} ({percentage.toFixed(1)}% positive)
                             </div>
                         </div>
                     );

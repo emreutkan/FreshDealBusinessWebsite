@@ -9,7 +9,7 @@
     "postbuild": "node scripts/set-env.js",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "serve dist -l $PORT"
+    "start": "npm install && npm run build && npx serve dist -s -l ${PORT:-8080}"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -21,7 +21,6 @@
     "axios": "^1.7.9",
     "chart.js": "^4.4.8",
     "date-fns": "^4.1.0",
-    "http-server": "^14.1.1",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.3.0",
     "react-datepicker": "^7.5.0",
