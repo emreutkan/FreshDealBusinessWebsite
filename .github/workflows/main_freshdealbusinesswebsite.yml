@@ -31,7 +31,6 @@ jobs:
       - name: Prepare deploy package
         run: |
           mkdir deploy
-          cp -r node_modules deploy/
           cp package.json package-lock.json deploy/
           cp -r dist deploy/
           cp -r scripts deploy/

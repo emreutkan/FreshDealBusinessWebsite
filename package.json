@@ -9,7 +9,7 @@
     "postbuild": "node scripts/set-env.js",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "npm install && npm run build && npx serve dist -s -l ${PORT:-8080}"
+    "start": "npx serve dist -s -l ${PORT:-8080}"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
