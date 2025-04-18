@@ -121,7 +121,7 @@ const Comments: React.FC<CommentsProps> = ({ restaurantId }) => {
         <div className={styles.commentsContainer}>
             <div className={styles.badges}>
                 {(Object.entries(BADGE_CATEGORIES) as Array<[keyof BadgeAnalytics, typeof BADGE_CATEGORIES[keyof BadgeAnalytics]]>).map(([category, config]) => {
-                    const { score, total, percentage } = getBadgeScore(category);
+                    const { score, percentage } = getBadgeScore(category);
                     const categoryData = badgeAnalytics?.[category] || { [config.positive]: 0, [config.negative]: 0 };
                     const positiveCount = categoryData[config.positive as keyof typeof categoryData];
                     const negativeCount = categoryData[config.negative as keyof typeof categoryData];
