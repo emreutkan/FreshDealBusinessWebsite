@@ -9,3 +9,9 @@ interface ImportMetaEnv {
 interface ImportMeta {
     readonly env: ImportMetaEnv
 }
+
+interface Window {
+    __env: {
+        VITE_GOOGLE_MAPS_API_KEY: string;
+    };
+}

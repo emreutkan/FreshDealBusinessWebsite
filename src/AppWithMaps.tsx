@@ -10,7 +10,7 @@ import Dashboard from "./feature/Dashboard/Dashboard";
 import type { Libraries } from '@react-google-maps/api';
 
 const GOOGLE_MAPS_LIBRARIES: Libraries = ['places'];
-const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+const GOOGLE_MAPS_API_KEY = (window as any).__env?.VITE_GOOGLE_MAPS_API_KEY || import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 if (!GOOGLE_MAPS_API_KEY) {
     console.error('Google Maps API key is missing. Please check your environment variables.');

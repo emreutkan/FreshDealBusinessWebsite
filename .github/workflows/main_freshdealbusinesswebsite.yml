@@ -22,9 +22,11 @@ jobs:
 
       - name: Install dependencies & build
         run: |
-          npm ci                       # installs deps & devDeps
-          npm run build                # generates dist/
-          npm prune --production       # removes devDeps, leaving only "serve" + runtime deps
+          npm ci                    
+          npm run build               
+          npm prune --production
+        env:
+          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.VITE_GOOGLE_MAPS_API_KEY }}
 
       - name: Prepare deploy package
         run: |
