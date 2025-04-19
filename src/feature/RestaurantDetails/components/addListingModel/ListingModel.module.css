@@ -95,10 +95,11 @@
 .container {
     flex: 1;
     padding-top: 1rem;
-    max-width: 1200px;
+    max-width: 1300px;
     margin: 0 auto;
     width: 100%;
     animation: fadeIn 0.4s ease-out 0.3s both;
+    overflow-y: auto;
 }
 
 .container h2 {
