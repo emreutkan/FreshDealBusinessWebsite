@@ -14,7 +14,11 @@ const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 if (!GOOGLE_MAPS_API_KEY) {
     console.error('Google Maps API key is missing. Please check your environment variables.');
+} else {
+    console.log('Google Maps API key is set.');
 }
+console.log("All env variables:", import.meta.env);
+console.log("API Key:", import.meta.env.VITE_GOOGLE_MAPS_API_KEY);
 
 const AppWithMaps = () => {
     return (
