@@ -16,7 +16,7 @@ const Landing: React.FC = () => {
         // Check if user is logged in
         if (token) {
             // Redirect to dashboard if user is logged in
-            navigate('/register', { replace: true });
+            navigate('/dashboard', { replace: true });
         } else {
             // Show landing page with a slight delay for loading animation
             setTimeout(() => setIsLoading(false), 800);
