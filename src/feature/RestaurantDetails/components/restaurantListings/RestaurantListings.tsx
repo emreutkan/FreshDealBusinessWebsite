@@ -235,17 +235,17 @@ const RestaurantListings: React.FC<RestaurantListingsProps> = ({ restaurantId })
                                         <div className={styles.priceSection}>
                                             <div className={styles.mainPrice}>
                                                 <LocalOfferIcon className={styles.priceIcon} />
-                                                <span>€{listing.original_price.toFixed(2)}</span>
+                                                <span>{listing.original_price.toFixed(2)} TL</span>
                                             </div>
                                             <div className={styles.alternativePrices}>
                                                 {listing.pick_up_price && (
                                                     <div className={styles.priceTag}>
-                                                        Pickup: €{listing.pick_up_price.toFixed(2)}
+                                                        Pickup: {listing.pick_up_price.toFixed(2)} TL
                                                     </div>
                                                 )}
                                                 {listing.delivery_price && (
                                                     <div className={styles.priceTag}>
-                                                        Delivery: €{listing.delivery_price.toFixed(2)}
+                                                        Delivery: {listing.delivery_price.toFixed(2)} TL
                                                     </div>
                                                 )}
                                             </div>

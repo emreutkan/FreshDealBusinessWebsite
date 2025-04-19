@@ -168,7 +168,7 @@ const RestaurantInfo: React.FC<RestaurantInfoProps> = ({ restaurantId }) => {
                         <div className={styles.infoContent}>
                             <h3>Delivery Details</h3>
                             <p>Range: {restaurant.maxDeliveryDistance || 0}km</p>
-                            <p className={styles.subInfo}>Fee: €{(restaurant.deliveryFee || 0).toFixed(2)}</p>
+                            <p className={styles.subInfo}>Fee: {(restaurant.deliveryFee || 0).toFixed(2)} TL</p>
                         </div>
                     </div>
                 )}
@@ -191,7 +191,7 @@ const RestaurantInfo: React.FC<RestaurantInfoProps> = ({ restaurantId }) => {
                     </div>
                     <div className={styles.infoContent}>
                         <h3>Minimum Order</h3>
-                        <p>€{(restaurant.minOrderAmount || 0).toFixed(2)}</p>
+                        <p>{(restaurant.minOrderAmount || 0).toFixed(2)} TL</p>
                     </div>
                 </div>
             </div>

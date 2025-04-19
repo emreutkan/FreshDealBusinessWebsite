@@ -61,7 +61,7 @@ const Orders: React.FC<OrdersProps> = ({ restaurantId }) => {
     const { items: purchases, loading, error } = useSelector((state: RootState) => state.purchases);
 
     const formatPrice = (price: string) => {
-        return `$${parseFloat(price).toFixed(2)}`;
+        return `${parseFloat(price).toFixed(2)} TL`;
     };
 
     useEffect(() => {

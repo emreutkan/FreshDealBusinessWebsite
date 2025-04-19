@@ -107,7 +107,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ restaurantId }) => {
                 <div className={styles.statCard}>
                     <h3>Monthly Revenue</h3>
                     <div className={styles.statValue}>
-                        ${parseFloat(analyticsData.monthly_stats.total_revenue).toFixed(2)}
+                        {parseFloat(analyticsData.monthly_stats.total_revenue).toFixed(2)} TL
                     </div>
                     <div className={styles.statPeriod}>
                         Period: {analyticsData.monthly_stats.period}

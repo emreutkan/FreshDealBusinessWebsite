@@ -7,7 +7,7 @@ const HeroSection: React.FC = () => {
 
     const handleGetStarted = () => {
         // Navigate to business registration
-        navigate('/business/register');
+        navigate('/register');
     };
 
     const handleLearnMore = () => {
@@ -45,15 +45,15 @@ const HeroSection: React.FC = () => {
             </div>
             <div className={styles.heroStats}>
                 <div className={styles.statItem}>
-                    <span className={styles.statNumber}>€50K+</span>
+                    <span className={styles.statNumber}>10.000+ TL</span>
                     <span className={styles.statLabel}>Average Annual Revenue</span>
                 </div>
                 <div className={styles.statItem}>
-                    <span className={styles.statNumber}>15K+</span>
+                    <span className={styles.statNumber}>15K+ </span>
                     <span className={styles.statLabel}>Active Users</span>
                 </div>
                 <div className={styles.statItem}>
-                    <span className={styles.statNumber}>30%</span>
+                    <span className={styles.statNumber}>30% </span>
                     <span className={styles.statLabel}>Reduced Food Waste</span>
                 </div>
             </div>
