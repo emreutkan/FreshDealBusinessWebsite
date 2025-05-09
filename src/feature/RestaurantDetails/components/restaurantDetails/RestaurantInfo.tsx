@@ -14,6 +14,7 @@ import {
     IoWalletOutline,
     IoStarOutline
 } from 'react-icons/io5';
+import FlashDealsStatus from '../../FlashDealStatus/FlashDealStatus';
 
 interface RestaurantInfoProps {
     restaurantId: string | undefined;
@@ -194,6 +195,12 @@ const RestaurantInfo: React.FC<RestaurantInfoProps> = ({ restaurantId }) => {
                         <p>{(restaurant.minOrderAmount || 0).toFixed(2)} TL</p>
                     </div>
                 </div>
+
+                <FlashDealsStatus
+                    restaurantId={restaurant.id}
+                    isAvailable={restaurant.flash_deals_available || false}
+                    count={restaurant.flash_deals_count || 0}
+                />
             </div>
 
             <div className={styles.descriptionSection}>

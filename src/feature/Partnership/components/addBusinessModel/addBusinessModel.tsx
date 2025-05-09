@@ -33,6 +33,8 @@ interface RestaurantData {
     restaurantEmail: string;
     restaurantPhone: string;
     image_url: string;
+    flash_deals_available?: boolean;
+    flash_deals_count?: number;
 }
 
 interface BusinessModelProps {
@@ -67,6 +69,7 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
             isEditing && restaurant?.minOrderAmount
                 ? restaurant.minOrderAmount.toString()
                 : "",
+        flash_deals_available: isEditing ? restaurant?.flash_deals_available || false : false,
     });
 
     const [currentStep, setCurrentStep] = useState(1);
@@ -336,6 +339,7 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                 minOrderAmount: formData.delivery
                     ? parseFloat(formData.minOrderAmount)
                     : 0,
+                flash_deals_available: formData.flash_deals_available
             };
 
             let response;
@@ -720,6 +724,38 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                 </div>
                             </div>
                         )}
+                        <div className={styles.flashDealsSection}>
+                            <div className={styles.flashDealsHeader}>
+                                <span className={styles.sectionTitle}>Flash Deals</span>
+                                <div className={styles.toggleContainer}>
+                                    <label className={styles.toggleSwitch}>
+                                        <input
+                                            type="checkbox"
+                                            name="flash_deals_available"
+                                            checked={formData.flash_deals_available}
+                                            onChange={handleChange}
+                                            className={styles.toggleInput}
+                                        />
+                                        <span className={styles.toggleSlider}></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <p className={styles.flashDealsDescription}>
+                                Enable flash deals to promote your restaurant to nearby customers.
+                                Limited to 3 purchases per restaurant. When activated, your restaurant will
+                                appear in the "Flash Deals" section of the customer app.
+                            </p>
+                            {isEditing && restaurant?.flash_deals_count !== undefined && restaurant.flash_deals_count > 0 && (
+                                <div className={styles.flashDealsInfo}>
+                                    <p>Flash deals used: {restaurant.flash_deals_count} of 3</p>
+                                    {restaurant.flash_deals_count >= 3 && (
+                                        <p className={styles.flashDealsWarning}>
+                                            You've used all your flash deals. This option will be automatically disabled.
+                                        </p>
+                                    )}
+                                </div>
+                            )}
+                        </div>
                         <Button onClick={handleComplete} className={styles.completeButton}>
                             Complete
                         </Button>

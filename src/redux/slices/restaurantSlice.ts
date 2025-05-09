@@ -4,6 +4,7 @@ import {
     addRestaurant,
     getRestaurantsOfUserThunk,
     removeRestaurant,
+    updateRestaurant,
 } from '../thunks/restaurantThunk';
 
 export interface Restaurant {
@@ -29,6 +30,8 @@ export interface Restaurant {
     minOrderAmount: number;
     restaurantEmail: string;
     restaurantPhone: string;
+    flash_deals_available: boolean;
+    flash_deals_count: number;
 }
 
 interface RestaurantState {
@@ -99,7 +102,21 @@ const restaurantSlice = createSlice({
             state.error = action.payload as string;
         });
 
-
+        // Update Restaurant
+        builder.addCase(updateRestaurant.fulfilled, (state, action: PayloadAction<any>) => {
+            state.status = 'succeeded';
+            if (action.payload.restaurant) {
+                const index = state.ownedRestaurants.findIndex(
+                    (restaurant) => restaurant.id === action.payload.restaurant.id
+                );
+                if (index !== -1) {
+                    state.ownedRestaurants[index] = {
+                        ...state.ownedRestaurants[index],
+                        ...action.payload.restaurant,
+                    };
+                }
+            }
+        });
     },
 });
 

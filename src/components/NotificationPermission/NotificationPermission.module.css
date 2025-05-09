@@ -1,0 +1,70 @@
+.notificationPrompt {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    max-width: 400px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.promptContent {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.bellIcon {
+    font-size: 48px;
+    color: #3b82f6;
+    margin-bottom: 16px;
+}
+
+.promptText {
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.promptText h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.promptText p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.promptActions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.allowButton {
+    background-color: #3b82f6 !important;
+    color: white !important;
+    padding: 8px 16px !important;
+    font-weight: 500 !important;
+}
+
+.dismissButton {
+    color: #6b7280 !important;
+}
+
+@media (max-width: 480px) {
+    .notificationPrompt {
+        bottom: 0;
+        right: 0;
+        width: 100%;
+        max-width: 100%;
+        border-radius: 8px 8px 0 0;
+    }
+}
