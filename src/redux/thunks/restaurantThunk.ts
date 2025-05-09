@@ -24,32 +24,41 @@ export interface AddRestaurantPayload {
     minOrderAmount: number;
     restaurantEmail: string;
     restaurantPhone: string;
+    flash_deals_available?: boolean;
 }
 
-export interface UpdateRestaurantPayload extends AddRestaurantPayload {
+export interface UpdateRestaurantPayload extends Partial<AddRestaurantPayload> {
     restaurantId: string;
 }
 
-const createFormData = (payload: AddRestaurantPayload) => {
+const createFormData = (payload: AddRestaurantPayload | UpdateRestaurantPayload) => {
     const formData = new FormData();
-    formData.append('restaurantName', payload.restaurantName);
-    formData.append('restaurantDescription', payload.restaurantDescription);
-    formData.append('longitude', payload.longitude.toString());
-    formData.append('latitude', payload.latitude.toString());
-    formData.append('category', payload.category);
-    payload.workingDays.forEach((day) => formData.append('workingDays', day));
-    formData.append('workingHoursStart', payload.workingHoursStart);
-    formData.append('workingHoursEnd', payload.workingHoursEnd);
-    formData.append('pickup', payload.pickup.toString());
-    formData.append('delivery', payload.delivery.toString());
-    if (payload.delivery) {
-        formData.append('maxDeliveryDistance', payload.maxDeliveryDistance.toString());
-        formData.append('deliveryFee', payload.deliveryFee.toString());
-        formData.append('minOrderAmount', payload.minOrderAmount.toString());
+
+    // Add all properties that exist in the payload to the FormData
+    if ('restaurantName' in payload) formData.append('restaurantName', payload.restaurantName);
+    if ('restaurantDescription' in payload) formData.append('restaurantDescription', payload.restaurantDescription);
+    if ('longitude' in payload) formData.append('longitude', payload.longitude.toString());
+    if ('latitude' in payload) formData.append('latitude', payload.latitude.toString());
+    if ('category' in payload) formData.append('category', payload.category);
+    if ('workingDays' in payload) {
+        payload.workingDays.forEach((day) => formData.append('workingDays', day));
     }
-    if (payload.image) formData.append('image', payload.image);
-    formData.append('restaurantEmail', payload.restaurantEmail);
-    formData.append('restaurantPhone', payload.restaurantPhone);
+    if ('workingHoursStart' in payload) formData.append('workingHoursStart', payload.workingHoursStart);
+    if ('workingHoursEnd' in payload) formData.append('workingHoursEnd', payload.workingHoursEnd);
+    if ('pickup' in payload) formData.append('pickup', payload.pickup.toString());
+    if ('delivery' in payload) formData.append('delivery', payload.delivery.toString());
+
+    if ('delivery' in payload && payload.delivery) {
+        if ('maxDeliveryDistance' in payload) formData.append('maxDeliveryDistance', payload.maxDeliveryDistance.toString());
+        if ('deliveryFee' in payload) formData.append('deliveryFee', payload.deliveryFee.toString());
+        if ('minOrderAmount' in payload) formData.append('minOrderAmount', payload.minOrderAmount.toString());
+    }
+
+    if ('image' in payload && payload.image) formData.append('image', payload.image);
+    if ('restaurantEmail' in payload) formData.append('restaurantEmail', payload.restaurantEmail);
+    if ('restaurantPhone' in payload) formData.append('restaurantPhone', payload.restaurantPhone);
+    if ('flash_deals_available' in payload) formData.append('flash_deals_available', payload.flash_deals_available.toString());
+
     return formData;
 };
 
