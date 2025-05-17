@@ -5,6 +5,7 @@ import userReducer from './slices/userSlice';
 import restaurantReducer from './slices/restaurantSlice';
 import purchaseReducer from './slices/purchaseSlice';
 import listingReducer from './slices/listingSlice';
+import notificationReducer from './slices/NotificationSlice';
 
 const store = configureStore({
     reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
         restaurant: restaurantReducer,
         purchases: purchaseReducer,
         listing: listingReducer,
+        notifications: notificationReducer,
     },
 });
 

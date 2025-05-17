@@ -7,7 +7,6 @@ export default defineConfig({
     react(),
     compression(),
   ],
-
   build: {
     rollupOptions: {
       output: {
@@ -24,5 +23,10 @@ export default defineConfig({
     },
     sourcemap: false,
     chunkSizeWarningLimit: 1000,
+  },
+  server: {
+    headers: {
+      'Service-Worker-Allowed': '/'
+    }
   }
 })
