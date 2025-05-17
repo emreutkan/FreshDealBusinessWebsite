@@ -32,8 +32,7 @@ const PunishRestaurantPage: React.FC = () => {
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<boolean>(false);
-    const [currentDate] = useState<string>('2025-05-16 22:50:40');
-    const [currentUser] = useState<string>('emreutkan');
+
 
     // Check if user is support
     useEffect(() => {
@@ -162,12 +161,7 @@ const PunishRestaurantPage: React.FC = () => {
 
                 <h1>Issue Restaurant Punishment</h1>
 
-                <div className={styles.pageHeader}>
-                    <div className={styles.userInfo}>
-                        <span className={styles.currentUser}>Logged in as: {currentUser}</span>
-                        <span className={styles.currentDate}>{currentDate}</span>
-                    </div>
-                </div>
+
 
                 {error && <div className={styles.error}>{error}</div>}
                 {success && <div className={styles.success}>Restaurant punished successfully! Redirecting...</div>}
