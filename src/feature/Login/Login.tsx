@@ -16,7 +16,7 @@ const Login: React.FC = () => {
         if (token) {
             // Redirect based on user role
             if (role === 'support') {
-                navigate('/tickets');
+                navigate('/support-dashboard');
             } else {
                 navigate('/dashboard');
             }

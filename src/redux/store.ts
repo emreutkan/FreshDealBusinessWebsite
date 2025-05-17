@@ -6,6 +6,8 @@ import restaurantReducer from './slices/restaurantSlice';
 import purchaseReducer from './slices/purchaseSlice';
 import listingReducer from './slices/listingSlice';
 import notificationReducer from './slices/NotificationSlice';
+import ticketReducer from './slices/ticketSlice';
+import punishmentReducer from './slices/punishmentSlice';
 
 const store = configureStore({
     reducer: {
@@ -14,6 +16,8 @@ const store = configureStore({
         purchases: purchaseReducer,
         listing: listingReducer,
         notifications: notificationReducer,
+        tickets: ticketReducer,
+        punishment: punishmentReducer,
     },
 });
 

@@ -1,0 +1,530 @@
+.supportDashboardPage {
+    min-height: 100vh;
+    background-color: #f5f5f5;
+}
+
+.contentContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.pageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.pageHeader h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.dashboardActions {
+    display: flex;
+    gap: 10px;
+}
+
+.refreshButton {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.refreshButton:hover {
+    background-color: #e0e0e0;
+}
+
+/* Statistics Row */
+.statisticsRow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.statCard {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.statCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.statIcon {
+    font-size: 24px;
+    color: #1976d2;
+    margin-bottom: 8px;
+}
+
+.statValue {
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.statLabel {
+    color: #757575;
+    font-size: 14px;
+}
+
+/* Search Bar */
+.searchBar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.searchInputWrapper {
+    position: relative;
+    flex: 1;
+}
+
+.searchIcon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9e9e9e;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 10px 40px 10px 36px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.clearButton {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #9e9e9e;
+    cursor: pointer;
+}
+
+.searchButton {
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0 16px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* Tabs Navigation */
+.tabsContainer {
+    display: flex;
+    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 20px;
+}
+
+.tabButton {
+    padding: 12px 24px;
+    border: none;
+    background: none;
+    font-size: 16px;
+    font-weight: 500;
+    color: #757575;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+}
+
+.activeTab {
+    color: #2196f3;
+    border-bottom: 2px solid #2196f3;
+}
+
+/* Error Message */
+.error {
+    padding: 16px;
+    margin: 16px 0;
+    border-radius: 4px;
+    background-color: #ffebee;
+    color: #d32f2f;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Restaurants Section */
+.restaurantsSection {
+    margin-top: 20px;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.radiusSelector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.locationIcon {
+    color: #1976d2;
+}
+
+.radiusSelect {
+    padding: 6px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background-color: white;
+}
+
+.restaurantList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 16px;
+}
+
+.restaurantCard {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s;
+}
+
+.restaurantCard:hover {
+    transform: translateY(-2px);
+}
+
+.restaurantImageWrapper {
+    height: 180px;
+    overflow: hidden;
+}
+
+.restaurantImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.restaurantInfo {
+    padding: 16px;
+    flex: 1;
+}
+
+.restaurantInfo h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.restaurantDescription {
+    color: #555;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.restaurantCategory {
+    margin-bottom: 8px;
+    color: #757575;
+    font-size: 14px;
+}
+
+.restaurantMeta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #757575;
+}
+
+.restaurantActions {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.viewButton,
+.punishButton {
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+}
+
+.viewButton {
+    background-color: #2196f3;
+    color: white;
+}
+
+.punishButton {
+    background-color: #f44336;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Tickets Section */
+.ticketsSection {
+    margin-top: 20px;
+}
+
+.ticketsHeader {
+    margin-bottom: 16px;
+}
+
+.statusFilters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.filterLabel {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+}
+
+.filterOptions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.filterButton {
+    padding: 8px 16px;
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filterButton.active {
+    background-color: #2196f3;
+    color: white;
+    border-color: #2196f3;
+}
+
+.ticketsList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 16px;
+}
+
+.ticketCard {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.ticketCard:hover {
+    transform: translateY(-2px);
+}
+
+.ticketHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.ticketId {
+    font-weight: 600;
+}
+
+.pendingStatus,
+.acceptedStatus,
+.completedStatus,
+.rejectedStatus,
+.resolvedStatus {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.pendingStatus {
+    background-color: #fff9c4;
+    color: #f57f17;
+}
+
+.acceptedStatus {
+    background-color: #bbdefb;
+    color: #0d47a1;
+}
+
+.completedStatus {
+    background-color: #c8e6c9;
+    color: #1b5e20;
+}
+
+.rejectedStatus {
+    background-color: #ffcdd2;
+    color: #b71c1c;
+}
+
+.resolvedStatus {
+    background-color: #e0e0e0;
+    color: #424242;
+}
+
+.ticketBody {
+    padding: 16px;
+}
+
+.restaurantInfo {
+    margin-bottom: 8px;
+}
+
+.viewRestaurantLink {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #1976d2;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: left;
+}
+
+.viewRestaurantLink:hover {
+    text-decoration: underline;
+}
+
+.ticketDescription {
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.ticketDetails {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 12px;
+}
+
+.ticketDetail {
+    margin-bottom: 6px;
+}
+
+.detailLabel {
+    font-weight: 500;
+    color: #757575;
+    margin-right: 8px;
+}
+
+.ticketActions {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px 16px;
+    background-color: #f5f5f5;
+    border-top: 1px solid #e0e0e0;
+}
+
+.disregardButton {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #9e9e9e;
+    color: white;
+    cursor: pointer;
+}
+
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+.loadingSpinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top: 4px solid #2196f3;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.noTickets,
+.noResults {
+    padding: 40px;
+    text-align: center;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: #757575;
+}
+
+/* Responsive styling */
+@media (max-width: 768px) {
+    .statisticsRow {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .searchBar {
+        flex-direction: column;
+    }
+
+    .statusFilters {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filterOptions {
+        width: 100%;
+    }
+
+    .ticketsList,
+    .restaurantList {
+        grid-template-columns: 1fr;
+    }
+
+    .ticketActions {
+        flex-direction: column;
+    }
+
+    .tabButton {
+        flex: 1;
+        padding: 12px 10px;
+        font-size: 14px;
+    }
+}

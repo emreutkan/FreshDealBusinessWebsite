@@ -10,6 +10,9 @@ import Dashboard from "./feature/Dashboard/Dashboard";
 import TicketsPage from "./feature/Tickets/screens/Tickets";
 import PunishRestaurantPage from "./feature/Tickets/screens/PunishRestaurant";
 import type { Libraries } from '@react-google-maps/api';
+import RestaurantSupportPage from "./feature/Tickets/screens/RestaurantSupport.tsx";
+import AllTicketsPage from "./feature/Tickets/screens/SupportDashboard.tsx";
+import SupportDashboardPage from "./feature/Tickets/screens/SupportDashboard.tsx";
 
 const GOOGLE_MAPS_LIBRARIES: Libraries = ['places'];
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
@@ -35,8 +38,9 @@ const AppWithMaps = () => {
                         <Route path="/register" element={<Register/>} />
                         <Route path="/dashboard" element={<Dashboard/>} />
                         <Route path="/dashboard/:restaurantId/*" element={<Dashboard/>} />
-                        <Route path="/tickets" element={<TicketsPage/>} />
+                        <Route path="/support-dashboard" element={<SupportDashboardPage/>} />
                         <Route path="/punish-restaurant/:id" element={<PunishRestaurantPage/>} />
+                        <Route path="/restaurant-support/:restaurantId" element={<RestaurantSupportPage />} />
                         <Route path="*" element={<Navigate to="/dashboard" />} />
                     </Routes>
                 </Router>

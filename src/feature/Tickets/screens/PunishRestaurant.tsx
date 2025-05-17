@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import styles from './PunishRestaurant.module.css';
-import { RootState } from '../../../redux/store';
+import { RootState, AppDispatch } from '../../../redux/store';
 import Header from '../../Header/Header';
 import { IoArrowBack } from 'react-icons/io5';
 import { API_BASE_URL } from "../../../redux/Api/apiService.ts";
+import { punishRestaurant } from "../../../redux/slices/punishmentSlice";
 
 interface Restaurant {
     id: number;
@@ -21,9 +22,15 @@ interface Restaurant {
     restaurantPhone: string | null;
 }
 
+interface LocationState {
+    reportId?: number;
+}
+
 const PunishRestaurantPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const dispatch = useDispatch<AppDispatch>();
+
     const { token, role } = useSelector((state: RootState) => state.user);
     const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
     const [durationType, setDurationType] = useState<string>('ONE_WEEK');
@@ -33,6 +40,17 @@ const PunishRestaurantPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<boolean>(false);
 
+    // Get reportId from location state if available
+    const [reportId, setReportId] = useState<number | undefined>(undefined);
+
+    // Get the reportId if passed through navigation
+    useEffect(() => {
+        // Check if we have location state with reportId
+        const locationState = window.history.state?.usr as LocationState | undefined;
+        if (locationState?.reportId) {
+            setReportId(locationState.reportId);
+        }
+    }, []);
 
     // Check if user is support
     useEffect(() => {
@@ -99,7 +117,7 @@ const PunishRestaurantPage: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!reason.trim() || !token) {
+        if (!reason.trim() || !token || !id) {
             setError('Please provide a reason for punishment');
             return;
         }
@@ -108,34 +126,33 @@ const PunishRestaurantPage: React.FC = () => {
             setSubmitting(true);
             setError(null);
 
-            console.log('Submitting punishment for restaurant:', id);
+            // Prepare the punishment data
+            const punishmentData = {
+                duration_type: durationType,
+                reason: reason
+            };
 
-            const response = await fetch(`${API_BASE_URL}/restaurants/${id}/punish`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    duration_type: durationType,
-                    reason
-                })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to punish restaurant');
+            // If there's a report ID associated, include it
+            if (reportId) {
+                punishmentData.report_id = reportId;
             }
 
-            // Success
-            setSuccess(true);
+            // Dispatch the punishRestaurant action
+            const result = await dispatch(punishRestaurant({
+                restaurantId: parseInt(id),
+                data: punishmentData,
+                reportId: reportId
+            })).unwrap();
 
-            // Redirect back to tickets page after delay
-            setTimeout(() => {
-                navigate('/tickets');
-            }, 2000);
-
+            if (result.success) {
+                setSuccess(true);
+                // Redirect after delay
+                setTimeout(() => {
+                    navigate('/support-dashboard');
+                }, 2000);
+            } else {
+                setError(result.message || 'Failed to punish restaurant');
+            }
         } catch (err) {
             console.error('Error punishing restaurant:', err);
             setError(err instanceof Error ? err.message : 'Failed to punish restaurant');
@@ -145,7 +162,7 @@ const PunishRestaurantPage: React.FC = () => {
     };
 
     const handleGoBack = () => {
-        navigate('/tickets');
+        navigate('/support-dashboard');
     };
 
     return (
@@ -155,13 +172,11 @@ const PunishRestaurantPage: React.FC = () => {
             <div className={styles.contentContainer}>
                 <div className={styles.navigationHeader}>
                     <button className={styles.backButton} onClick={handleGoBack}>
-                        <IoArrowBack /> Back to Tickets
+                        <IoArrowBack /> Back to Dashboard
                     </button>
                 </div>
 
                 <h1>Issue Restaurant Punishment</h1>
-
-
 
                 {error && <div className={styles.error}>{error}</div>}
                 {success && <div className={styles.success}>Restaurant punished successfully! Redirecting...</div>}
@@ -199,6 +214,12 @@ const PunishRestaurantPage: React.FC = () => {
                         </div>
 
                         <form onSubmit={handleSubmit} className={styles.punishmentForm}>
+                            {reportId && (
+                                <div className={styles.reportInfo}>
+                                    <p><strong>Associated Report ID:</strong> {reportId}</p>
+                                </div>
+                            )}
+
                             <div className={styles.formGroup}>
                                 <label htmlFor="duration">Punishment Duration:</label>
                                 <select

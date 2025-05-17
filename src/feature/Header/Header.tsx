@@ -10,7 +10,7 @@ import { IoLogOutOutline } from 'react-icons/io5';
 const Header: React.FC = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
-    const { token, name_surname } = useSelector((state: RootState) => state.user);
+    const { token, name_surname, role } = useSelector((state: RootState) => state.user);
 
     useEffect(() => {
         const token = localStorage.getItem('userToken');
@@ -38,7 +38,11 @@ const Header: React.FC = () => {
                 <Link to="/" className={styles.logo}>
                     <img src={logo} alt="Fresh Deal" className={styles.logoImage} />
                 </Link>
-
+                {role === 'support' && (
+                    <div className={styles.navLinks}>
+                        <Link to="/support-dashboard" className={styles.navLink}>Support Dashboard</Link>
+                    </div>
+                )}
                 <div className={styles.auth}>
                     {token ? (
                         <div className={styles.userMenu}>
