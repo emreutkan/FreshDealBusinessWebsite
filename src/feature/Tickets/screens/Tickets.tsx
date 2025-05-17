@@ -44,8 +44,6 @@ const TicketsPage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [searchRadius, setSearchRadius] = useState<number>(50); // Default 50km radius
-    const [currentDate] = useState<string>('2025-05-16 22:50:40'); // Updated with your timestamp
-    const [currentUser] = useState<string>('emreutkan'); // Updated with your username
 
     // Check if user is support role
     useEffect(() => {
@@ -210,10 +208,7 @@ const TicketsPage: React.FC = () => {
             <div className={styles.contentContainer}>
                 <div className={styles.pageHeader}>
                     <h1>Support Tickets Dashboard</h1>
-                    <div className={styles.userInfo}>
-                        <span className={styles.currentUser}>Logged in as: {currentUser}</span>
-                        <span className={styles.currentDate}>{currentDate}</span>
-                    </div>
+
                 </div>
 
                 {error && <div className={styles.error}>{error}</div>}
