@@ -22,7 +22,7 @@ interface UserState {
     token: string | null;
     loading: boolean;
     error: string | null;
-    role: "owner" | "customer" | "";
+    role: "owner" | "customer" | "support" | ""; // Added "support" role
 }
 
 const storedToken = getStoredToken();

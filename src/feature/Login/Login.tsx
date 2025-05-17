@@ -10,13 +10,18 @@ import { IoArrowBack } from 'react-icons/io5';
 const Login: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
-    const { email, password, loading, error, token } = useSelector((state: RootState) => state.user);
+    const { email, password, loading, error, token, role } = useSelector((state: RootState) => state.user);
 
     useEffect(() => {
         if (token) {
-            navigate('/dashboard');
+            // Redirect based on user role
+            if (role === 'support') {
+                navigate('/tickets');
+            } else {
+                navigate('/dashboard');
+            }
         }
-    }, [token, navigate]);
+    }, [token, role, navigate]);
 
     const handleLogin = async () => {
         try {
@@ -31,7 +36,7 @@ const Login: React.FC = () => {
 
             if (result && result.token) {
                 dispatch(setToken(result.token));
-                navigate('/dashboard');
+                // The useEffect above will handle redirection after the role is set
             }
         } catch (err) {
             console.error("Failed to login:", err);

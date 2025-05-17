@@ -7,6 +7,8 @@ import PartnershipPage from "./feature/Partnership/screens/partnershipPage";
 import Login from "./feature/Login/Login";
 import Register from "./feature/Register/Register";
 import Dashboard from "./feature/Dashboard/Dashboard";
+import TicketsPage from "./feature/Tickets/screens/Tickets";
+import PunishRestaurantPage from "./feature/Tickets/screens/PunishRestaurant";
 import type { Libraries } from '@react-google-maps/api';
 
 const GOOGLE_MAPS_LIBRARIES: Libraries = ['places'];
@@ -33,6 +35,8 @@ const AppWithMaps = () => {
                         <Route path="/register" element={<Register/>} />
                         <Route path="/dashboard" element={<Dashboard/>} />
                         <Route path="/dashboard/:restaurantId/*" element={<Dashboard/>} />
+                        <Route path="/tickets" element={<TicketsPage/>} />
+                        <Route path="/punish-restaurant/:id" element={<PunishRestaurantPage/>} />
                         <Route path="*" element={<Navigate to="/dashboard" />} />
                     </Routes>
                 </Router>
