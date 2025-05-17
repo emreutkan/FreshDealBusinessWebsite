@@ -1,0 +1,252 @@
+.punishPage {
+    min-height: 100vh;
+    background-color: #f5f7fa;
+}
+
+.contentContainer {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.navigationHeader {
+    margin-bottom: 20px;
+}
+
+.backButton {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: #1890ff;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+}
+
+.backButton:hover {
+    text-decoration: underline;
+}
+
+.pageHeader {
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.userInfo {
+    text-align: right;
+}
+
+.currentUser {
+    font-weight: 500;
+    color: #333;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.currentDate {
+    display: block;
+    color: #666;
+    font-size: 14px;
+}
+
+h1 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 24px;
+}
+
+.error {
+    background-color: #fff1f0;
+    border: 1px solid #ffccc7;
+    color: #f5222d;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.success {
+    background-color: #f6ffed;
+    border: 1px solid #b7eb8f;
+    color: #52c41a;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+.loadingSpinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top: 4px solid #4caf50;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.notFound {
+    text-align: center;
+    color: #999;
+    padding: 40px 0;
+    font-size: 18px;
+}
+
+.punishmentContainer {
+    background-color: white;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.restaurantCard {
+    display: flex;
+    gap: 20px;
+    padding-bottom: 24px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.restaurantImageContainer {
+    flex: 0 0 120px;
+    height: 120px;
+    overflow: hidden;
+    border-radius: 8px;
+    background-color: #f0f0f0;
+}
+
+.restaurantImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.restaurantDetails {
+    flex: 1;
+}
+
+.restaurantDetails h2 {
+    font-size: 22px;
+    margin-bottom: 16px;
+    color: #333;
+}
+
+.restaurantInfo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 16px;
+}
+
+.restaurantInfo p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.punishmentForm {
+    margin-top: 24px;
+}
+
+.formGroup {
+    margin-bottom: 20px;
+}
+
+.formGroup label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.formGroup select,
+.formGroup textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.formGroup select {
+    background-color: white;
+    height: 48px;
+}
+
+.formGroup textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.formActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.cancelButton,
+.submitButton {
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.cancelButton {
+    background-color: white;
+    border: 1px solid #d9d9d9;
+    color: #666;
+}
+
+.cancelButton:hover {
+    background-color: #fafafa;
+    border-color: #999;
+}
+
+.submitButton {
+    background-color: #f5222d;
+    border: none;
+    color: white;
+}
+
+.submitButton:hover {
+    background-color: #cf1322;
+}
+
+.submitButton:disabled,
+.cancelButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .restaurantCard {
+        flex-direction: column;
+    }
+
+    .restaurantImageContainer {
+        width: 100%;
+        height: 180px;
+    }
+
+    .restaurantInfo {
+        grid-template-columns: 1fr;
+    }
+}

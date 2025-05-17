@@ -1,0 +1,444 @@
+.ticketsPage {
+    min-height: 100vh;
+    background-color: #f5f7fa;
+}
+
+.contentContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.pageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.userInfo {
+    text-align: right;
+}
+
+.currentUser {
+    font-weight: 500;
+    color: #333;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.currentDate {
+    display: block;
+    color: #666;
+    font-size: 14px;
+}
+
+h1 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.error {
+    background-color: #fff1f0;
+    border: 1px solid #ffccc7;
+    color: #f5222d;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+}
+
+/* Restaurant section */
+.restaurantsSection {
+    margin-bottom: 30px;
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.sectionHeader h2 {
+    font-size: 20px;
+    margin-bottom: 0;
+    color: #333;
+    font-weight: 600;
+}
+
+.radiusSelector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.locationIcon {
+    color: #1890ff;
+    font-size: 18px;
+}
+
+.radiusSelector label {
+    color: #666;
+    font-size: 14px;
+}
+
+.radiusSelect {
+    padding: 6px 8px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.restaurantList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 16px;
+}
+
+.restaurantCard {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.restaurantImageWrapper {
+    height: 140px;
+    overflow: hidden;
+    background-color: #e8e8e8;
+}
+
+.restaurantImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.restaurantInfo {
+    padding: 16px;
+    flex: 1;
+}
+
+.restaurantInfo h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.restaurantDescription {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.restaurantCategory {
+    display: inline-block;
+    background-color: #e6f7ff;
+    color: #1890ff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.restaurantMeta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+}
+
+.rating {
+    font-weight: 600;
+    color: #faad14;
+}
+
+.distance {
+    color: #52c41a;
+    font-weight: 500;
+}
+
+.restaurantActions {
+    padding: 12px 16px;
+    background-color: rgba(0,0,0,0.03);
+    border-top: 1px solid #eee;
+}
+
+.noResults {
+    text-align: center;
+    color: #999;
+    padding: 40px 0;
+    font-size: 16px;
+}
+
+/* Tickets section */
+.ticketsSection {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.ticketsHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.ticketsHeader h2 {
+    font-size: 20px;
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+.statusFilters {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filterLabel {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    color: #666;
+}
+
+.filterOptions {
+    display: flex;
+    gap: 8px;
+}
+
+.filterButton {
+    background-color: #f5f5f5;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.filterButton.active {
+    background-color: #e6f7ff;
+    border-color: #91d5ff;
+    color: #1890ff;
+}
+
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+.loadingSpinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top: 4px solid #4caf50;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.noTickets {
+    text-align: center;
+    color: #999;
+    padding: 40px 0;
+    font-size: 16px;
+}
+
+/* Ticket cards */
+.ticketsList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 16px;
+}
+
+.ticketCard {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ticketCard.pending {
+    border-left: 4px solid #faad14;
+}
+
+.ticketCard.accepted {
+    border-left: 4px solid #52c41a;
+}
+
+.ticketCard.completed {
+    border-left: 4px solid #1890ff;
+}
+
+.ticketCard.rejected {
+    border-left: 4px solid #f5222d;
+}
+
+.ticketHeader {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background-color: #fafafa;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.ticketId {
+    font-weight: 600;
+    color: #333;
+}
+
+.ticketStatus span {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.pendingStatus {
+    background-color: #fff7e6;
+    color: #faad14;
+}
+
+.acceptedStatus {
+    background-color: #f6ffed;
+    color: #52c41a;
+}
+
+.completedStatus {
+    background-color: #e6f7ff;
+    color: #1890ff;
+}
+
+.rejectedStatus {
+    background-color: #fff1f0;
+    color: #f5222d;
+}
+
+.ticketBody {
+    padding: 16px;
+    background-color: white;
+}
+
+.ticketDetail {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.detailLabel {
+    color: #8c8c8c;
+    font-weight: 500;
+}
+
+.detailValue {
+    color: #333;
+    font-weight: 600;
+}
+
+.ticketActions {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    background-color: #fafafa;
+    border-top: 1px solid #f0f0f0;
+}
+
+.disregardButton,
+.punishButton {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+}
+
+.disregardButton {
+    background-color: #ff4d4f;
+    color: white;
+}
+
+.disregardButton:hover {
+    background-color: #cf1322;
+}
+
+.punishButton {
+    background-color: #faad14;
+    color: white;
+}
+
+.punishButton:hover {
+    background-color: #d48806;
+}
+
+@media (max-width: 768px) {
+    .pageHeader {
+        flex-direction: column;
+    }
+
+    .userInfo {
+        text-align: left;
+        margin-top: 8px;
+    }
+
+    .sectionHeader {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .radiusSelector {
+        margin-top: 12px;
+    }
+
+    .ticketsList {
+        grid-template-columns: 1fr;
+    }
+
+    .ticketsHeader {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .statusFilters {
+        margin-top: 12px;
+    }
+
+    .filterOptions {
+        margin-top: 8px;
+    }
+
+    .restaurantList {
+        grid-template-columns: 1fr;
+    }
+}
