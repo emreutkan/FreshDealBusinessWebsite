@@ -1,6 +1,8 @@
+/* RestaurantSupport.module.css */
 .restaurantSupportPage {
     min-height: 100vh;
-    background-color: #f5f5f5;
+    background-color: #FFFFFF;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 .contentContainer {
@@ -10,34 +12,75 @@
 }
 
 .navigationHeader {
-    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between; /* Added for the refresh button */
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .backButton {
     display: flex;
     align-items: center;
+    gap: 8px;
     background: none;
     border: none;
-    color: #1976d2;
-    font-size: 1rem;
-    font-weight: 500;
+    padding: 10px 18px;
+    color: #4B5563;
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
-    padding: 0;
+    border-radius: 10px;
+    transition: all 0.15s ease;
 }
 
-.backButton svg {
-    margin-right: 8px;
+.backButton:hover {
+    background-color: #F9FAFB;
+    transform: translateY(-1px);
+}
+
+.backButton:active {
+    transform: translateY(0);
+}
+
+/* Added refresh button style from TSX */
+.refreshButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #4B5563;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.refreshButton:hover {
+    background-color: #F9FAFB;
+    border-color: rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.04);
+}
+
+.refreshButton:active {
+    transform: translateY(0);
 }
 
 .restaurantHeader {
     display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    padding: 20px;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 28px;
+    padding: 24px;
     background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .restaurantImageContainer {
@@ -49,7 +92,9 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 8px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .restaurantInfo {
@@ -63,29 +108,39 @@
     gap: 10px;
     margin-top: 0;
     margin-bottom: 10px;
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.025em;
 }
 
 .suspendedBadge {
-    background-color: #f44336;
-    color: white;
+    background-color: #FEE2E2;
+    color: #B91C1C;
     font-size: 14px;
-    padding: 2px 8px;
-    border-radius: 4px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 600;
 }
 
 .restaurantDescription {
-    margin-bottom: 10px;
-    color: #555;
+    margin-bottom: 16px;
+    color: #4B5563;
+    font-size: 15px;
+    line-height: 1.6;
 }
 
 .restaurantCategory {
     font-size: 14px;
-    color: #666;
+    color: #6B7280;
+    font-weight: 500;
+    margin-bottom: 8px;
 }
 
 .restaurantRating {
     font-size: 14px;
-    color: #666;
+    color: #6B7280;
+    font-weight: 500;
 }
 
 .actionButtons {
@@ -95,31 +150,42 @@
 }
 
 .punishButton {
-    background-color: #f44336;
-    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background-color: #FEE2E2;
+    color: #B91C1C;
     border: none;
-    border-radius: 4px;
-    padding: 8px 16px;
-    font-size: 14px;
-    font-weight: 500;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .punishButton:hover {
-    background-color: #d32f2f;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.punishButton:active {
+    transform: translateY(0);
 }
 
 .tabsContainer {
     background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
     overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
 .tabsHeader {
     display: flex;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .tabButton {
@@ -127,172 +193,242 @@
     background: none;
     border: none;
     padding: 16px;
-    font-size: 16px;
-    font-weight: 500;
+    font-size: 15px;
+    font-weight: 600;
+    color: #6B7280;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.15s ease;
 }
 
-.tabButton.active {
-    color: #1976d2;
-    border-bottom: 2px solid #1976d2;
+/* Added active class */
+.active {
+    color: #111827;
+    border-bottom: 2px solid #b0f484;
 }
 
 .ticketsContainer {
-    padding: 20px;
+    padding: 24px;
 }
 
+/* Added missing ticketStats styles */
 .ticketStats {
     display: flex;
     flex-wrap: wrap;
     gap: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 .statItem {
-    background-color: #f5f5f5;
-    padding: 10px 16px;
-    border-radius: 4px;
+    background-color: #F9FAFB;
+    padding: 12px 20px;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .statLabel {
-    font-weight: 500;
+    font-weight: 600;
     margin-right: 8px;
+    color: #4B5563;
 }
 
 .statValue {
-    font-weight: 600;
+    font-weight: 700;
+    color: #111827;
 }
 
 .statusFilters {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 12px;
+    margin-bottom: 24px;
 }
 
 .filterLabel {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-weight: 500;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    color: #4B5563;
 }
 
 .filterButton {
-    background-color: #f5f5f5;
-    border: 1px solid #e0e0e0;
+    padding: 8px 16px;
+    background-color: #F9FAFB;
+    border: 1px solid rgba(0, 0, 0, 0.05);
     border-radius: 20px;
-    padding: 6px 12px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.15s ease;
+    font-size: 14px;
+    font-weight: 500;
+    color: #6B7280;
+}
+
+.filterButton:hover {
+    background-color: #F3F4F6;
+    border-color: rgba(0, 0, 0, 0.08);
 }
 
 .filterButton.active {
-    background-color: #1976d2;
-    color: white;
-    border-color: #1976d2;
+    background-color: #b0f484;
+    color: #111827;
+    border-color: transparent;
 }
 
 .ticketsList {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 16px;
+    gap: 20px;
 }
 
 .ticketCard {
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
     overflow: hidden;
-    border: 1px solid #e0e0e0;
-    transition: transform 0.2s;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.03);
+    background-color: white;
+    transition: all 0.2s ease;
 }
 
 .ticketCard:hover {
     transform: translateY(-2px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.02);
 }
 
 .ticketHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 16px;
-    background-color: #f5f5f5;
-    border-bottom: 1px solid #e0e0e0;
+    padding: 16px 20px;
+    background-color: #F9FAFB;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .ticketId {
     font-weight: 600;
+    font-size: 15px;
+    color: #111827;
 }
 
+/* Added missing ticket status styles */
 .ticketStatus {
-    padding: 4px 8px;
+    padding: 6px 12px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
+    letter-spacing: -0.01em;
 }
 
-.ticketStatus:contains('ACTIVE') {
-    background-color: #bbdefb;
-    color: #0d47a1;
+.pending {
+    background-color: #FEF3C7;
+    color: #92400E;
 }
 
-.ticketStatus:contains('RESOLVED') {
-    background-color: #c8e6c9;
-    color: #1b5e20;
+.accepted {
+    background-color: #DBEAFE;
+    color: #1E40AF;
 }
 
+.completed {
+    background-color: #D1FAE5;
+    color: #065F46;
+}
+
+.rejected {
+    background-color: #FEE2E2;
+    color: #B91C1C;
+}
+
+.resolved {
+    background-color: #F3F4F6;
+    color: #374151;
+}
+
+/* Added missing ticketContent class */
 .ticketContent {
-    padding: 16px;
+    padding: 20px;
 }
 
 .ticketDescription {
     margin-top: 0;
     margin-bottom: 16px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #111827;
 }
 
+/* Added missing ticketMeta class */
 .ticketMeta {
-    border-top: 1px solid #e0e0e0;
-    padding-top: 12px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    padding-top: 16px;
 }
 
 .metaItem {
-    margin-bottom: 6px;
+    margin-bottom: 8px;
+    display: flex;
+    font-size: 14px;
 }
 
 .metaLabel {
-    font-weight: 500;
+    font-weight: 600;
     margin-right: 8px;
-    color: #666;
+    color: #6B7280;
+    min-width: 80px;
+}
+
+/* Added missing metaValue class */
+.metaValue {
+    color: #4B5563;
 }
 
 .ticketActions {
     display: flex;
-    padding: 12px 16px;
-    border-top: 1px solid #e0e0e0;
-    background-color: #f5f5f5;
+    padding: 16px 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    background-color: #F9FAFB;
 }
 
 .disregardButton {
-    padding: 8px 16px;
-    background-color: #9e9e9e;
-    color: white;
+    width: 100%;
+    padding: 10px 18px;
+    background-color: #F3F4F6;
+    color: #4B5563;
     border: none;
-    border-radius: 4px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
 .disregardButton:hover {
-    background-color: #757575;
+    background-color: #E5E7EB;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.disregardButton:active {
+    transform: translateY(0);
 }
 
 .noTickets {
     display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    padding: 40px 0;
-    color: #757575;
-    font-style: italic;
+    padding: 60px 40px;
+    color: #6B7280;
+    font-size: 16px;
+    font-weight: 500;
+    background-color: white;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
 .loadingContainer {
@@ -300,17 +436,17 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 40px 0;
+    padding: 60px 0;
 }
 
 .loadingSpinner {
-    border: 4px solid rgba(0, 0, 0, 0.1);
+    border: 4px solid rgba(0, 0, 0, 0.05);
     border-radius: 50%;
-    border-top: 4px solid #2196f3;
+    border-top: 4px solid #b0f484;
     width: 40px;
     height: 40px;
     animation: spin 1s linear infinite;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 
 @keyframes spin {
@@ -321,22 +457,28 @@
 .error {
     padding: 16px;
     margin: 16px 0;
-    border-radius: 4px;
-    background-color: #ffebee;
-    color: #d32f2f;
+    border-radius: 10px;
+    background-color: #FEF2F2;
+    color: #B91C1C;
     text-align: center;
     font-weight: 500;
+    border: 1px solid rgba(185, 28, 28, 0.1);
 }
 
 .notFound {
-    padding: 40px 0;
+    padding: 60px 40px;
     text-align: center;
     font-size: 18px;
-    color: #757575;
+    font-weight: 500;
+    color: #6B7280;
+    background-color: white;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
 .punishmentContainer {
-    padding: 20px;
+    padding: 24px;
 }
 
 @media (max-width: 768px) {
@@ -358,5 +500,15 @@
 
     .ticketsList {
         grid-template-columns: 1fr;
+    }
+
+    .navigationHeader {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .refreshButton {
+        width: 100%;
+        justify-content: center;
     }
 }

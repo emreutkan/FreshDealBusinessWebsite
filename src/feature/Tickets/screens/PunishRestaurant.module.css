@@ -1,6 +1,8 @@
+/* PunishRestaurant.module.css */
 .punishPage {
     min-height: 100vh;
-    background-color: #f5f7fa;
+    background-color: #FFFFFF;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 .contentContainer {
@@ -10,90 +12,278 @@
 }
 
 .navigationHeader {
-    margin-bottom: 20px;
+    display: flex;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .backButton {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     background: none;
     border: none;
-    color: #1890ff;
+    padding: 10px 18px;
+    color: #4B5563;
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
-    font-size: 16px;
-    padding: 0;
+    border-radius: 10px;
+    transition: all 0.15s ease;
 }
 
 .backButton:hover {
-    text-decoration: underline;
+    background-color: #F9FAFB;
+    transform: translateY(-1px);
 }
 
-.pageHeader {
+.backButton:active {
+    transform: translateY(0);
+}
+
+/* Missing h1 styling from TSX */
+.contentContainer h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 24px;
+    text-align: center;
+    letter-spacing: -0.025em;
+}
+
+/* Missing punishmentContainer style */
+.punishmentContainer {
     display: flex;
-    justify-content: flex-end;
-    align-items: flex-start;
-    margin-bottom: 20px;
+    flex-direction: column;
+    gap: 24px;
 }
 
-.userInfo {
-    text-align: right;
+.restaurantCard {
+    background-color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.03);
+    margin-bottom: 28px;
 }
 
-.currentUser {
-    font-weight: 500;
-    color: #333;
-    display: block;
-    margin-bottom: 4px;
+/* Missing restaurantImageContainer style */
+.restaurantImageContainer {
+    width: 100%;
+    max-height: 240px;
+    overflow: hidden;
 }
 
-.currentDate {
-    display: block;
-    color: #666;
+.restaurantImage {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+/* Missing restaurantDetails style */
+.restaurantDetails {
+    padding: 24px;
+}
+
+.restaurantDetails h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #111827;
+    margin-top: 0;
+    margin-bottom: 16px;
+    letter-spacing: -0.025em;
+}
+
+/* Missing restaurantInfo style */
+.restaurantInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: #4B5563;
     font-size: 14px;
 }
 
-h1 {
-    font-size: 28px;
-    font-weight: 600;
-    color: #333;
+.restaurantInfo p {
+    margin: 0;
+    line-height: 1.6;
+}
+
+.punishmentForm {
+    background-color: white;
+    border-radius: 12px;
+    padding: 24px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+/* Missing reportInfo style */
+.reportInfo {
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    background-color: #F3F4F6;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #4B5563;
+}
+
+.reportInfo p {
+    margin: 0;
+}
+
+.formGroup {
     margin-bottom: 24px;
 }
 
+.formGroup label {
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+    color: #4B5563;
+    margin-bottom: 8px;
+}
+
+/* Added missing select style */
+.formGroup select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+    font-size: 15px;
+    background-color: white;
+    transition: all 0.15s ease;
+    color: #4B5563;
+    font-family: inherit;
+}
+
+.formGroup select:focus {
+    border-color: rgba(176, 244, 132, 0.6);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(176, 244, 132, 0.15);
+}
+
+/* Added missing textarea style */
+.formGroup textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+    font-size: 15px;
+    background-color: white;
+    transition: all 0.15s ease;
+    resize: vertical;
+    color: #4B5563;
+    font-family: inherit;
+    line-height: 1.6;
+}
+
+.formGroup textarea:focus {
+    border-color: rgba(176, 244, 132, 0.6);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(176, 244, 132, 0.15);
+}
+
+/* Missing formActions style */
+.formActions {
+    display: flex;
+    gap: 16px;
+    margin-top: 32px;
+}
+
+.submitButton,
+.cancelButton {
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.submitButton {
+    background-color: #FEE2E2;
+    color: #B91C1C;
+}
+
+.submitButton:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.submitButton:active {
+    transform: translateY(0);
+}
+
+.submitButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.cancelButton {
+    background-color: #F3F4F6;
+    color: #4B5563;
+}
+
+.cancelButton:hover {
+    background-color: #E5E7EB;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.cancelButton:active {
+    transform: translateY(0);
+}
+
+/* Error and success messages */
 .error {
-    background-color: #fff1f0;
-    border: 1px solid #ffccc7;
-    color: #f5222d;
-    padding: 12px 16px;
-    margin-bottom: 20px;
-    border-radius: 4px;
+    padding: 16px;
+    margin: 16px 0;
+    border-radius: 10px;
+    background-color: #FEF2F2;
+    color: #B91C1C;
+    text-align: center;
+    font-weight: 500;
+    border: 1px solid rgba(185, 28, 28, 0.1);
 }
 
 .success {
-    background-color: #f6ffed;
-    border: 1px solid #b7eb8f;
-    color: #52c41a;
-    padding: 12px 16px;
-    margin-bottom: 20px;
-    border-radius: 4px;
+    padding: 16px;
+    margin: 16px 0;
+    border-radius: 10px;
+    background-color: #ECFDF5;
+    color: #065F46;
+    text-align: center;
+    font-weight: 500;
+    border: 1px solid rgba(6, 95, 70, 0.1);
 }
 
+/* Loading state */
 .loadingContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 40px 0;
+    padding: 60px 0;
 }
 
 .loadingSpinner {
-    border: 4px solid rgba(0, 0, 0, 0.1);
+    border: 4px solid rgba(0, 0, 0, 0.05);
     border-radius: 50%;
-    border-top: 4px solid #4caf50;
-    width: 30px;
-    height: 30px;
+    border-top: 4px solid #b0f484;
+    width: 40px;
+    height: 40px;
     animation: spin 1s linear infinite;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 @keyframes spin {
@@ -101,152 +291,9 @@ h1 {
     100% { transform: rotate(360deg); }
 }
 
-.notFound {
-    text-align: center;
-    color: #999;
-    padding: 40px 0;
-    font-size: 18px;
-}
-
-.punishmentContainer {
-    background-color: white;
-    border-radius: 8px;
-    padding: 24px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.restaurantCard {
-    display: flex;
-    gap: 20px;
-    padding-bottom: 24px;
-    margin-bottom: 24px;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.restaurantImageContainer {
-    flex: 0 0 120px;
-    height: 120px;
-    overflow: hidden;
-    border-radius: 8px;
-    background-color: #f0f0f0;
-}
-
-.restaurantImage {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.restaurantDetails {
-    flex: 1;
-}
-
-.restaurantDetails h2 {
-    font-size: 22px;
-    margin-bottom: 16px;
-    color: #333;
-}
-
-.restaurantInfo {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px 16px;
-}
-
-.restaurantInfo p {
-    margin: 0;
-    font-size: 14px;
-    color: #666;
-}
-
-.punishmentForm {
-    margin-top: 24px;
-}
-
-.formGroup {
-    margin-bottom: 20px;
-}
-
-.formGroup label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: #333;
-}
-
-.formGroup select,
-.formGroup textarea {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #d9d9d9;
-    border-radius: 4px;
-    font-size: 16px;
-}
-
-.formGroup select {
-    background-color: white;
-    height: 48px;
-}
-
-.formGroup textarea {
-    min-height: 120px;
-    resize: vertical;
-}
-
-.formActions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 24px;
-}
-
-.cancelButton,
-.submitButton {
-    padding: 10px 20px;
-    font-size: 16px;
-    font-weight: 500;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.cancelButton {
-    background-color: white;
-    border: 1px solid #d9d9d9;
-    color: #666;
-}
-
-.cancelButton:hover {
-    background-color: #fafafa;
-    border-color: #999;
-}
-
-.submitButton {
-    background-color: #f5222d;
-    border: none;
-    color: white;
-}
-
-.submitButton:hover {
-    background-color: #cf1322;
-}
-
-.submitButton:disabled,
-.cancelButton:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
+/* Responsive */
 @media (max-width: 768px) {
-    .restaurantCard {
+    .formActions {
         flex-direction: column;
-    }
-
-    .restaurantImageContainer {
-        width: 100%;
-        height: 180px;
-    }
-
-    .restaurantInfo {
-        grid-template-columns: 1fr;
     }
 }
