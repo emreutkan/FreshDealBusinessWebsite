@@ -2,14 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { API_BASE_URL } from "../Api/apiService.ts";
 import axios from 'axios';
 
-export enum TicketStatus {
-    PENDING = 'PENDING',
-    ACCEPTED = 'ACCEPTED',
-    COMPLETED = 'COMPLETED',
-    REJECTED = 'REJECTED',
-    RESOLVED = 'RESOLVED'
-}
-
 export interface Ticket {
     id: number;
     user_id: number;

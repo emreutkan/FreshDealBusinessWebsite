@@ -109,15 +109,23 @@ export const updatePassword = createAsyncThunk<
 
 export const getUserData = createAsyncThunk<
     UserDataResponse,
-    { token: string },
-    { rejectValue: string }
->(
-    'user/getUserData',
-    async ({ token }, { rejectWithValue }) => {
-        try {
-            return await getUserDataAPI(token);
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+    void,
+    { rejectValue: string; state: RootState }
+>('user/getUserData', async (_, { getState, rejectWithValue }) => {
+    try {
+        const state = getState();
+        const token = state.user?.token;
+
+        if (!token) {
+            return rejectWithValue('No token available');
         }
+
+        // Add your API call to get user data
+        const response = await getUserDataAPI(token);
+
+        return await response;
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        return rejectWithValue(errorMessage);
     }
-);
+});

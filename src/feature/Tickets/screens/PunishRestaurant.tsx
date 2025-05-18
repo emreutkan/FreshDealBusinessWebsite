@@ -132,10 +132,6 @@ const PunishRestaurantPage: React.FC = () => {
                 reason: reason
             };
 
-            // If there's a report ID associated, include it
-            if (reportId) {
-                punishmentData.report_id = reportId;
-            }
 
             // Dispatch the punishRestaurant action
             const result = await dispatch(punishRestaurant({

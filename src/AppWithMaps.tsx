@@ -1,51 +1,36 @@
+import React from 'react';
 import { Provider } from 'react-redux';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { LoadScript } from '@react-google-maps/api';
 import store from "./redux/store";
-import Landing from "./feature/Landing/screens/Landing";
-import PartnershipPage from "./feature/Partnership/screens/partnershipPage";
-import Login from "./feature/Login/Login";
-import Register from "./feature/Register/Register";
-import Dashboard from "./feature/Dashboard/Dashboard";
-import TicketsPage from "./feature/Tickets/screens/Tickets";
-import PunishRestaurantPage from "./feature/Tickets/screens/PunishRestaurant";
+import AuthMiddleware from './components/AuthMiddleware';
+import AppRoutes from './components/AppRoutes';
 import type { Libraries } from '@react-google-maps/api';
-import RestaurantSupportPage from "./feature/Tickets/screens/RestaurantSupport.tsx";
-import AllTicketsPage from "./feature/Tickets/screens/SupportDashboard.tsx";
-import SupportDashboardPage from "./feature/Tickets/screens/SupportDashboard.tsx";
 
+// Define libraries as a constant outside the component to prevent reloads
 const GOOGLE_MAPS_LIBRARIES: Libraries = ['places'];
-const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
 
-const AppWithMaps = () => {
+const AppWithMaps: React.FC = () => {
     return (
-        <LoadScript
-            googleMapsApiKey={GOOGLE_MAPS_API_KEY || ''}
-            libraries={GOOGLE_MAPS_LIBRARIES}
-            loadingElement={
-                <div className="loading-container">
-                    <div className="loading-spinner"></div>
-                    <p className="loading-text">Loading Fresh Deal Maps...</p>
-                </div>
-            }
-        >
-            <Provider store={store}>
-                <Router>
-                    <Routes>
-                        <Route path="/" element={<Landing/>} />
-                        <Route path="/partnership" element={<PartnershipPage/>} />
-                        <Route path="/login" element={<Login/>} />
-                        <Route path="/register" element={<Register/>} />
-                        <Route path="/dashboard" element={<Dashboard/>} />
-                        <Route path="/dashboard/:restaurantId/*" element={<Dashboard/>} />
-                        <Route path="/support-dashboard" element={<SupportDashboardPage/>} />
-                        <Route path="/punish-restaurant/:id" element={<PunishRestaurantPage/>} />
-                        <Route path="/restaurant-support/:restaurantId" element={<RestaurantSupportPage />} />
-                        <Route path="*" element={<Navigate to="/dashboard" />} />
-                    </Routes>
-                </Router>
-            </Provider>
-        </LoadScript>
+        <Provider store={store}>
+            <Router>
+                <AuthMiddleware>
+                    <LoadScript
+                        googleMapsApiKey={GOOGLE_MAPS_API_KEY}
+                        libraries={GOOGLE_MAPS_LIBRARIES}
+                        loadingElement={
+                            <div className="loading-container">
+                                <div className="loading-spinner"></div>
+                                <p className="loading-text">Loading Fresh Deal Maps...</p>
+                            </div>
+                        }
+                    >
+                        <AppRoutes />
+                    </LoadScript>
+                </AuthMiddleware>
+            </Router>
+        </Provider>
     );
 };
 

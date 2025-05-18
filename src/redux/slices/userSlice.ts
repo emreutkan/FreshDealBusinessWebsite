@@ -23,15 +23,45 @@ interface UserState {
     loading: boolean;
     error: string | null;
     role: "owner" | "customer" | "support" | ""; // Added "support" role
+    lastUserDataFetch: number | null; // Timestamp of last successful fetch
 }
 
-const storedToken = getStoredToken();
+// Helper function to store user data in localStorage
+const saveUserDataToLocalStorage = (userData: Partial<UserState>) => {
+    try {
+        const existingData = localStorage.getItem('userData');
+        const parsedData = existingData ? JSON.parse(existingData) : {};
+        localStorage.setItem('userData', JSON.stringify({
+            ...parsedData,
+            ...userData,
+            lastSaved: Date.now()
+        }));
+    } catch (e) {
+        console.error('Error saving user data to localStorage:', e);
+    }
+};
 
+// Helper function to get user data from localStorage
+const getUserDataFromLocalStorage = () => {
+    try {
+        const data = localStorage.getItem('userData');
+        return data ? JSON.parse(data) : null;
+    } catch (e) {
+        console.error('Error reading user data from localStorage:', e);
+        return null;
+    }
+};
+
+// Get token and saved user data
+const storedToken = getStoredToken();
+const savedUserData = getUserDataFromLocalStorage();
+
+// Initialize state from localStorage if available
 const initialState: UserState = {
-    email: '',
-    name_surname: '',
-    phoneNumber: '',
-    selectedCode: '+90',
+    email: savedUserData?.email || '',
+    name_surname: savedUserData?.name_surname || '',
+    phoneNumber: savedUserData?.phoneNumber || '',
+    selectedCode: savedUserData?.selectedCode || '+90',
     password: '',
     passwordLogin: false,
     verificationCode: '',
@@ -40,7 +70,8 @@ const initialState: UserState = {
     token: storedToken,
     loading: false,
     error: null,
-    role: '',
+    role: savedUserData?.role || '',
+    lastUserDataFetch: savedUserData?.lastUserDataFetch || null
 };
 
 const userSlice = createSlice({
@@ -53,7 +84,8 @@ const userSlice = createSlice({
         },
         logout() {
             removeStoredToken();
-            return { ...initialState, token: null };
+            localStorage.removeItem('userData');
+            return { ...initialState, token: null, role: '' };
         },
         setSelectedCode(state, action: PayloadAction<string>) {
             state.selectedCode = action.payload;
@@ -88,6 +120,21 @@ const userSlice = createSlice({
         setLoginType(state, action: PayloadAction<"email" | "phone_number">) {
             state.login_type = action.payload;
         },
+        // Add setRole action
+        setRole(state, action: PayloadAction<"owner" | "customer" | "support" | "">) {
+            state.role = action.payload;
+            saveUserDataToLocalStorage({ role: action.payload });
+        },
+        // Manual action to force-update user data from localStorage in case of issues
+        restoreUserDataFromStorage(state) {
+            const savedData = getUserDataFromLocalStorage();
+            if (savedData) {
+                if (savedData.email) state.email = savedData.email;
+                if (savedData.name_surname) state.name_surname = savedData.name_surname;
+                if (savedData.phoneNumber) state.phoneNumber = savedData.phoneNumber;
+                if (savedData.role) state.role = savedData.role;
+            }
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -99,6 +146,12 @@ const userSlice = createSlice({
                 state.loading = false;
                 state.token = action.payload.token;
                 setStoredToken(action.payload.token);
+
+                // Reset role when logging in
+                state.role = '';
+                saveUserDataToLocalStorage({ role: '' });
+
+                console.log('Login successful, token saved');
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;
@@ -122,6 +175,7 @@ const userSlice = createSlice({
             .addCase(updateUsername.fulfilled, (state, action) => {
                 state.loading = false;
                 state.name_surname = action.payload.username;
+                saveUserDataToLocalStorage({ name_surname: action.payload.username });
             })
             .addCase(updateUsername.rejected, (state, action) => {
                 state.loading = false;
@@ -134,6 +188,7 @@ const userSlice = createSlice({
             .addCase(updateEmail.fulfilled, (state, action) => {
                 state.loading = false;
                 state.email = action.payload.email;
+                saveUserDataToLocalStorage({ email: action.payload.email });
             })
             .addCase(updateEmail.rejected, (state, action) => {
                 state.loading = false;
@@ -153,17 +208,44 @@ const userSlice = createSlice({
             .addCase(getUserData.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                console.log('getUserData: Fetching user data...');
             })
             .addCase(getUserData.fulfilled, (state, action) => {
+                console.log('getUserData fulfilled with payload:', action.payload);
                 state.loading = false;
-                state.name_surname = action.payload.user_data.name;
-                state.email = action.payload.user_data.email;
-                state.phoneNumber = action.payload.user_data.phone_number;
-                state.role = action.payload.user_data.role;
+
+                if (action.payload && action.payload.user_data) {
+                    state.name_surname = action.payload.user_data.name;
+                    state.email = action.payload.user_data.email;
+                    state.phoneNumber = action.payload.user_data.phone_number;
+                    state.role = action.payload.user_data.role;
+                    state.lastUserDataFetch = Date.now();
+
+                    console.log('Updated user state with role:', action.payload.user_data.role);
+
+                    // Save complete user data to localStorage
+                    saveUserDataToLocalStorage({
+                        name_surname: action.payload.user_data.name,
+                        email: action.payload.user_data.email,
+                        phoneNumber: action.payload.user_data.phone_number,
+                        role: action.payload.user_data.role,
+                        lastUserDataFetch: Date.now()
+                    });
+                } else {
+                    console.warn('getUserData payload missing user_data:', action.payload);
+                }
             })
             .addCase(getUserData.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload || 'Failed to fetch user data';
+                console.error('getUserData rejected with error:', action.payload);
+
+                // Try to restore from localStorage as fallback
+                const savedData = getUserDataFromLocalStorage();
+                if (savedData?.role && !state.role) {
+                    console.log('Restoring role from localStorage after API failure');
+                    state.role = savedData.role;
+                }
             });
     }
 });
@@ -174,7 +256,7 @@ export interface UserDataResponse {
         name: string;
         email: string;
         phone_number: string;
-        role: "owner" | "customer" | "";
+        role: "owner" | "customer" | "support" | "";
     };
     user_address_list: Array<{
         id: number;
@@ -203,7 +285,9 @@ export const {
     setStep,
     setLoginType,
     setToken,
+    setRole,
     logout,
+    restoreUserDataFromStorage
 } = userSlice.actions;
 
 export default userSlice.reducer;

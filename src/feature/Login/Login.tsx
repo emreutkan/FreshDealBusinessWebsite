@@ -13,11 +13,11 @@ const Login: React.FC = () => {
     const { email, password, loading, error, token, role } = useSelector((state: RootState) => state.user);
 
     useEffect(() => {
-        if (token) {
-            // Redirect based on user role
+        if (token && role) {
+            // Redirect based on role
             if (role === 'support') {
                 navigate('/support-dashboard');
-            } else {
+            } else if (role === 'owner') {
                 navigate('/dashboard');
             }
         }
