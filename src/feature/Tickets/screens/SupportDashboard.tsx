@@ -4,9 +4,18 @@ import { useSelector, useDispatch } from 'react-redux';
 import styles from './SupportDashboard.module.css';
 import { RootState, AppDispatch } from '../../../redux/store';
 import Header from '../../Header/Header';
-import { IoFilter, IoCloseCircleOutline, IoBan, IoLocationOutline, IoSearch, IoRefresh, IoStatsChartOutline } from 'react-icons/io5';
+import {
+    IoFilter,
+    IoCloseCircleOutline,
+    IoBan,
+    IoLocationOutline,
+    IoSearch,
+    IoRefresh,
+    IoStatsChartOutline,
+    IoClose
+} from 'react-icons/io5';
 import { API_BASE_URL } from "../../../redux/Api/apiService.ts";
-import { fetchAllTickets, disregardTicket } from '../../../redux/slices/ticketSlice';
+import {fetchAllTickets, disregardTicket, searchTickets} from '../../../redux/slices/ticketSlice';
 
 interface Restaurant {
     id: number;
@@ -35,7 +44,7 @@ const SupportDashboardPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [statusFilter, setStatusFilter] = useState<string>('all');
-    const [searchRadius, setSearchRadius] = useState<number>(500); // Default 50km radius
+    const [searchRadius, setSearchRadius] = useState<number>(50000); // Default 50km radius
     const [activeTab, setActiveTab] = useState<'restaurants' | 'tickets'>('tickets');
     const [searchQuery, setSearchQuery] = useState<string>('');
 
