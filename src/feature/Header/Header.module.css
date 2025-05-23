@@ -125,3 +125,31 @@
     color: #007bff;
 }
 
+.accountButton {
+    background: none;
+    border: none;
+    color: #50703C;
+    cursor: pointer;
+    padding: 8px;
+    margin-right: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.accountButton:hover {
+    background-color: rgba(80, 112, 60, 0.1);
+    transform: translateY(-1px);
+}
+
+.settingsIcon {
+    font-size: 20px;
+}
+
+@media (max-width: 768px) {
+    .accountButton {
+        margin-right: 4px;
+    }
+}

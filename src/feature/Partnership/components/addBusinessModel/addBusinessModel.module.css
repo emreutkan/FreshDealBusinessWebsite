@@ -503,6 +503,13 @@ button.completeButton {
     }
 }
 
+@media (min-width: 2000px) {
+    .outerDiv {
+        max-width: 1800px;
+    }
+
+}
+
 
 
 

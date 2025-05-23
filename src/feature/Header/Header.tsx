@@ -5,15 +5,17 @@ import styles from './Header.module.css';
 import logo from '../../assets/fresh-deal-logo.svg';
 import { RootState, AppDispatch } from '../../redux/store';
 import { logout } from '../../redux/slices/userSlice';
-import { IoLogOutOutline } from 'react-icons/io5';
+import { IoLogOutOutline, IoSettingsOutline } from 'react-icons/io5';
 import { IoMdNotificationsOutline, IoMdNotifications } from 'react-icons/io';
 import NotificationModal from './components/NotificationModal';
+import AccountSettingsModal from '../AccountSettings/AccountSettingsModal';
 
 const Header: React.FC = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
-    const { token, name_surname, role } = useSelector((state: RootState) => state.user);
+    const { token, name_surname} = useSelector((state: RootState) => state.user);
     const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+    const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
     const [notificationStatus, setNotificationStatus] = useState<boolean>(false);
 
     useEffect(() => {
@@ -63,6 +65,10 @@ const Header: React.FC = () => {
         }
     };
 
+    const handleAccountSettings = () => {
+        setIsAccountModalOpen(true);
+    };
+
     return (
         <header className={styles.header}>
             <div className={styles.container}>
@@ -72,16 +78,26 @@ const Header: React.FC = () => {
 
                 <div className={styles.auth}>
                     {token && (
-                        <button
-                            onClick={handleNotificationToggle}
-                            className={styles.notificationButton}
-                            title="Notification Settings"
-                        >
-                            {notificationStatus ?
-                                <IoMdNotifications className={styles.notificationIcon} /> :
-                                <IoMdNotificationsOutline className={styles.notificationIcon} />
-                            }
-                        </button>
+                        <>
+                            <button
+                                onClick={handleNotificationToggle}
+                                className={styles.notificationButton}
+                                title="Notification Settings"
+                            >
+                                {notificationStatus ?
+                                    <IoMdNotifications className={styles.notificationIcon} /> :
+                                    <IoMdNotificationsOutline className={styles.notificationIcon} />
+                                }
+                            </button>
+
+                            <button
+                                onClick={handleAccountSettings}
+                                className={styles.accountButton}
+                                title="Account Settings"
+                            >
+                                <IoSettingsOutline className={styles.settingsIcon} />
+                            </button>
+                        </>
                     )}
 
                     {token ? (
@@ -106,6 +122,11 @@ const Header: React.FC = () => {
             <NotificationModal
                 isOpen={isNotificationModalOpen}
                 onClose={handleCloseModal}
+            />
+
+            <AccountSettingsModal
+                isOpen={isAccountModalOpen}
+                onClose={() => setIsAccountModalOpen(false)}
             />
         </header>
     );
