@@ -100,3 +100,28 @@
         white-space: nowrap;
     }
 }
+
+/* Add this to your existing Header.module.css */
+
+.notificationButton {
+    background: none;
+    border: none;
+    margin-right: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 5px;
+}
+
+.notificationIcon {
+    font-size: 24px;
+    color: #333;
+    transition: color 0.2s ease;
+}
+
+.notificationButton:hover .notificationIcon {
+    color: #007bff;
+}
+

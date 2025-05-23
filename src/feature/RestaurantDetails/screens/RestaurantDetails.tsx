@@ -7,7 +7,6 @@ import Orders from "../components/Orders/Orders";
 import Comments from "../components/Comments/Comments";
 import Analytics from "../components/Analytics/Analytics";
 import { IoRestaurantOutline, IoListOutline, IoReceiptOutline, IoChatbubbleOutline, IoStatsChartOutline } from 'react-icons/io5';
-import NotificationTest from "../components/NotificationTest/NotificationTest.tsx";
 
 const RestaurantDetails: React.FC = () => {
     const { restaurantId } = useParams<{ restaurantId: string }>();
@@ -18,7 +17,6 @@ const RestaurantDetails: React.FC = () => {
 
     return (
         <div className={styles.pageWrapper}>
-            <NotificationTest />
 
             <div className={styles.container}>
                 <nav className={styles.tabNavigation}>
