@@ -1,7 +1,7 @@
 import {logout} from "../slices/userSlice.ts";
 
 // export const API_BASE_URL = 'https://freshdealbackend.azurewebsites.net/v1';
-export const API_BASE_URL = 'http://192.168.1.6:8000/v1';
+export const API_BASE_URL = 'http://192.168.1.3:8000/v1';
 
 export const TOKEN_KEY = 'userToken';
 

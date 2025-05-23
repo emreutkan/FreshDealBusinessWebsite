@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../redux/store';
 import { getUserData } from '../redux/thunks/userThunks';
+import { logout } from '../redux/slices/userSlice';
 
 // Simple debounce utility
 const useDebounce = (callback: Function, delay: number) => {
@@ -28,7 +29,7 @@ const AuthMiddleware: React.FC<AuthMiddlewareProps> = ({ children }) => {
     const { token, role, loading, error } = user;
     const [hasAttempted, setHasAttempted] = useState(false);
     const attemptCountRef = useRef(0);
-    const MAX_ATTEMPTS = 3;
+    const MAX_ATTEMPTS = 1;
 
     // Debug log whenever user state changes
     useEffect(() => {
@@ -47,10 +48,23 @@ const AuthMiddleware: React.FC<AuthMiddlewareProps> = ({ children }) => {
             attemptCountRef.current += 1;
             const response = await dispatch(getUserData());
             console.log('Fetch response:', response);
-            const role = useSelector((state: RootState) => state.user.role);
-            console.log('Fetched role:', role);
+            // Don't use hooks here - removed the invalid hook call
         }
     }, 1000);
+
+    // Effect to check for max attempts and clear token if needed
+    useEffect(() => {
+        if (
+            attemptCountRef.current >= MAX_ATTEMPTS &&
+            error &&
+            token &&
+            error.includes("404")
+        ) {
+            console.log('Maximum attempts reached with 404 errors. Clearing invalid token.');
+            dispatch(logout());
+            // No need for window.location.reload() as the state change will trigger a re-render
+        }
+    }, [attemptCountRef.current, error, token, dispatch]);
 
     useEffect(() => {
         // If we have a token but no role and haven't tried fetching yet
@@ -73,34 +87,6 @@ const AuthMiddleware: React.FC<AuthMiddlewareProps> = ({ children }) => {
             debouncedFetchUserData();
         }
     }, [token, role, loading, hasAttempted, debouncedFetchUserData]);
-
-    // For extreme debugging, force-update the role from localStorage if available
-    useEffect(() => {
-        // This is a workaround if the reducer isn't working properly
-        const tryRestoreRoleFromLocalStorage = () => {
-            try {
-                // Only do this if we've exhausted our API attempts
-                if (attemptCountRef.current >= MAX_ATTEMPTS && token && !role) {
-                    const savedUserData = localStorage.getItem('userData');
-                    if (savedUserData) {
-                        const userData = JSON.parse(savedUserData);
-                        if (userData.role) {
-                            console.log('Restoring role from localStorage:', userData.role);
-                            // You would need to add a setRole action to your userSlice
-                            // dispatch(setRole(userData.role));
-                            window.location.reload(); // Extreme measure, reload the page
-                        }
-                    }
-                }
-            } catch (e) {
-                console.error('Error restoring role from localStorage:', e);
-            }
-        };
-
-        if (attemptCountRef.current >= MAX_ATTEMPTS) {
-            tryRestoreRoleFromLocalStorage();
-        }
-    }, [attemptCountRef.current, token, role, dispatch]);
 
     return <>{children}</>;
 };
