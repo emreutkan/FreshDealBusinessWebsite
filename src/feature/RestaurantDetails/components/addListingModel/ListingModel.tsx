@@ -45,6 +45,7 @@ const ListingModel: React.FC<ListingModelProps> = ({
                                                    }) => {
     const dispatch = useDispatch<AppDispatch>();
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [invalidFields, setInvalidFields] = useState<string[]>([]);
     const [formData, setFormData] = useState<FormData>(initialFormData);
     const [isExiting, setIsExiting] = useState(false);
@@ -116,10 +117,24 @@ const ListingModel: React.FC<ListingModelProps> = ({
                 return;
             }
             setUploadedFile(file);
+
+            // Create image preview URL
+            const previewUrl = URL.createObjectURL(file);
+            setImagePreview(previewUrl);
+
             setInvalidFields((prev) => prev.filter((f) => f !== "image"));
             setError(null);
         }
     };
+
+    // Clean up object URL when component unmounts or when file changes
+    useEffect(() => {
+        return () => {
+            if (imagePreview) {
+                URL.revokeObjectURL(imagePreview);
+            }
+        };
+    }, [imagePreview]);
 
     const validateForm = (): boolean => {
         const requiredFields = [
@@ -270,7 +285,7 @@ const ListingModel: React.FC<ListingModelProps> = ({
                                 <textarea
                                     name="description"
                                     className={styles.textarea}
-                                    placeholder="Description (optional)"
+                                    placeholder="Description"
                                     value={formData.description}
                                     onChange={handleChange}
                                 />
@@ -294,7 +309,7 @@ const ListingModel: React.FC<ListingModelProps> = ({
                                             type="number"
                                             step="0.01"
                                             className={styles.input}
-                                            placeholder="Pickup Price (optional)"
+                                            placeholder="Pickup Price"
                                             value={formData.pick_up_price}
                                             onChange={handleChange}
                                         />
@@ -305,7 +320,7 @@ const ListingModel: React.FC<ListingModelProps> = ({
                                             type="number"
                                             step="0.01"
                                             className={styles.input}
-                                            placeholder="Delivery Price (optional)"
+                                            placeholder="Delivery Price"
                                             value={formData.delivery_price}
                                             onChange={handleChange}
                                         />
@@ -331,7 +346,7 @@ const ListingModel: React.FC<ListingModelProps> = ({
                                         className={`${styles.input} ${
                                             isInvalid("consume_within") ? styles.invalid : ""
                                         }`}
-                                        placeholder="Consume Within (days)"
+                                        placeholder="Consume Within (hours)"
                                         value={formData.consume_within}
                                         onChange={handleChange}
                                     />
@@ -344,29 +359,46 @@ const ListingModel: React.FC<ListingModelProps> = ({
                                         isInvalid("image") ? styles.invalid : ""
                                     }`}
                                 >
-                                    <input
-                                        type="file"
-                                        id="listingImage"
-                                        className={styles.fileInput}
-                                        accept="image/*"
-                                        onChange={handleFileChange}
-                                    />
-                                    <label htmlFor="listingImage" className={styles.fileLabel}>
-                                        {uploadedFile
-                                            ? uploadedFile.name
-                                            : isEditing
-                                                ? "Change Listing Image (optional)"
-                                                : "Upload Listing Image"}
-                                    </label>
-                                    {isEditing && listing?.image_url && !uploadedFile && (
-                                        <div className={styles.currentImage}>
-                                            <img
-                                                src={listing.image_url}
-                                                alt="Current listing"
-                                                className={styles.previewImage}
-                                            />
+                                    <div className={styles.uploadContainer}>
+                                        <input
+                                            type="file"
+                                            id="listingImage"
+                                            className={styles.fileInput}
+                                            accept="image/*"
+                                            onChange={handleFileChange}
+                                        />
+                                        <label htmlFor="listingImage" className={styles.fileLabel}>
+                                            {uploadedFile
+                                                ? uploadedFile.name
+                                                : isEditing
+                                                    ? "Change Listing Image"
+                                                    : "Upload Listing Image"}
+                                        </label>
+
+                                        <div className={styles.imagePreviewContainer}>
+                                            {/* Show new image preview if available */}
+                                            {imagePreview && (
+                                                <div className={styles.imagePreview}>
+                                                    <img
+                                                        src={imagePreview}
+                                                        alt="Preview"
+                                                        className={styles.thumbnailPreview}
+                                                    />
+                                                </div>
+                                            )}
+
+                                            {/* Show current image if editing and no new image uploaded */}
+                                            {isEditing && listing?.image_url && !uploadedFile && (
+                                                <div className={styles.currentImage}>
+                                                    <img
+                                                        src={listing.image_url}
+                                                        alt="Current listing"
+                                                        className={styles.thumbnailPreview}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
+                                    </div>
                                 </div>
                             </div>
 

@@ -3,7 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     updateEmail,
     updatePassword,
-    updateUsername
+    updateUsername,
+    getUserData
 } from '../../redux/thunks/userThunks';
 import { logout } from '../../redux/slices/userSlice';
 import { RootState, AppDispatch } from '../../redux/store';
@@ -71,6 +72,7 @@ const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({ isOpen, onC
 
                     if (!hasErrors) {
                         alert('Profile updated successfully');
+                        dispatch(getUserData());
                         setIsEditing(false);
                     } else {
                         alert('Some updates failed. Please try again.');
@@ -230,3 +232,4 @@ const AccountSettingsModal: React.FC<AccountSettingsModalProps> = ({ isOpen, onC
 };
 
 export default AccountSettingsModal;
+
