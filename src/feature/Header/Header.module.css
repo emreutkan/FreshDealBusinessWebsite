@@ -100,3 +100,56 @@
         white-space: nowrap;
     }
 }
+
+/* Add this to your existing Header.module.css */
+
+.notificationButton {
+    background: none;
+    border: none;
+    margin-right: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 5px;
+}
+
+.notificationIcon {
+    font-size: 24px;
+    color: #333;
+    transition: color 0.2s ease;
+}
+
+.notificationButton:hover .notificationIcon {
+    color: #007bff;
+}
+
+.accountButton {
+    background: none;
+    border: none;
+    color: #50703C;
+    cursor: pointer;
+    padding: 8px;
+    margin-right: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.accountButton:hover {
+    background-color: rgba(80, 112, 60, 0.1);
+    transform: translateY(-1px);
+}
+
+.settingsIcon {
+    font-size: 20px;
+}
+
+@media (max-width: 768px) {
+    .accountButton {
+        margin-right: 4px;
+    }
+}

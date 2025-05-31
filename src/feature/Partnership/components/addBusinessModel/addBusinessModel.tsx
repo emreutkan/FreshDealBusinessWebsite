@@ -46,6 +46,29 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                                             isEditing = false,
                                                             restaurant,
                                                         }) => {
+    // Extract phone number components if editing
+    const parsePhoneNumber = () => {
+        if (!isEditing || !restaurant?.restaurantPhone) return { areaCode: "+90", number: "" };
+
+        // Common area codes to check
+        const areaCodes = ["+90", "+1", "+44"];
+        let phoneAreaCode = "+90";
+        let phoneNumber = restaurant.restaurantPhone;
+
+        // Check if the phone number starts with any of the area codes
+        for (const code of areaCodes) {
+            if (restaurant.restaurantPhone.startsWith(code)) {
+                phoneAreaCode = code;
+                phoneNumber = restaurant.restaurantPhone.substring(code.length);
+                break;
+            }
+        }
+
+        return { areaCode: phoneAreaCode, number: phoneNumber };
+    };
+
+    const { areaCode, number } = parsePhoneNumber();
+
     const [formData, setFormData] = useState({
         restaurantName: isEditing ? restaurant?.restaurantName || "" : "",
         restaurantDescription: isEditing ? restaurant?.restaurantDescription || "" : "",
@@ -56,7 +79,7 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
         workingHoursStart: isEditing ? restaurant?.workingHoursStart || "" : "",
         workingHoursEnd: isEditing ? restaurant?.workingHoursEnd || "" : "",
         restaurantEmail: isEditing ? restaurant?.restaurantEmail || "" : "",
-        restaurantPhone: isEditing ? restaurant?.restaurantPhone || "" : "",
+        restaurantPhone: number, // Use extracted number without area code
         pickup: isEditing ? restaurant?.pickup || false : false,
         delivery: isEditing ? restaurant?.delivery || false : false,
         maxDeliveryDistance:
@@ -75,12 +98,15 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
     const [currentStep, setCurrentStep] = useState(1);
     const [phoneModalOpen, setPhoneModalOpen] = useState(false);
     const [categoryModalOpen, setCategoryModalOpen] = useState(false);
-    const [selectedAreaCode, setSelectedAreaCode] = useState("+90");
+    const [selectedAreaCode, setSelectedAreaCode] = useState(areaCode); // Use extracted area code
     const [selectedCategory, setSelectedCategory] = useState(
         isEditing ? restaurant?.category || "" : ""
     );
     const [daysModalOpen, setDaysModalOpen] = useState(false);
     const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+    const [existingImageUrl, setExistingImageUrl] = useState<string | null>(
+        isEditing && restaurant?.image_url ? restaurant.image_url : null
+    );
     const [error, setError] = useState<string | null>(null);
 
     const navigate = useNavigate();
@@ -236,6 +262,7 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                 return;
             }
             setUploadedFile(file);
+            setExistingImageUrl(null); // Clear existing image when new one is uploaded
             setInvalidFields((f) => f.filter((x) => x !== "image"));
             setError(null);
         }
@@ -272,7 +299,9 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
         });
 
         if (!formData.workingDays.length) invalid.push("workingDays");
-        if (!uploadedFile) invalid.push("image");
+
+        // Only require image upload if there's no existing image and no new upload
+        if (!uploadedFile && !existingImageUrl) invalid.push("image");
 
         if (formData.workingHoursStart && !validateTimeFormat(formData.workingHoursStart)) {
             invalid.push("workingHoursStart");
@@ -311,6 +340,7 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
         setInvalidFields(invalid);
         return !invalid.length;
     };
+
     const handleComplete = async () => {
         if (!validateStep2()) {
             setError("Please fill in all required fields");
@@ -369,6 +399,15 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
             }
         }
     };
+
+    // Helper function to get a shortened version of the image URL for display
+    const getShortImageName = (url: string) => {
+        if (!url) return "";
+        const urlParts = url.split('/');
+        const fileName = urlParts[urlParts.length - 1];
+        return fileName.length > 20 ? fileName.substring(0, 17) + '...' : fileName;
+    };
+
     return (
         <div className={styles.fullHeightContainer}>
             <div className={styles.outerDiv}>
@@ -621,16 +660,22 @@ const AddBusinessModel: React.FC<BusinessModelProps> = ({
                                                     : ""
                                             }`}
                                         >
-                                            {!uploadedFile ? (
-                                                <span className={styles.labelText}>
-                                                    Add your restaurant image
-                                                </span>
-                                            ) : (
+                                            {uploadedFile ? (
                                                 <div className={styles.successMessage}>
                                                     <span className={styles.fileName}>
                                                         {uploadedFile.name}
                                                     </span>
                                                 </div>
+                                            ) : existingImageUrl ? (
+                                                <div className={styles.successMessage}>
+                                                    <span className={styles.fileName}>
+                                                        Current image: {getShortImageName(existingImageUrl)}
+                                                    </span>
+                                                </div>
+                                            ) : (
+                                                <span className={styles.labelText}>
+                                                    Add your restaurant image
+                                                </span>
                                             )}
                                         </label>
                                     </div>

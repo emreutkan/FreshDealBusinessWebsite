@@ -258,7 +258,7 @@ const RestaurantListings: React.FC<RestaurantListingsProps> = ({ restaurantId })
                                             </div>
                                             <div className={styles.metric}>
                                                 <EventAvailableIcon className={styles.metricIcon} />
-                                                <span>within {listing.consume_within} days</span>
+                                                <span>within {listing.consume_within} hours</span>
                                             </div>
                                         </div>
                                     </div>

@@ -9,6 +9,7 @@ import {
 } from '../../../../redux/thunks/purchaseThunks.ts';
 import { AppDispatch, RootState } from "../../../../redux/store.ts";
 import { Purchase } from "../../../../redux/slices/purchaseSlice.ts";
+import {IoCheckmark} from "react-icons/io5";
 
 interface ModalProps {
     isOpen: boolean;
@@ -268,7 +269,14 @@ const Orders: React.FC<OrdersProps> = ({ restaurantId }) => {
                         onClick={() => handleAcceptOrder(purchase.purchase_id)}
                         disabled={acceptingOrder === purchase.purchase_id}
                     >
-                        {acceptingOrder === purchase.purchase_id ? 'Accepting...' : 'Accept Order'}
+                        {acceptingOrder === purchase.purchase_id ?
+                            <>
+                                <div className={styles.loadingSpinner}></div> Accepting...
+                            </> :
+                            <>
+                                <IoCheckmark /> Accept Order
+                            </>
+                        }
                     </button>
                     <button
                         className={styles.rejectButton}
@@ -359,8 +367,12 @@ const Orders: React.FC<OrdersProps> = ({ restaurantId }) => {
         <div className={styles.purchasesContainer}>
             <div className={styles.purchasesHeader}>
                 <h2>Restaurant Orders</h2>
-                {loading && <div className={styles.loadingIndicator}>Loading...</div>}
-            </div>
+                {loading && (
+                    <div className={styles.loadingIndicator}>
+                        <div className={styles.loadingSpinner}></div>
+                        Loading orders...
+                    </div>
+                )}            </div>
 
             {error && (
                 <div className={styles.errorContainer}>
@@ -382,6 +394,10 @@ const Orders: React.FC<OrdersProps> = ({ restaurantId }) => {
                 onClose={() => setExpandedSection(null)}
                 title="Pending Orders"
             >
+                <div className={styles.modalHeader}>
+                    <h3>Pending Orders</h3>
+                    <button className={styles.modalClose} onClick={() => setExpandedSection(null)}>×</button>
+                </div>
                 <div className={styles.modalList}>
                     {groupPurchasesByStatus(purchases).pending.map(purchase =>
                         renderPurchaseItem(purchase)

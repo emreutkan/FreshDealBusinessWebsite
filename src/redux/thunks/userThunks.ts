@@ -21,11 +21,13 @@ export const loginUser = createAsyncThunk(
         try {
             const response = await loginUserAPI(payload);
             if (response.token) {
-                await dispatch(getUserData({token: response.token}));
+                // Store token first, then get user data
+                await dispatch(getUserData());
             }
             return response;
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            return rejectWithValue(errorMessage);
         }
     }
 );
@@ -56,15 +58,21 @@ export const updateUsername = createAsyncThunk<
     { state: RootState; rejectValue: string }
 >(
     'user/updateUsername',
-    async ({newUsername}, {getState, rejectWithValue}) => {
+    async ({newUsername}, {getState, rejectWithValue, dispatch}) => {
         try {
             const token = getState().user.token;
             if (!token) {
                 return rejectWithValue('No authentication token');
             }
-            return await updateUsernameAPI(newUsername, token);
-        } catch (error: any) {
-            return rejectWithValue(error.message);
+            const result = await updateUsernameAPI(newUsername, token);
+
+            // After successful username update, refresh user data to ensure state is in sync
+            await dispatch(getUserData());
+
+            return result;
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            return rejectWithValue(errorMessage);
         }
     }
 );

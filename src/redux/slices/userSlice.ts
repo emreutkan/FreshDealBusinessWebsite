@@ -82,6 +82,15 @@ const userSlice = createSlice({
             state.token = action.payload;
             setStoredToken(action.payload);
         },
+        clearUserSession: (state) => {
+            state.token = null;
+            state.role = '';
+            state.loading = false;
+            state.error = null;
+            // Clear any stored token
+            localStorage.removeItem('token');
+            localStorage.removeItem('userData');
+        },
         logout() {
             removeStoredToken();
             localStorage.removeItem('userData');
@@ -287,7 +296,8 @@ export const {
     setToken,
     setRole,
     logout,
-    restoreUserDataFromStorage
+    restoreUserDataFromStorage,
+    clearUserSession
 } = userSlice.actions;
 
 export default userSlice.reducer;
