@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { RootState } from '../redux/store';
+import { logout } from '../redux/slices/userSlice';
 
 export function AuthGuard({
                               requiredRole,
@@ -12,7 +13,11 @@ export function AuthGuard({
 }) {
     const { token, role } = useSelector((state: RootState) => state.user);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [isChecking, setIsChecking] = useState(true);
+
+    // Customer redirection URL
+    const CUSTOMER_REDIRECT_URL = 'https://delightful-bay-05963e103.6.azurestaticapps.net/';
 
     useEffect(() => {
         console.log('Auth check - token:', !!token, 'role:', role);
@@ -27,6 +32,15 @@ export function AuthGuard({
         // We have a token, check role
         if (role) {
             console.log(`User role: ${role}, Required role: ${requiredRole}`);
+
+            // If the user is a customer, redirect them to the customer site and log them out
+            if (role === 'customer') {
+                console.log('Customer detected, redirecting to customer site');
+                dispatch(logout());
+                // Use window.location to navigate to external URL
+                window.location.href = CUSTOMER_REDIRECT_URL;
+                return;
+            }
 
             // Check if user has the required role
             if (requiredRole === null || role === requiredRole) {
@@ -52,7 +66,7 @@ export function AuthGuard({
             // The Login component should check for token and redirect appropriately
             setIsChecking(false);
         }
-    }, [token, role, requiredRole, navigate]);
+    }, [token, role, requiredRole, navigate, dispatch]);
 
     if (isChecking) {
         return <div>Checking authorization...</div>;
@@ -60,3 +74,4 @@ export function AuthGuard({
 
     return <>{children}</>;
 }
+

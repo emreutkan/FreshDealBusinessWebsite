@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../redux/store';
 import { getUserData } from '../redux/thunks/userThunks';
 import { logout } from '../redux/slices/userSlice';
+import { removeStoredToken } from '../redux/Api/apiService';
 
 // Simple debounce utility
 const useDebounce = (callback: Function, delay: number) => {
@@ -74,8 +75,8 @@ const AuthMiddleware: React.FC<AuthMiddlewareProps> = ({ children }) => {
             debouncedFetchUserData();
         }
 
-        // Reset attempt tracking if we get a role
-        if (role) {
+        // Reset attempt tracking once if we get a role and we previously attempted
+        if (role && hasAttempted) {
             console.log(`Role detected: ${role}. Resetting attempt counter.`);
             attemptCountRef.current = 0;
             setHasAttempted(false);
@@ -88,7 +89,18 @@ const AuthMiddleware: React.FC<AuthMiddlewareProps> = ({ children }) => {
         }
     }, [token, role, loading, hasAttempted, debouncedFetchUserData]);
 
+    // If the user is a customer, log them out, clear token, and redirect to customer site
+    useEffect(() => {
+        if (role === 'customer') {
+            console.log('Customer role detected, logging out and redirecting...');
+            dispatch(logout());
+            removeStoredToken();
+            window.location.href = 'https://delightful-bay-05963e103.6.azurestaticapps.net/';
+        }
+    }, [role, dispatch]);
+
     return <>{children}</>;
 };
 
 export default AuthMiddleware;
+
