@@ -1,6 +1,6 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {RootState} from "../store";
-import {UserDataResponse} from "../slices/userSlice.ts";
+import {UserDataResponse, setToken} from "../slices/userSlice.ts";
 import {loginUserAPI, registerUserAPI} from "../Api/authApi.ts";
 import {getUserDataAPI, updateEmailAPI, updatePasswordAPI, updateUsernameAPI} from "../Api/userApi.ts";
 
@@ -21,7 +21,8 @@ export const loginUser = createAsyncThunk(
         try {
             const response = await loginUserAPI(payload);
             if (response.token) {
-                // Store token first, then get user data
+                // Save token before fetching user data so the thunk can access it
+                dispatch(setToken(response.token));
                 await dispatch(getUserData());
             }
             return response;
